@@ -250,7 +250,7 @@ Follow.extend(
 	merge: function( model )
 	{
 		var 
-			branch = Follow('merge'),
+			branch = this.constructor('merge'),
 			chains = [];
 		
 		branch(model);
