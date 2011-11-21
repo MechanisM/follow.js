@@ -264,6 +264,8 @@ Follow.extend(
 			typeof value != 'object' && this(chain, value);
 		}, this);
 		branch.clear();
+		
+		return this;
 	}
 });
 
