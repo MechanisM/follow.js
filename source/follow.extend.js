@@ -93,7 +93,7 @@ Follow.extend(
 	restore: function( key )
 	{
 		var 
-			key = key || -1,
+			key = key == null ? -1 : key,
 			data = typeof key == 'string'
 				? this.backups[key]
 				: this.backups.slice(key)[0];
