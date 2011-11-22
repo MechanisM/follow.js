@@ -98,7 +98,7 @@
 		{
 			constructor: Follow,
 			
-			model: modelName,
+			modelName: modelName,
 			storage: storage,
 			extend: extend,
 			
@@ -110,7 +110,11 @@
 			backups: [],
 			wrappers: [],
 			
-			clearCache: function(){ model = null },
+			model: function( obj )
+			{
+				model = obj;
+				storage[modelName] = obj ? JSON.stringify(obj) : '{}';
+			},
 			toString: function( path )
 			{
 				return path

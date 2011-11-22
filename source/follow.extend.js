@@ -71,10 +71,7 @@ Follow.extend(
 		
 		// model
 		if( path ) this(path, undefined);
-		else {
-			this.clearCache();
-			delete this.storage[this.model];
-		};
+		else this.model(null);
 		
 		return this;
 	},
@@ -102,7 +99,7 @@ Follow.extend(
 				: this.backups.slice(key)[0];
 		
 		data && (
-			this.storage[this.model] = data.model,
+			this.model(JSON.parse(data.model)),
 			this.followers = data.followers,
 			this.dependency = data.dependency
 		);
