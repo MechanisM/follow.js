@@ -13,9 +13,10 @@
 			storage = storage || models,
 			modelName = modelName || 'default';
 		
-		var observable = function __( chain, value, if_not_defined )
+		var observable = function( chain, value, if_not_defined )
 		{
 			var 
+				__ = observable,
 				args = array(arguments),
 				model = model || JSON.parse(__.toJSON()),
 				path = typeof chain == 'object' ? {} : String(chain).split('.'),
@@ -51,12 +52,12 @@
 								? value.call(__, current, extend({ value: current }, params))
 								: value;
 						
-						if( __.toJSON(chain) != JSON.stringify(new_value) )
+						if( __.toJSON(chain) != json_stringify(new_value) )
 						{
 							if( !if_not_defined )
 							{
 								parent[prop] = new_value;
-								storage[modelName] = JSON.stringify( model );
+								storage[modelName] = json_stringify( model );
 								
 								__.tracking(chain);
 								__.broadcast(chain, [
@@ -113,12 +114,12 @@
 			model: function( obj )
 			{
 				model = obj;
-				storage[modelName] = obj ? JSON.stringify(obj) : '{}';
+				storage[modelName] = obj ? json_stringify(obj) : '{}';
 			},
 			toString: function( path )
 			{
 				return path
-					? JSON.stringify( observable(path) )
+					? json_stringify( observable(path) )
 					: storage[modelName] || '{}';
 			}
 		}, Follow.prototype);
@@ -126,7 +127,12 @@
 		return observable;
 	}
 	
-	function array( obj ){ return [].slice.call(obj) }
+	function json_stringify( obj, replacer, space ){
+		return JSON.stringify( obj, replacer, space || '\t' );
+	}
+	function array( obj ){
+		return [].slice.call(obj);
+	}
 	function extend( deep, source )
 	{
 		var 

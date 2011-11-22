@@ -41,7 +41,7 @@ try {
 		alert( [value, this.toJSON(params.chain), params.chain, params.prop, params.parent.user].join('\n') );
 	}, 'sensible');
 
-	window.onclick = function()
+	document.onclick = function()
 	{
 		//model('user.test', Math.random());
 		//model('name.first', 'Zeta');
