@@ -5,7 +5,7 @@
  
 (function()
 {
-	var models = {};
+	var model, models = {};
 	
 	function Follow( modelName, storage )
 	{
@@ -17,7 +17,7 @@
 		{
 			var 
 				args = array(arguments),
-				model = JSON.parse(__.toJSON()),
+				model = model || JSON.parse(__.toJSON()),
 				path = typeof chain == 'object' ? {} : String(chain).split('.'),
 				prop, parent = model;
 			
@@ -110,6 +110,7 @@
 			backups: [],
 			wrappers: [],
 			
+			clearCache: function(){ model = null },
 			toString: function( path )
 			{
 				return path
@@ -168,7 +169,7 @@
 	}
 	
 	Follow.extend = function() {
-		extend.apply(null, [this.prototype].concat(array(arguments)));
+		extend.apply(null, [true].concat(this.prototype, array(arguments)));
 	};
 	
 	// export to global

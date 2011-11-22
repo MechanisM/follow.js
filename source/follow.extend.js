@@ -71,7 +71,10 @@ Follow.extend(
 		
 		// model
 		if( path ) this(path, undefined);
-		else delete this.storage[this.model];
+		else {
+			this.clearCache();
+			delete this.storage[this.model];
+		};
 		
 		return this;
 	},
