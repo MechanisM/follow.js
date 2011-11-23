@@ -20,8 +20,7 @@ try {
 				one: 1,
 				two: 2
 			}
-		},
-		params: ['One', 'Two', 'Three']
+		}
 	});
 	
 	var path = /lang\..*/;
@@ -40,6 +39,21 @@ try {
 	model.follow('user', function( value, params ){
 		alert( [value, this.toJSON(params.chain), params.chain, params.prop, params.parent.user].join('\n') );
 	}, 'sensible');
+
+	/*model('collection', [
+		{x: 1, y: 1, color: 'blue', b: true},
+		{x: 0, y: 2, color: 'red', b: "true", test: [1,0,2]},
+		{x: 1, y: 3, color: 'red'},
+		{x: 0, y: 4, values: [0,1]},
+		{z: 1, y: 5, children: {count: 3, list: ['one', 'two', 'three']}, x: null }
+	]);
+	
+	alert([
+		model.map('collection', "x[=y] || z"),					// [object Object],[object Object]
+		model.map('collection', "x[=values.0]"),				// [object Object]
+		model.map('collection', "y[>=3] && children", 'y'),		// 5
+		model.map('collection', "x[=1]", 'color') 				// blue,red
+	].join('\n'));*/
 
 	document.onclick = function()
 	{
