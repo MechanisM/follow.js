@@ -22,7 +22,7 @@ Follow.extend(
 					var expr = condition.replace(/([A-Z0-9_\$\.]+)(?:\[(>=?|<=?|==?|!=?)(.*?)\])?/gi, function(S, chain, compare, value)
 					{
 						var prop = chain.split('.').shift();
-						if( prop in elem )
+						if( elem.hasOwnProperty(prop) )
 						{
 							if( compare && value )
 							{
@@ -39,8 +39,10 @@ Follow.extend(
 								
 								if( checklist[chain] ) 
 								{
+									var prop = value.split('.').shift();
+									
 									checklist[chain]['parse'] && 
-									value.split('.').shift() in elem && (
+									elem.hasOwnProperty(prop) && (
 										value = model([path, index, value].join('.'))
 									);
 									
@@ -62,9 +64,12 @@ Follow.extend(
 					{
 						if( returnValue )
 						{
-							returnValue.split('.').shift() in elem && 
+							var prop = returnValue.split('.').shift();
+							
+							elem.hasOwnProperty(prop) &&
 							returnValue.match(/^[A-Z0-9_$\.]+$/i) &&
 							(value = model([path, index, returnValue].join('.')));
+							
 							value && stack.push(value);
 						}
 						else {
