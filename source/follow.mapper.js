@@ -39,22 +39,19 @@ Follow.extend(
 								
 								if( checklist[chain] ) 
 								{
-									var prop = value.split('.').shift();
-									
 									checklist[chain]['parse'] && 
-									elem.hasOwnProperty(prop) && (
-										value = model([path, index, value].join('.'))
+									elem.hasOwnProperty( value.split('.').shift() ) && (
+										value = model.toJSON([path, index, value].join('.'))
 									);
-									
-									if( value === null || typeof value != 'object' ){
-										return eval('(elem.'+ chain + compare + value +')');
-									}
+									return eval('(elem.'+ chain + compare + value +')');
 								}
 								
 								return false;
 							}
 							
-							return model([path, index, chain].join('.')) !== null;
+							return chain == prop
+								? true
+								: model([path, index, chain].join('.')) !== null;
 						}
 						return false;
 					});
@@ -64,13 +61,10 @@ Follow.extend(
 					{
 						if( returnValue )
 						{
-							var prop = returnValue.split('.').shift();
-							
-							elem.hasOwnProperty(prop) &&
-							returnValue.match(/^[A-Z0-9_$\.]+$/i) &&
+							elem.hasOwnProperty( returnValue.split('.').shift() ) &&
 							(value = model([path, index, returnValue].join('.')));
 							
-							value && stack.push(value);
+							value !== null && stack.push(value);
 						}
 						else {
 							stack.push(elem);
