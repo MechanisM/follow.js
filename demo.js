@@ -40,7 +40,7 @@ try {
 		alert( [value, this.toJSON(params.chain), params.chain, params.prop, params.parent.user].join('\n') );
 	}, 'sensible');
 
-	/*model('collection', [
+	model('collection', [
 		{x: 1, y: 1, color: 'blue', b: true},
 		{x: 0, y: 2, color: 'red', b: "true", test: [1,0,2]},
 		{x: 1, y: 3, color: 'red'},
@@ -53,7 +53,7 @@ try {
 		model.map('collection', "x[=values.0]"),				// [object Object]
 		model.map('collection', "y[>=3] && children", 'y'),		// 5
 		model.map('collection', "x[=1]", 'color') 				// blue,red
-	].join('\n'));*/
+	].join('\n'));
 
 	document.onclick = function()
 	{

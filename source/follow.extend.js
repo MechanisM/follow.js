@@ -291,8 +291,8 @@ Follow.extend(
 						{
 							if( compare && value )
 							{
-								compare[0] == '=' && (compare = '===');
-								compare[0] == '!' && (compare = '!==');
+								compare.charAt(0) == '=' && (compare = '===');
+								compare.charAt(0) == '!' && (compare = '!==');
 								
 								!checklist[chain] && (
 									checklist[chain] = 
