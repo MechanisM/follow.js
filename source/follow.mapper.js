@@ -1,5 +1,5 @@
 /*!
- * Follow.js - small javascript library for tracking dependencies
+ * Follow.js
  * Data-mapper for collections (arrays) in the model.
  */
  

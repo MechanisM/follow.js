@@ -1,5 +1,5 @@
 /*!
- * Follow.js - small javascript library for tracking dependencies
+ * Follow.js
  * ECMA-262 compatibility
  */
 

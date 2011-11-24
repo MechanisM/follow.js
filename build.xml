@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<project name="follow.js" default="init" basedir=".">
+
+	<property name="yui.jar" location="tools/yuicompressor-2.4.7.jar"/>
+	<property name="output" value="follow.min.js"/>
+
+	<target name="init" depends="">
+
+		<concat destfile="${output}">
+			<filelist files="header" />
+			<fileset dir="source/external"/>
+			<filelist dir="source">
+				<file name="follow.ecma.js"/>
+				<file name="follow.core.js"/>
+				<file name="follow.extend.js"/>
+				<file name="follow.mapper.js"/>
+			</filelist>
+		</concat>
+		<yuicompress/>
+		
+	</target>
+	
+	<macrodef name="yuicompress">
+		<attribute name="from" default="${output}"/>
+		<attribute name="to" default="${output}"/>
+		<sequential>
+			<exec executable="cmd.exe">
+				<arg line="/c java -jar ${yui.jar} @{from} -o @{to}"/>
+			</exec>
+		</sequential>
+	</macrodef>
+	
+</project>
