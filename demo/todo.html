@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Follow.js sample: TODO list</title>
+	<link rel="stylesheet" href="todo.css" media="screen" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../source/external/json2.js"></script>
+	<script type="text/javascript" src="../source/follow.ecma.js"></script>
+	<script type="text/javascript" src="../source/follow.core.js"></script>
+	<script type="text/javascript" src="../source/follow.extend.js"></script>
+	<script type="text/javascript" src="../source/follow.mapper.js"></script>
+	<!-- <script type="text/javascript" src="../follow.min.js"></script> -->
+	<script type="text/javascript" src="todo.js"></script>
+</head>
+<body>
+		
+	<div class="todo">
+		<h2>TODO</h2>
+		<input id="new-entry" type="text" value="What needs to be done?" title="Press Enter to save entry" />
+		<ul id="todo_list">
+			<!-- in this example we will use <li> below as template -->
+			<li style="display:none;">
+				<input type="checkbox" name="mark" />
+				<span class="text"></span>
+				<i class="delete" title="Remove this item">(x)</i>
+			</li>
+		</ul>
+		<div class="info">
+			<p class="right" id="todo_completed">
+				<a href="#" class="clear">Clear <span class="completed-count">0</span> completed item<i class="suffix">s</i></a>
+			</p>
+			<p id="todo_left">
+				<span class="left-count">0</span> item<i class="suffix">s</i> left.
+			</p>
+		</div>
+	</div>
+
+</body>
+</html>

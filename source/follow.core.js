@@ -49,12 +49,18 @@
 								model: model
 							},
 							new_value = typeof value == 'function' 
-								? value.call(__, current, extend({ value: current }, params))
+								? value.apply(__, 
+								[
+									typeof current != 'object' 
+										? current 
+										: __.clone(current),
+									extend({ value: current }, params)
+								])
 								: value;
 						
 						if( __.toJSON(chain) != __.stringify(new_value) )
 						{
-							if( !if_not_defined )
+							if( !if_not_defined || current === undefined )
 							{
 								parent[prop] = new_value;
 								storage[modelName] = __.stringify( model );
@@ -111,6 +117,9 @@
 			backups: [],
 			wrappers: [],
 			
+			clone: function( obj ){
+				return JSON.parse( this.stringify(obj) );
+			},
 			stringify: function( obj, replacer, space ){
 				return JSON.stringify( obj, replacer, space || '\t' );
 			},

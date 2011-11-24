@@ -7,12 +7,18 @@ Follow.extend(
 {
 	follow: function( path, callback, mode )
 	{
-		var follower = this.wrap.apply(this, arguments);
-		
-		String(path).trim().split(/\s+/).forEach(function( path )
+		var regexp = path instanceof RegExp;
+		String(path).trim().split(/\s+/).forEach(function( chain )
 		{
-			!this.followers[path] && (this.followers[path] = []);
-			this.followers[path].push(follower);
+			var follower = this.wrap.apply(
+				this, [
+					regexp ? path : chain,
+					callback, 
+					mode
+				]
+			);
+			!this.followers[chain] && (this.followers[chain] = []);
+			this.followers[chain].push(follower);
 		}, this);
 		
 		return this;
