@@ -19,7 +19,9 @@ Follow.extend(
 			collection.forEach(function( elem, index )
 			{
 				try {
-					var expr = condition.replace(/([A-Z0-9_\$\.]+)(?:\[(>=?|<=?|==?|!=?)(.*?)\])?/gi, function(S, chain, compare, value)
+					var expr = 
+					! condition ? true
+					: condition.replace(/([A-Z0-9_\$\.]+)(?:\[(>=?|<=?|==?|!=?)(.*?)\])?/gi, function(S, chain, compare, value)
 					{
 						var prop = chain.split('.').shift();
 						if( elem.hasOwnProperty(prop) )
@@ -56,15 +58,15 @@ Follow.extend(
 						return false;
 					});
 					
-					var result = Function('return '+ expr)();
-					if( result )
+					var bool = Function('return '+ expr)();
+					if( bool )
 					{
 						if( returnValue )
 						{
-							elem.hasOwnProperty( returnValue.split('.').shift() ) &&
-							(value = model([path, index, returnValue].join('.')));
-							
-							value !== null && stack.push(value);
+							var prop = returnValue.split('.').shift(), value;
+							elem.hasOwnProperty(prop) &&
+							(value = eval('(elem.'+ returnValue +')'));
+							value !== undefined && stack.push(value);
 						}
 						else {
 							stack.push(elem);
