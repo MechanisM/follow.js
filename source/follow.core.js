@@ -92,7 +92,7 @@
 				setter();
 			}
 			
-			return __;
+			return model;
 		};
 		
 		extend(observable, 

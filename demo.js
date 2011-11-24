@@ -49,11 +49,19 @@ try {
 	]);
 	
 	alert([
-		model.map('collection', "x[=y] || z"),					// [object Object],[object Object]
-		model.map('collection', "x[=values.0]"),				// [object Object]
-		model.map('collection', "y[>=3] && children", 'y'),		// 5
-		model.map('collection', "x[=1]", 'color') 				// blue,red
+		model.select('collection', "x[=y] || z"),					// [object Object],[object Object]
+		model.select('collection', "x[=values.0]"),					// [object Object]
+		model.select('collection', "y[>=3] && children", 'y'),		// 5
+		model.select('collection', "x[=1]", 'color') 				// blue,red
 	].join('\n'));
+	
+	model.follow(/collection(\..+)*/, function( value, params ){
+		alert([
+			params.chain,
+			this.toJSON(params.chain)
+		].join(' = '));
+	});
+	//model.select('collection', 'x[=1]', 'color').update('green');
 
 	document.onclick = function()
 	{

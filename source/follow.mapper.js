@@ -5,12 +5,13 @@
  
 Follow.extend(
 {
-	map: function( path, condition, returnValue )
+	select: function( path, condition, returnValue )
 	{
 		var 
 			model = this,
 			collection = model(path),
 			stack = [],
+			chains = [],
 			checklist = {},
 			value;
 		
@@ -61,24 +62,56 @@ Follow.extend(
 					var bool = Function('return '+ expr)();
 					if( bool )
 					{
+						var chain = {
+							index: index,
+							path: [path, index]
+						};
 						if( returnValue )
 						{
-							var prop = returnValue.split('.').shift(), value;
+							var value, prop = returnValue.split('.').shift();
+							
 							elem.hasOwnProperty(prop) &&
 							(value = eval('(elem.'+ returnValue +')'));
-							value !== undefined && stack.push(value);
+							
+							value !== undefined && (
+								chain.path.push(returnValue),
+								chains.push(chain),
+								stack.push(value)
+							);
 						}
 						else {
 							stack.push(elem);
+							chains.push(chain);
 						}
 					}
 				}
 				catch(e){}
 			}, this);
-			
-			return stack;
 		}
 		
-		return collection;
+		stack.update = function( value, every )
+		{
+			if( arguments.length )
+			{
+				var branch = model.constructor('merge');
+				branch(path, collection);
+				
+				chains.forEach(function( chain, index )
+				{
+					var chain = chain.path.join('.');
+					branch(chain, value);
+				});
+				
+				every
+					? model.merge( branch() )
+					: model( path, branch(path) );
+				
+				branch.clear();
+			}
+			
+			return model;
+		};
+		
+		return stack;
 	}
 });
