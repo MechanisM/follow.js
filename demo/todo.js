@@ -50,16 +50,10 @@ $(function()
 		{
 			if( this.value && evt.which == 13 /* Enter */ )
 			{
-				var item = {
+				todo('list').push({
 					title: this.value,
 					completed: false
-				};
-				
-				todo('list', function( items ) {
-					items.push(item);
-					return items;
 				});
-				
 				this.value = '';
 			}
 		});
@@ -75,10 +69,10 @@ $(function()
 		ui.count.text( value );
 	});
 
-	todo.follow('list', function( items, params )
+	todo.follow('list', function( item, params )
 	{
-		// bla bla
-	});
+		// alert( item )
+	}, 'children');
 	
 	todo({
 		list: [],

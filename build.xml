@@ -14,6 +14,7 @@
 				<file name="follow.core.js"/>
 				<file name="follow.extend.js"/>
 				<file name="follow.mapper.js"/>
+				<file name="follow.helper.js"/>
 			</filelist>
 		</concat>
 		<yuicompress/>

@@ -91,8 +91,8 @@
 					chain.hasOwnProperty(i) && __(i, chain[i], args[1]);
 				}
 			}
-			else if( args.length == 1 ){
-				return getter();
+			else if( args.length == 1 ) {
+				return __.__get(getter(), args);
 			}
 			else if( args.length >= 2 ){
 				setter();
@@ -117,6 +117,7 @@
 			backups: [],
 			wrappers: [],
 			
+			__get: function( value ){ return value },
 			clone: function( obj ){
 				return JSON.parse( this.stringify(obj) );
 			},
