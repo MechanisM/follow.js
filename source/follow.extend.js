@@ -118,21 +118,21 @@ Follow.extend(
 	composite: function( dependent, callback )
 	{
 		var 
-			self = this,
 			depend = this.dependency,
 			handler = depend.composite[ dependent ];
 		
 		if( typeof callback == 'function' )
 		{
-			callback.call(function(chain)
-			{
+			this.__hook = function( chain ){
 				depend.on[chain] = depend.on[chain] || [];
 				depend.on[chain].indexOf(dependent) == -1 && depend.on[chain].push(dependent);
-				return self.apply(null, arguments);
-			});
+			};
+			callback.call(this);
+			delete this.__hook;
 			
 			this(dependent, function( value, params )
 			{
+				var self = this;
 				return (depend.composite[ dependent ] = function(){
 					return callback.call(self, params);
 				})();
@@ -240,14 +240,15 @@ Follow.extend(
 			},
 			wrapper = this.extend({}, this.wrappers, 
 			{
-				'once': function()
+				'once': function( path, callback )
 				{
+					var handler = function(){
+						callback.apply(this, arguments);
+						this.unfollow(path, handler);
+					};
 					return {
 						path: path,
-						callback: function __(){
-							callback.apply(this, arguments);
-							this.unfollow(path, __);
-						}
+						callback: handler
 					}
 				},
 				

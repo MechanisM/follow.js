@@ -4,14 +4,14 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Follow.js sample: TODO list</title>
 	<link rel="stylesheet" href="todo.css" media="screen" />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script type="text/javascript" src="../source/external/json2.js"></script>
-	<script type="text/javascript" src="../source/follow.ecma.js"></script>
-	<script type="text/javascript" src="../source/follow.core.js"></script>
-	<script type="text/javascript" src="../source/follow.extend.js"></script>
-	<script type="text/javascript" src="../source/follow.mapper.js"></script>
-	<script type="text/javascript" src="../source/follow.helper.js"></script>
-	<!-- <script type="text/javascript" src="../follow.min.js"></script> -->
+	<script type="text/javascript" src="../jquery.min.js"></script>
+	<script type="text/javascript" src="../../source/external/json2.js"></script>
+	<script type="text/javascript" src="../../source/follow.ecma.js"></script>
+	<script type="text/javascript" src="../../source/follow.core.js"></script>
+	<script type="text/javascript" src="../../source/follow.extend.js"></script>
+	<script type="text/javascript" src="../../source/follow.mapper.js"></script>
+	<script type="text/javascript" src="../../source/follow.helper.js"></script>
+	<!-- <script type="text/javascript" src="../../follow.min.js"></script> -->
 	<script type="text/javascript" src="todo.js"></script>
 </head>
 <body>
@@ -22,8 +22,10 @@
 		<ul id="todo_list">
 			<!-- in this example we will use <li> below as template -->
 			<li style="display:none;">
-				<input type="checkbox" name="mark" />
-				<span class="text"></span>
+				<label>
+					<input type="checkbox" name="mark" />
+					<span class="text"></span>
+				</label>
 				<i class="delete" title="Remove this item">(x)</i>
 			</li>
 		</ul>

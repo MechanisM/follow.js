@@ -13,4 +13,4 @@
 .todo .info * { font-size:15px; }
 .todo .info p { margin:0; padding:0; }
 .todo .right { float:right; }
-.todo .checked { text-decoration:line-through; color:gray; }
+.todo .completed { text-decoration:line-through; color:gray; }

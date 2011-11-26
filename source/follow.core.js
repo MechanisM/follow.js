@@ -19,6 +19,7 @@
 				__ = observable,
 				args = array(arguments),
 				model = JSON.parse(__.toJSON()),
+				chain = chain instanceof Array ? chain.join('.') : chain,
 				path = typeof chain == 'object' ? {} : String(chain).split('.'),
 				prop, parent = model;
 			
@@ -84,6 +85,9 @@
 					}
 				}
 			}
+			
+			// apply hook, if exists
+			__.__hook && __.__hook.apply(__, args);
 
 			// behavior
 			if( typeof chain == 'object' ){
@@ -94,8 +98,9 @@
 			else if( args.length == 1 ) {
 				return __.__get(getter(), args);
 			}
-			else if( args.length >= 2 ){
+			else if( args.length >= 2 ) {
 				setter();
+				return __;
 			}
 			
 			return model;
@@ -117,6 +122,7 @@
 			backups: [],
 			wrappers: [],
 			
+			__hook: null,
 			__get: function( value ){ return value },
 			clone: function( obj ){
 				return JSON.parse( this.stringify(obj) );
