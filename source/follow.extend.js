@@ -258,11 +258,11 @@ Follow.extend(
 				
 				// descendants or self + always own context
 				'sensible': regexp(function( path ){
-					return RegExp('^('+ path +'|'+ path +'\\..*)$', 'i');
+					return RegExp('^('+ path +'|'+ path +'\\..*)$');
 				}),
 				
 				'children': regexp(function( path ){
-					return RegExp('^'+ path +'\.[^\.]+$', 'i');
+					return RegExp('^'+ path +'\.([^\.]+)$');
 				}, true)
 			});
 		

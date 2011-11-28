@@ -17,19 +17,14 @@ Follow.extend(
 			{
 				splice: function( start, count )
 				{
-					var items = [].slice.call(arguments, 2);
-					[].splice.apply(this, arguments);
-					
-					for(
-						var i = start, chains = []; 
-						i < start + Math.max(count, items.length); 
-						i++
-					) chains.push([chain, i].join('.'));
-					
-					model(chain, this);
-					chains.forEach(function( path ){
-						model.dispatch( path );
-					});
+					var 
+						items = [].slice.call(arguments, 2),
+						end = start + Math.max(count, items.length);
+					while( start < end )
+					{
+						var path = [chain, start++].join('.');
+						model(path, items.shift());
+					}
 				},
 				
 				push: function() {

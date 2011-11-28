@@ -5,21 +5,22 @@
 
 !window.localStorage && (localStorage = {}); // fallback
 
-// jQyery DOM ready
+// jQuery DOM ready
 $(function()
 {
-	todo({
-		init: true, // must be first!
+	todo.init({
+		init: true, // must be first (in this sample)
 		list: [],
 		completed: 0,
 		left: 0
-	}, true);
-
+	});
 });
 
-var todo = Follow('todo');
+// в качестве объекта для хранения данных (JSON) можно указать любой объект JS
+// в данном примере мы будем сохранять данные в HTML 5 data storage под свойством "todo"
+var todo = Follow('todo', localStorage, true);
 
-todo.follow('init', function( value )
+todo.follow('init', function()
 {
 	var model = this;
 	
@@ -27,13 +28,15 @@ todo.follow('init', function( value )
 		completed: {
 			block: $('#todo_completed'),
 			count: $('#todo_completed .completed-count'),
-			suffix: $('#todo_completed .suffix')
+			suffix: $('#todo_completed .suffix'),
+			clear: $('#todo_completed a.clear')
 		},
 		left: {
 			block: $('#todo_left'),
 			count: $('#todo_left .left-count'),
 			suffix: $('#todo_left .suffix')
 		},
+		input: $('#new-entry'),
 		list: {
 			block: $('#todo_list'),
 			elem: function()
@@ -45,22 +48,28 @@ todo.follow('init', function( value )
 		}
 	};
 	
-	$('#todo_list')
-		.delegate(':checkbox', 'change', function( evt )
+	this.ui.list.block
+		.delegate(':checkbox', 'click', function( evt )
 		{
-			var 
-				state = $(this).prop('checked'),
-				index = $(this).closest('li').index(),
-				chain = ['list', index, 'completed'].join('.');
-			model(chain, state);
+			var index = $(this).closest('li').index();
+			model(['list', index, 'completed'], function( value ){
+				return !value;
+			});
 		})
 		.delegate('.delete', 'click', function( evt )
 		{
 			var index = $(this).closest('li').index();
 			model('list').splice(index, 1);
 		});
+	
+	this.ui.completed.clear
+		.click(function()
+		{
+			model.select('list', 'completed[=true]').remove(true);
+			return false;
+		});
 
-	$('#new-entry')
+	this.ui.input
 		.focus(function() {
 			if( this.value == this.defaultValue ){
 				this.value = '';
@@ -95,6 +104,19 @@ todo.follow('completed left', function( value, params )
 	info.count.text( value );
 });
 
+// событие для первоначальной отрисовки элементов
+todo.follow('list', function( items, params )
+{
+	items.forEach(function( item, index )
+	{
+		var 
+			chain = [params.chain, index].join('.'),
+			completed = [chain, 'completed'].join('.');
+		this.dispatch(chain);
+		this.dispatch(completed);
+	}, this);
+}, 'once');
+
 // триггер на любое изменение внутри list
 todo.follow('list', function()
 {
@@ -105,10 +127,10 @@ todo.follow('list', function()
 // триггер на изменения элементов массива, т.е флаг "children" просто шорткат для /list\.\d+/
 todo.follow('list', function( item, params )
 {
-	// add
+	var items = this.ui.list;
 	if( item )
 	{
-		this.ui.list.elem
+		items.elem
 			.find('.text')
 			.text(item.title)
 			.end()
@@ -116,20 +138,24 @@ todo.follow('list', function( item, params )
 		.appendTo( this.ui.list.block )
 		.slideDown('fast');
 	}
-	// remove
 	else {
-		//alert( this('list').length )
+		var index = params.match[1];
+		items.block
+			.find('li:eq('+ index +')')
+			.slideUp('fast', function(){
+				$(this).remove();
+			});
 	}
 }, 'children');
 
+// отмечаем задачу выполненной (зачеркнутой линией)
 todo.follow(/list\.(\d+)\.completed/, function( value, params )
 {
 	var index = params.match[1];
 	this.ui.list.block
-		.find(':eq('+ index +') .text')
-		.toggleClass('completed', value);
+		.find('li:eq('+ index +')')
+		.find('.text').toggleClass('completed', value).end()
+		.find(':checkbox').attr('checked', value);
 });
-
-
 
 

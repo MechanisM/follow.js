@@ -96,20 +96,25 @@ Follow.extend(
 				var branch = model.constructor('merge');
 				branch(path, collection);
 				
-				chains.forEach(function( chain, index )
-				{
-					var chain = chain.path.join('.');
-					branch(chain, value);
-				});
+				// remove items from back to front, because Array.splice will make offset
+				chains
+					.reverse()
+					.forEach(function( chain )
+					{
+						var chain = chain.path.join('.');
+						branch(chain, value);
+						every && model(chain, value);
+					});
 				
-				every
-					? model.merge( branch() )
-					: model( path, branch(path) );
-				
+				!every && model(path, branch(path));
 				branch.clear();
 			}
 			
 			return model;
+		};
+		
+		stack.remove = function( every ){
+			this.update(undefined, every);
 		};
 		
 		return stack;

@@ -2,15 +2,16 @@
 .todo { display:block; margin:auto; width:500px; background:white; padding:1em 2em; margin-top:-1.5em; }
 .todo { -moz-box-shadow:0 0 15px gray; -webkit-box-shadow:0 0 15px gray; box-shadow:0 0 15px gray; }
 .todo h2 { font-weight:bold; }
-.todo * { font:30px Arial, Helvetica, sans-serif; }
+.todo * { font:30px Arial, Helvetica, sans-serif; zoom:1; vertical-align:middle; }
 .todo input[type=text] { color:gray; width:100%; padding:.1em; margin-bottom:1em; }
 .todo ul { list-style:none; padding:0; margin:0; }
 .todo li { position:relative; border-bottom:1px solid silver; padding:.2em 0; }
 .todo li:hover .delete { display:block; }
-.todo .delete { cursor:pointer; color:red; position:absolute; right:-1.2em; top:0; padding-right:1em; display:none; }
+.todo .delete { cursor:pointer; color:red; position:absolute; right:-1.2em; top:.3em; padding-right:1em; display:none; }
 .todo .delete:hover { color:silver; }
 .todo .info { min-height:1em; }
 .todo .info * { font-size:15px; }
 .todo .info p { margin:0; padding:0; }
 .todo .right { float:right; }
 .todo .completed { text-decoration:line-through; color:gray; }
+.todo .text { cursor:pointer; }

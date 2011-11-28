@@ -7,12 +7,14 @@
 {
 	var models = {};
 	
-	function Follow( modelName, storage )
+	function Follow( modelName, storage, lazy )
 	{
 		var 
 			storage = storage || models,
-			modelName = modelName || 'default';
+			modelName = modelName || 'default',
+			json = storage[modelName];
 		
+		lazy && (storage[modelName] = '');
 		var observable = function( chain, value, if_not_defined )
 		{
 			var 
@@ -63,7 +65,10 @@
 						{
 							if( !if_not_defined || current === undefined )
 							{
-								parent[prop] = new_value;
+								(new_value === undefined && parent instanceof Array)
+									? parent.splice(prop, 1)
+									: (parent[prop] = new_value);
+								
 								storage[modelName] = __.stringify( model );
 								
 								__.tracking(chain);
@@ -86,7 +91,7 @@
 				}
 			}
 			
-			// apply hook, if exists
+			// apply hook, if exists (it needs for dependent observable)
 			__.__hook && __.__hook.apply(__, args);
 
 			// behavior
@@ -124,12 +129,17 @@
 			
 			__hook: null,
 			__get: function( value ){ return value },
+			
 			clone: function( obj ){
 				return JSON.parse( this.stringify(obj) );
 			},
 			stringify: function( obj, replacer, space ){
 				return JSON.stringify( obj, replacer, space || '\t' );
 			},
+			init: function( defaults ) {
+				this(json ? JSON.parse(json) : defaults || '{}');
+			},
+			
 			toString: function( path )
 			{
 				return path
