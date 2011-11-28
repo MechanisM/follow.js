@@ -195,7 +195,9 @@ Follow.extend(
 	
 	broadcast: function( chain, data, filter )
 	{
-		var followers = this.followers;
+		var 
+			followers = this.followers,
+			params = data[1] || {};
 		
 		for(var p in followers)
 		{
@@ -206,9 +208,11 @@ Follow.extend(
 				{
 					var path = follower.path;
 					(path == chain || (
-						path instanceof RegExp && chain.match(path)
-					)) &&
-					follower.callback.apply(this, data);
+						path instanceof RegExp && (params.match = chain.match(path))
+					)) && (
+						follower.callback.apply(this, data),
+						delete params.match
+					)
 				}, this)
 		};
 	},

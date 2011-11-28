@@ -50,20 +50,14 @@ todo.follow('init', function( value )
 		{
 			var 
 				state = $(this).prop('checked'),
-				item = $(this).closest('li'),
-				index = item.index();
-			item
-				.find('span.text')
-				.toggleClass('completed');
-			
-			model(['list', index, 'completed'], state);
+				index = $(this).closest('li').index(),
+				chain = ['list', index, 'completed'].join('.');
+			model(chain, state);
 		})
 		.delegate('.delete', 'click', function( evt )
 		{
-			/*var 
-				item = $(this).closest('li'),
-				index = item.index();
-			return false;*/
+			var index = $(this).closest('li').index();
+			model('list').splice(index, 1);
 		});
 
 	$('#new-entry')
@@ -91,6 +85,7 @@ todo.follow('init', function( value )
 	
 }, 'once');
 
+// обновляем информационные блоки
 todo.follow('completed left', function( value, params )
 {
 	var info = this.ui[ params.prop ];
@@ -100,20 +95,41 @@ todo.follow('completed left', function( value, params )
 	info.count.text( value );
 });
 
+// триггер на любое изменение внутри list
 todo.follow('list', function()
 {
 	this('left', this.select('list', 'completed[=false]').length);
 	this('completed', this.select('list', 'completed[=true]').length);
 }, 'sensible');
 
-
+// триггер на изменения элементов массива, т.е флаг "children" просто шорткат для /list\.\d+/
 todo.follow('list', function( item, params )
 {
-	this.ui.list.elem
-		.find('.text')
-		.text(item.title)
-		.end()
-	.clone(true)
-	.appendTo( this.ui.list.block )
-	.slideDown('fast');
+	// add
+	if( item )
+	{
+		this.ui.list.elem
+			.find('.text')
+			.text(item.title)
+			.end()
+		.clone(true)
+		.appendTo( this.ui.list.block )
+		.slideDown('fast');
+	}
+	// remove
+	else {
+		//alert( this('list').length )
+	}
 }, 'children');
+
+todo.follow(/list\.(\d+)\.completed/, function( value, params )
+{
+	var index = params.match[1];
+	this.ui.list.block
+		.find(':eq('+ index +') .text')
+		.toggleClass('completed', value);
+});
+
+
+
+
