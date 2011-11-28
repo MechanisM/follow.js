@@ -7,14 +7,16 @@
 {
 	var models = {};
 	
-	function Follow( modelName, storage, lazy )
+	function Follow( modelName, storage, make_clean )
 	{
 		var 
 			storage = storage || models,
 			modelName = modelName || 'default',
 			json = storage[modelName];
 		
-		lazy && (storage[modelName] = '');
+		// we can restore default-json through "model.init", when we need
+		make_clean && (storage[modelName] = '');
+		
 		var observable = function( chain, value, if_not_defined )
 		{
 			var 
@@ -137,7 +139,7 @@
 				return JSON.stringify( obj, replacer, space || '\t' );
 			},
 			init: function( defaults ) {
-				this(json ? JSON.parse(json) : defaults || '{}');
+				this(json ? JSON.parse(json) : defaults || {});
 			},
 			
 			toString: function( path )

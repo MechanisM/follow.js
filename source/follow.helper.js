@@ -1,6 +1,6 @@
 /*!
  * Follow.js
- * Helpers for collections (arrays) in the model.
+ * Helper for collections (arrays) in the model.
  */
  
 Follow.extend(
