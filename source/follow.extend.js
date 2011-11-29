@@ -177,7 +177,6 @@ Follow.extend(
 				args = [].slice.call(arguments),
 				params = this.extend(true, args, data);
 			
-			value !== undefined &&
 			this.broadcast(chain, params, function( follower, index )
 			{
 				if( filter != null ){

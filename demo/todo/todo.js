@@ -84,7 +84,7 @@ todo.follow('init', function()
 		{
 			if( this.value && evt.which == 13 )
 			{
-				model('list').push({
+				model('list').unshift({
 					title: this.value,
 					completed: false
 				});
@@ -104,7 +104,7 @@ todo.follow('completed left', function( value, params )
 	info.count.text( value );
 });
 
-// событие для первоначальной отрисовки элементов
+// колбэк для первоначальной отрисовки элементов
 todo.follow('list', function( items, params )
 {
 	items.forEach(function( item, index )
@@ -118,28 +118,34 @@ todo.follow('list', function( items, params )
 }, 'once');
 
 // триггер на любое изменение внутри list
-todo.follow('list', function()
+todo.follow('list', function( items )
 {
-	this('left', this.select('list', 'completed[=false]').length);
-	this('completed', this.select('list', 'completed[=true]').length);
+	var
+		left = this.select('list', 'completed[=false]').length,
+		completed = items.length - left;
+	this('left', left);
+	this('completed', completed);
 }, 'sensible');
 
 // триггер на изменения элементов массива, т.е флаг "children" просто шорткат для /list\.\d+/
 todo.follow('list', function( item, params )
 {
-	var items = this.ui.list;
+	var 
+		items = this.ui.list,
+		index = params.match[1];
 	if( item )
 	{
-		items.elem
-			.find('.text')
-			.text(item.title)
-			.end()
-		.clone(true)
-		.appendTo( this.ui.list.block )
-		.slideDown('fast');
+		var 
+			prev = items.block[0].childNodes[index],
+			elem = items.elem
+				.find('.text').text(item.title).end()
+				.clone(true);
+		prev 
+			? elem.insertBefore(prev) 
+			: elem.appendTo(items.block);
+		elem.slideDown('fast');
 	}
 	else {
-		var index = params.match[1];
 		items.block
 			.find('li:eq('+ index +')')
 			.slideUp('fast', function(){

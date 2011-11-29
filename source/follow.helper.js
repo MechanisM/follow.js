@@ -20,10 +20,16 @@ Follow.extend(
 					var 
 						items = [].slice.call(arguments, 2),
 						end = start + Math.max(count, items.length);
+					
+					[].splice.apply(this, arguments);
+					model(chain, this);
+					
 					while( start < end )
 					{
-						var path = [chain, start++].join('.');
-						model(path, items.shift());
+						var 
+							path = [chain, start++].join('.'),
+							value = items.shift();
+						model.dispatch(path, [value]);
 					}
 				},
 				
