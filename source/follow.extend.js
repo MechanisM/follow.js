@@ -63,7 +63,7 @@ Follow.extend(
 				{
 					depend.on.hasOwnProperty(chain) && 
 					(depend.on[chain] = depend.on[chain].filter(function( obj ){
-						return !(obj.chain == chain || obj.chain == path);
+						return obj.chain !== path;
 					}));
 				}
 			}
@@ -128,6 +128,7 @@ Follow.extend(
 			{
 				depend.on[chain] = depend.on[chain] || [];
 				
+				chain !== dependent &&
 				! depend.on[chain].some(function( obj ){
 					return obj.chain === dependent;
 				}) && 

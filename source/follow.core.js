@@ -70,7 +70,6 @@
 								
 								storage[modelName] = makeJSON( model );
 								
-								__.tracking(chain);
 								__.broadcast(chain, [
 									new_value,
 									extend({
@@ -80,6 +79,7 @@
 										}
 									}, params)
 								]);
+								__.tracking(chain);
 							}
 						}
 					}
