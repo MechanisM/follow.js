@@ -61,9 +61,10 @@ Follow.extend(
 				
 				for(var chain in depend.on)
 				{
-					depend.on.hasOwnProperty(chain) &&
-					(index = depend.on[chain].indexOf(path)) > -1 &&
-					depend.on[chain].splice(index, 1);
+					depend.on.hasOwnProperty(chain) && 
+					(depend.on[chain] = depend.on[chain].filter(function( obj ){
+						return !(obj.chain == chain || obj.chain == path);
+					}));
 				}
 			}
 			else {
@@ -115,7 +116,7 @@ Follow.extend(
 		return this;
 	},
 	
-	composite: function( dependent, callback )
+	composite: function( dependent, callback, sensible )
 	{
 		var 
 			depend = this.dependency,
@@ -123,19 +124,30 @@ Follow.extend(
 		
 		if( typeof callback == 'function' )
 		{
-			this.__hook = function( chain ){
+			this.__hook = function( chain )
+			{
 				depend.on[chain] = depend.on[chain] || [];
-				depend.on[chain].indexOf(dependent) == -1 && depend.on[chain].push(dependent);
+				
+				! depend.on[chain].some(function( obj ){
+					return obj.chain === dependent;
+				}) && 
+				depend.on[chain].push({
+					chain: dependent,
+					sensible: sensible
+				});
 			};
-			callback.call(this);
-			delete this.__hook;
 			
 			this(dependent, function( value, params )
 			{
-				var self = this;
-				return (depend.composite[ dependent ] = function(){
+				var 
+					self = this,
+					value = callback.call(this, params);
+				
+				delete this.__hook;
+				depend.composite[ dependent ] = function(){
 					return callback.call(self, params);
-				})();
+				};
+				return value;
 			});
 			
 			return this;
@@ -148,8 +160,9 @@ Follow.extend(
 			{
 				if( depend.on.hasOwnProperty(chain) )
 				{
-					var index = depend.on[chain].indexOf( dependent );
-					depend.on[chain].splice(index, 1);
+					depend.on[chain] = depend.on[chain].filter(function( obj ){
+						return obj.chain !== dependent;
+					});
 				}
 			}
 			delete depend.composite[ dependent ];
@@ -160,9 +173,27 @@ Follow.extend(
 	
 	tracking: function( chain )
 	{
-		(this.dependency.on[chain] || []).forEach(function( dependent ) {
-			this(dependent, this.dependency.composite[dependent]());
-		}, this);
+		for(var path in this.dependency.on)
+		{
+			this.dependency.on.hasOwnProperty(path) &&
+			this.dependency.on[path].forEach(function( dependent )
+			{
+				var 
+					cond = [
+						chain === path, 
+						chain.indexOf( path + '.' ) === 0
+					],
+					matched = dependent.sensible
+						? cond.some(function( expr ){ return expr })
+						: cond.shift();
+				
+				if( matched ) {
+					var value = this.dependency.composite[dependent.chain]();
+					value === undefined && (value = null);
+					this(dependent.chain, value);
+				}
+			}, this);
+		}
 	},
 	
 	dispatch: function( chain, data, filter )
