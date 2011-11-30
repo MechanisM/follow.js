@@ -126,29 +126,34 @@ Follow.extend(
 		{
 			this.__hook = function( chain )
 			{
-				depend.on[chain] = depend.on[chain] || [];
-				
-				chain !== dependent &&
-				! depend.on[chain].some(function( obj ){
-					return obj.chain === dependent;
-				}) && 
-				depend.on[chain].push({
-					chain: dependent,
-					sensible: sensible
-				});
+				if( chain !== dependent )
+				{
+					depend.on[chain] = depend.on[chain] || [];
+					
+					! depend.on[chain].some(function( obj ){
+						return obj.chain === dependent;
+					}) && 
+					depend.on[chain].push({
+						chain: dependent,
+						sensible: sensible
+					});
+				}
 			};
 			
-			this(dependent, function( value, params )
+			this.follow(dependent, function( value, params )
 			{
-				var 
-					self = this,
-					value = callback.call(this, params);
-				
 				delete this.__hook;
-				depend.composite[ dependent ] = function(){
-					return callback.call(self, params);
+				depend.composite[ dependent ] = function()
+				{
+					return callback.call(this, {
+						chain: params.chain,
+						prop: params.prop
+					});
 				};
-				return value;
+			}, 'once');
+			
+			this(dependent, function( value, params ) {
+				return callback.call(this, params);
 			});
 			
 			return this;
@@ -186,13 +191,14 @@ Follow.extend(
 					],
 					matched = dependent.sensible
 						? cond.some(function( expr ){ return expr })
-						: cond.shift();
+						: cond.shift(),
+					callback = this.dependency.composite[ dependent.chain ];
 				
-				if( matched ) {
-					var value = this.dependency.composite[dependent.chain]();
-					value === undefined && (value = null);
-					this(dependent.chain, value);
-				}
+				matched && 
+				callback && 
+				chain !== dependent.chain && 
+				this(dependent.chain, callback.call(this));
+				
 			}, this);
 		}
 	},
