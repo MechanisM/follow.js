@@ -54,16 +54,13 @@
 								model: model
 							},
 							new_value = typeof value == 'function' 
-								? value.apply(__, 
-								[
-									typeof current != 'object' 
-										? current 
-										: __.clone(current),
+								? value.apply(__, [
+									typeof current != 'object' ? current : __.clone(current),
 									extend({ value: current }, params)
 								])
 								: value;
 						
-						if( __.toJSON(chain) != __.stringify(new_value) )
+						if( __.toJSON(chain) !== makeJSON(new_value) )
 						{
 							if( !if_not_defined || current === undefined )
 							{
@@ -71,7 +68,7 @@
 									? parent.splice(prop, 1)
 									: (parent[prop] = new_value);
 								
-								storage[modelName] = __.stringify( model );
+								storage[modelName] = makeJSON( model );
 								
 								__.tracking(chain);
 								__.broadcast(chain, [
@@ -119,7 +116,6 @@
 			
 			modelName: modelName,
 			storage: storage,
-			extend: extend,
 			
 			followers: {},
 			dependency: {
@@ -132,11 +128,9 @@
 			__hook: null,
 			__get: function( value ){ return value },
 			
+			extend: extend,
 			clone: function( obj ){
-				return JSON.parse( this.stringify(obj) );
-			},
-			stringify: function( obj, replacer, space ){
-				return JSON.stringify( obj, replacer, space || '\t' );
+				return JSON.parse( JSON.stringify(obj) );
 			},
 			init: function( defaults ) {
 				this(json ? JSON.parse(json) : defaults || {});
@@ -145,14 +139,17 @@
 			toString: function( path )
 			{
 				return path
-					? this.stringify( observable(path) )
+					? makeJSON( this(path) )
 					: storage[modelName] || '{}';
 			}
 		}, Follow.prototype);
 		
 		return observable;
 	}
-	
+
+	function makeJSON( obj ){
+		return JSON.stringify( obj, null, "\t");
+	}	
 	function array( obj ){
 		return [].slice.call(obj);
 	}
@@ -205,7 +202,7 @@
 		extend.apply(null, [true].concat(this.prototype, array(arguments)));
 	};
 	
-	// export to global
+	// exports to the global scope
 	window.Follow = Follow;
 }());
 
