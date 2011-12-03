@@ -21,3 +21,6 @@ h3. Follow.js
 
 * TODO list (demo/todo.html)
 * Dependent observable (demo/composite.html)
+
+Это бета версия, библиотека постоянно дорабатывается и исправляются ошибки.
+Подробная документация будет позже.
