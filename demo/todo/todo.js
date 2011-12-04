@@ -133,6 +133,8 @@ todo.follow('list', function( item, params )
 	var 
 		items = this.ui.list,
 		index = params.match[1];
+	
+	// add new one
 	if( item )
 	{
 		var 
@@ -143,8 +145,11 @@ todo.follow('list', function( item, params )
 		prev 
 			? elem.insertBefore(prev) 
 			: elem.appendTo(items.block);
-		elem.slideDown('fast');
+		elem
+			.delay(10)
+			.slideDown('fast');
 	}
+	// remove
 	else {
 		items.block
 			.find('li:eq('+ index +')')
