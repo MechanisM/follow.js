@@ -5,8 +5,9 @@ html, body
 	color:white; 
 	font:14px/160% Arial, Helvetica, sans-serif;
 }
-a { color:#CFC; }
+a { color:#ccffcc; font-style:italic; }
 a:hover { color:#0CF; }
+a[target="_blank"] { display:inline-block; padding-right:20px; background:url(new_window.gif) no-repeat right; }
 
 .left { float:left; }
 .main {
@@ -48,9 +49,10 @@ code, .code {
 	border-radius:10px;
 	overflow-x:auto;
 }
-.code li { line-height:150%; margin:-7px 0; }
+.code li { line-height:150%; margin:-7px 0; color:gray; }
+.code li > span { color:white; padding-left:10px; }
 
-.colored { background:rgba(255, 255, 255, .05); }
+.colored { background:rgba(255, 255, 255, .03); }
 .code-string { color:#060 !important; }
 .code-function { color:#06F !important; }
 .code-keyword { color:red !important; }

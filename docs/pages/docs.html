@@ -1,0 +1,44 @@
+<!-- Documentation -->
+
+<h3>Библиотека состоит из 5 основных частей</h3>
+<ol>
+	<li>
+		<strong>Ядро (follow.core.js)</strong> &mdash; 
+		служит конструктором моделей и обеспечивает основной функционал доступа к данным (getter/setter).
+	</li>
+	<li>
+		<strong>Базовый функционал (follow.extend.js)</strong> &mdash; 
+		основной набор методов для работы с моделью (follow, composite, итд.)
+	</li>
+	<li>
+		<strong>Расширение ECMA-262</strong> &mdash; поддержка обратной совместимости стандарта для старых браузеров. 
+		Расширяет прототип Array методами forEach, map, filter, some, every, indexOf, а также добавляет String.trim().<br />
+		Более подробно об изменениях в JavaScript 1.6 можно почитать на <a href="https://developer.mozilla.org/en/JavaScript/New_in_JavaScript/1.6" target="_blank" title="Mozilla Development Network">MDN</a>.
+	</li>
+	<li>
+		<strong>Маппер для коллекций (<a href="#collections.mapper">follow.mapper.js</a>)</strong> &mdash; 
+		для дополнительного удобства выборки/обновления данных в массивах модели.
+	</li>
+	<li>
+		<strong>Хелпер для коллекций (<a href="#collections.helper">follow.helper.js</a>)</strong> &mdash;
+		также, как и маппер, облегчает работу с коллекциями в модели, перегружая стандартные методы splice, push, pop, shift и unshift, благодаря чему, автоматически срабатывают все зависимые коллбэки.
+	</li>
+</ol>
+
+<h3>Конструкторы</h3>
+<ul>
+	<li><a href="#Follow">Follow(modelName, [storageObject], [clean])</a></li>
+</ul>
+
+<h3>Методы</h3>
+<ul>
+	<li><a href="#model.follow">model.follow(chain, callback, [mode])</a></li>
+	<li><a href="#model.unfollow">model.unfollow([path], [callback])</a></li>
+	<li><a href="#model.toJSON">model.toJSON([path])</a></li>
+	<li><a href="#model.clear">model.clear([path], [all])</a></li>
+	<li><a href="#model.backup">model.backup([name])</a></li>
+	<li><a href="#model.restore">model.restore([key])</a></li>
+	<li><a href="#model.composite">model.composite(chain, callback, [sensible])</a></li>
+	<li><a href="#model.dispatch">model.dispatch(chain, [data], [filter])</a></li>
+	<li><a href="#model.merge">model.merge(data)</a></li>
+</ul>

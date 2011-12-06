@@ -1,0 +1,45 @@
+<!-- Intro -->
+
+<h3>Введение</h3>
+<p>
+	Целью фреймворка является создание связующего звена между данными приложения (моделью) и его бизнес логикой.<br />
+	За счет реализации паттерна &laquo;наблюдатель&raquo; (observable), становится возможным гибко управлять зависимостями между данными приложения (model) и его отображением (view).<br />
+	Библиотека не предоставляет никаких возможностей работы с DOM. Для этого используйте <a href="http://jquery.com/" target="_blank">jQuery</a> или любой другой фреймворк.
+</p>
+
+<h3>Основные возможности</h3>
+<ul>
+	<li>JSON-формат модели</li>
+	<li>Простой и интуитивно понятный API для работы с моделью</li>
+	<li>Отслеживание изменений любого объекта, массива или свойства модели (<a href="#">model.follow</a>)</li>
+	<li>Возможность создания составных свойств модели, зависящих от других данных модели (<a href="#">model.composite</a>)</li>
+	<li>Легкая сериализация всей модели или любой её части (<a href="#">model.toJSON</a>)</li>
+	<li>Сохранение и восстановление промежуточных состояний модели (<a href="#">model.backup</a>, <a href="#">model.restore</a>)</li>
+	<li>Обновление модели с автоматическим вызовом всех зависимых колбэков (<a href="#">model.merge</a>)</li>
+	<li>Ручной вызов одного или всех слушателей данных модели (<a href="#">model.dispatch</a>)</li>
+</ul>
+
+<h3>Пример кода</h3>
+
+<code>
+	var model = Follow('sample');
+	model({
+		lang: {
+			from: 'en',
+			to: 'ru'
+		}
+	});
+	model.follow('lang.to', function( value, params ){
+		$('#flag').attr('src', '/icons/'+ value + '.png');
+	});
+	$('select[name="lang.to"]').change(function(){
+		model('lang.to', this.value);
+	});
+</code>
+
+<h3>Демо</h3>
+
+<ul>
+	<li>TODO list (<a href="../demo/todo.html">demo/todo.html</a>)</li>
+	<li>Dependent observable (<a href="../demo/composite.html">demo/composite.html</a>)</li>
+</ul>
