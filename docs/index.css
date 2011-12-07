@@ -10,6 +10,7 @@ a:hover { color:#0CF; }
 a[target="_blank"] { display:inline-block; padding-right:20px; background:url(new_window.gif) no-repeat right; }
 
 .left { float:left; }
+.pre { white-space:pre; }
 .main {
 	position:relative;
 	min-height:100%;
@@ -22,7 +23,7 @@ a[target="_blank"] { display:inline-block; padding-right:20px; background:url(ne
 }
 h1 {
 	text-shadow:5px 5px 0 black, 0 0 15px white;
-	font:bold 100px/100% Arial, Helvetica, sans-serif;
+	font:bold 110px/100% Arial, Helvetica, sans-serif;
 	border-bottom:10px solid white;
 	text-align:center;
 	padding-top:20px;
@@ -53,11 +54,24 @@ code, .code {
 .code li > span { color:white; padding-left:10px; }
 
 .colored { background:rgba(255, 255, 255, .03); }
-.code-string { color:#060 !important; }
 .code-function { color:#06F !important; }
 .code-keyword { color:red !important; }
 .code-this { color:#939 !important; }
-.code-comment { color:gray !important; }
+.code-string,
+.code-string * { color:#060 !important; }
+.code-comment,
+.code-comment * { color:gray !important; }
 
+.string:before { content:"(string) "; }
+.object:before { content:"(object) "; }
+.boolean:before { content:"(boolean) "; }
+.function:before { content:"(function) "; color:#0FF; }
+.notext:before { content:""; }
+
+.argument { font-weight:bold; }
+.argument:after { content:": "; }
+
+a.next { position:absolute; right:0; top:0; }
+a.next:after { content:" →"; }
 
 

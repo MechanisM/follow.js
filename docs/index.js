@@ -37,12 +37,16 @@ $(function()
 		})
 		.bind('loadhtml', function( evt, url )
 		{
+			var content = $('#content .text');
 			$.ajax({
 				url: 'pages/' + (url || 'intro') + '.html',
 				success: function( text )
 				{
-					$('div.text').html(text);
+					content.html(text);
 					$(document).trigger('highlight');
+				},
+				error: function( xhr, error, thrown ){
+					content.html(thrown);
 				}
 			});
 		})

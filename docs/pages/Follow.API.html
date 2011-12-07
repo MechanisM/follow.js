@@ -1,0 +1,62 @@
+<!-- Follow (Getters/Setters API) -->
+
+<h3 class="pre">(mixed) model(
+	(string | mapped-object) chain, 
+	(boolean | number | string | callback) [value], 
+	(boolean) [if_not_defined]
+);</h3>
+
+<h3>Примечания</h3>
+<ol>
+    <li>
+    	Аргумент <em>[if_not_defined]</em> смещается на 2-ю позицию в случае использования <em>mapped-object</em> <em>[chain]</em>.<br />
+        Данный аргумент, в значении true, предотвращает запись свойства, если оно уже ранее создавалось.
+    </li>
+    <li>
+    	Возвращаемое значение функции зависит от переданных аргументов, так в случае "<strong>get</strong>" будет возвращено текущее значение свойства или null, если оно не существует,
+        в случае "<strong>set</strong>" возвращается ссылка на себя, в случае вызова без аргументов &mdash; будет возвращен JS-объект на основе существующей модели (JSON.parse).
+    </li>
+    <li>
+    	При модификации и доступе к модели через API всегда возвращается копия распарсенного JSON-а модели. <br />
+        Т.е model() != model() т.к сравниваются разные копии объектов, но model.toJSON() == model.toJSON(). Отслеживание изменений в ветках модели, 
+        также происходит построчно путем JSON.stringify().
+    </li>
+</ol>
+
+<h3>Примеры</h3>
+<code>
+    var model = Follow('sample');
+    
+    // Getters
+    // получение значения (в случае если цепочка не существует в модели возвращается null)
+    model('my.custom.data');
+
+    // Setters
+    // записываем новое значение для свойства id
+    model('id', 123);
+    
+    // если цепочка settings.user не существует, она будет создана автоматически
+    model('settings.user.css', 'color: red');
+    
+    // сохранение нескольких полей одновременно
+    model({
+        color: 'green',
+        fonts: ['Arial', 'Verdana', 'Tahoma']
+    }, true);
+    
+    // модификация существующего значения
+    model('data.checkboxes', function( value, params )
+    {
+        // this == model
+        // params.parent == объект model('data')
+        // params.prop == 'checkboxes'
+        // params.chain == 'data.checkboxes'
+        // params.value.current == value
+        // params.value.prev == предыдущее значение или undefined
+        value.push('new');
+        return value;
+    });
+</code>
+
+<a href="#" class="next">model.init</a>
+

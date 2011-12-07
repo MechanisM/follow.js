@@ -1,0 +1,54 @@
+<!-- Follow (constructor) -->
+
+<h3 class="pre"><span class="function">model</span> Follow(
+    <span class="string">[model]</span>, 
+    <span class="object">[storage]</span>,
+    <span class="boolean">[clean]</span>
+)</h3>
+
+<p>
+	Конструктор <strong>Follow</strong> служит для создания новых моделей, или же для обращения к уже существующим.
+</p>
+<ol>
+    <li>
+    	<span class="argument">model</span>
+    	<span class="desc">название модели, по-умолчанию "default"</span>
+    </li>
+    <li>
+    	<span class="argument">storage</span>
+    	<span class="desc">объект для хранения JSON-представления модели, по-умолчанию сохраняется во внутреннем объекте</span>
+    </li>
+    <li>
+    	<span class="argument">clean</span>
+    	<span class="desc">булевое значение, очистить содержимое модели после инициализации, необходимо для отложенного вызова колбэков (см. пример ниже)</span>
+    </li>
+</ol>
+
+<h3>Простые примеры</h3>
+<code>
+    var model = Follow();
+    var model = Follow('myModel');
+    var model = Follow('settings', localStorage);
+</code>
+
+<h3>Более сложный пример</h3>
+<code>
+var 
+    myStorage = {
+        sample: '{"count": 0, "items": []}'
+    }
+    // при изменении модели, её представление (JSON) будет храниться в myStorage.sample
+    model = Follow('sample', myStorage, true);
+
+model.follow('count', function( value ){
+	$('#items-count').text( value );
+});
+
+// инициируем данные модели после загрузки DOM, 
+// чтобы созданные коллбэки обновили представление на основе модели
+$(function(){
+	model.init();
+});
+</code>
+
+<a href="#Follow.API" class="next">Getters / Setters API</a>

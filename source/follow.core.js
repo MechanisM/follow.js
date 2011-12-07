@@ -98,6 +98,7 @@
 				for(var i in chain){
 					chain.hasOwnProperty(i) && __(i, chain[i], args[1]);
 				}
+				return __;
 			}
 			else if( args.length == 1 ) {
 				return __.__get(getter(), args);
