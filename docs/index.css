@@ -38,6 +38,7 @@ ol, ul { list-style-position:inside; }
 .text { position:relative; overflow:hidden; padding-left:30px; }
 
 code, .code {
+	position:relative;
 	font:15px "Lucida Console", Monaco, monospace;
 	background: black;
 	margin:1em 0;
@@ -74,4 +75,4 @@ code, .code {
 a.next { position:absolute; right:0; top:0; }
 a.next:after { content:" →"; }
 
-
+.run-code { position:absolute; right:0; top:0; margin:1em; cursor:pointer; width:16px; height:16px; background:url(exec.png) no-repeat; }

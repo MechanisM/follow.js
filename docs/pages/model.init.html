@@ -1,0 +1,27 @@
+<!-- Follow.js: model.init -->
+
+<h3 class="pre"><span class="function">model</span> model.init(
+    <span class="object">[defaults]</span>
+)</h3>
+
+<p>
+	Во время вызова конструктора <a href="#Follow">Follow</a> сохраняется копия модели (JSON) во внутренней переменной.
+	Таким образом, данный метод служит для восстановления первичного состояния модели в любой момент времени, после её изменения или удаления.
+</p>
+
+<h3>Пример</h3>
+<code>
+var 
+    storage = {
+        data: '{"x": 1, "y": 2}'
+    },
+    model = Follow('data', storage);
+    
+delete storage.data;
+alert( model );
+
+model.init();
+alert( model );
+</code>
+
+<a href="#" class="next">model.follow</a>

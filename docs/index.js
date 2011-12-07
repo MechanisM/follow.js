@@ -18,12 +18,16 @@ $(function()
 						  .replace(/\r/g, "\n") // fix for ie
 						  .replace(/^.*$/gm, function( line ){
 								return '<li><span>'+ line.substr(extra) +'</span></li>'; // remove prefix spaces (not all!)
-						  });
+						  }),
+					icon_exec = $('<span class="run-code" title="Выполнить код примера"></span>')
+						.click(function(){
+							eval($(this).parent().text());
+						});
 		
 				// simple highlighter
 				code = code
 						.replace(/('|")(.*?)\1/g, '<span class="code-string">$&</span>')
-						.replace(/\bfunction\b/g, '<b class="code-function">$&</b>')
+						.replace(/\bfunction|alert\b/g, '<b class="code-function">$&</b>')
 						.replace(/\bthis\b/g, '<span class="code-this">$&</span>')
 						.replace(/\b(return|true|false|new|null|var)\b/g, '<span class="code-keyword">$&</span>')
 						.replace(/\/\/.*?$/gm, '<span class="code-comment">$&</span>')
@@ -32,7 +36,8 @@ $(function()
 				$('<ol class="code" />')
 					.html( code.replace(/\t/g, Array(8).join('&nbsp;')) )
 					.replaceAll( this )
-					.find('li:even').addClass('colored');
+					.find('li:even').addClass('colored').end()
+					.append(icon_exec)
 			});
 		})
 		.bind('loadhtml', function( evt, url )

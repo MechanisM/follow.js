@@ -135,6 +135,7 @@
 			},
 			init: function( defaults ) {
 				this(json ? JSON.parse(json) : defaults || {});
+				return this;
 			},
 			
 			toString: function( path )
