@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Follow.js sample: dependent observable (model.composite)</title>
+	<title>Follow.js: dependent observable (model.composite)</title>
 	<script type="text/javascript" src="common/jquery.min.js"></script>
 	<script type="text/javascript" src="../source/external/json2.js"></script>
 	<script type="text/javascript" src="../source/follow.ecma.js"></script>
@@ -66,10 +66,12 @@
 			h2 { font-weight:bold; }
 			input { border:1px solid silver; padding:.1em; }
 			input:focus { border-color:black; }
+			#sample { width:500px; margin:auto; }
 		</style>
-		<div style="width:500px; margin:auto;">
-			<h2>Follow.js sample: dependent observable (model.composite)</h2>
-			
+		<div id="sample">
+			<h2>
+				<script type="text/javascript">document.write(document.title)</script>
+			</h2>
 			<div class="name">
 				<p>
 					First name: <input type="text" name="name.first" value="John" />

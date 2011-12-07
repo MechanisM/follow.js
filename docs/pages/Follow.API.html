@@ -1,9 +1,9 @@
 <!-- Follow (Getters/Setters API) -->
 
-<h3 class="pre">(mixed) model(
-	(string | mapped-object) [chain], 
-	(boolean | number | string | callback) [value], 
-	(boolean) [if_not_defined]
+<h3 class="pre"><span class="mixed">(mixed)</span> model(
+	<span class="mixed">(string | mapped-object)</span> [chain], 
+	<span class="mixed">(boolean | number | string | callback)</span> [value], 
+	<span class="boolean">[if_not_defined]</span>
 );</h3>
 
 <h3>Примечания</h3>
@@ -25,7 +25,7 @@
 
 <h3>Примеры</h3>
 <code>
-    var model = Follow('sample');
+    var model = Follow('sample', null, true);
     
     // Getters
     // получение значения (в случае если цепочка не существует в модели возвращается null)
@@ -53,9 +53,12 @@
         // params.chain == 'data.checkboxes'
         // params.value.current == value
         // params.value.prev == предыдущее значение или undefined
-        value.push('new');
+        value = value || [];
+        value.push({checked: false, title: "Select all"});
         return value;
     });
+	
+    alert(model);
 </code>
 
 <a href="#" class="next">model.init</a>

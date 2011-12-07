@@ -1,0 +1,100 @@
+<!-- Follow.js: model.follow -->
+
+<h3 class="pre"><span class="function">model</span> model.follow(
+	<span class="mixed">(string | regexp)</span> chain,
+	<span class="function">callback</span>,
+	<span class="string">[mode]</span>
+)</h3>
+
+<p>
+	Метод <em>model.follow</em> предоставляет возможность подписки на изменение свойств модели.
+	В качестве "адресации" (<em>chain</em>) по полям модели, используется запись, как при обращении к JS-объекту (через точку).
+	Поскольку цепочку мы передаем строкой, то можно не беспокоится о несуществовании какой-либо её части.
+	Можно указать сразу несколько "цепочек" через пробел, или же регулярное выражение для отслеживания множества свойств JSON-модели.
+</p>
+
+<p>
+	Третьим необязательным аргументом (<em>mode</em>) можно передать некоторые режимы работы колбэка.<br />
+	По-умолчанию существует 3 режима:
+</p>
+<ol>
+	<li>"<strong>once</strong>": автоматический <a href="#">model.unfollow</a> после выполнения колбэка</li>
+	<li>"<strong>sensible</strong>": срабатывание колбэка на любое изменение внутри данной цепочки (для объектов и массивов) в контексте отслеживаемой цепочки</li>
+	<li>"<strong>children</strong>": срабатывание колбэка на изменение "детей" массива или объекта в своем контексте, шорткат для <em>/chain\.[^\.]+/</em></li>
+</ol>
+
+<code id="model">
+	var model = Follow();
+	model({
+		name: {
+			first: "John",
+			last: "Smith"
+		},
+		hobbies: ["Computer Games", "Extreme Sports", "Fishing"],
+		greeting: "Hello world!"
+	});
+</code>
+
+<h3>Простой пример</h3>
+<code dependent-on="model">
+	model.follow('name.first', function(value, params)
+	{
+		alert([
+			value,
+			JSON.stringify(params, null, 3)
+		].join('\n'));
+	});
+	
+	// изменяем значение для отслеживаемой цепочки
+	model('name.first', 'Alex');
+</code>
+
+<h3>Однократное выполнение</h3>
+<code dependent-on="model">
+	model.follow('name.first', function(value) {
+		alert('Hello, '+ value);
+	}, 'once');
+	
+	// дважды изменяем значение свойства, колбэк срабатывает только один раз
+	model('name.first', 'Joe');
+	model('name.first', 'Richie');
+	
+	// проверяем содержимое модели (model.toString == model.toJSON)
+	alert( model );
+</code>
+
+<h3>Использование регулярных выражений</h3>
+<code dependent-on="model">
+	// будем отслеживать любое изменение в имени
+	model.follow(/name\.(.+)/, function(value, params) {
+		// части пути, заключенные в круглых скобках в регулярном выражении, 
+		// можно получить в массиве params.match
+		alert([
+			value,
+			params.chain,
+			params.match[1]
+		].join('\n'));
+	});
+	
+	// изменяем фамилию
+	model('name.last', 'Miller');
+</code>
+
+<h3>Режим mode="sensible"</h3>
+<code dependent-on="model">
+	var callback = function( value, params ) {
+		// в случае mode="sensible", value и params всегда поступают в своем контексте
+		// т.е как при непосредственном изменении этого свойства
+		alert(JSON.stringify(value, null, 3));
+	};
+	
+	model
+		.follow('hobbies', callback, 'sensible')
+		.follow(/hobbies(\..+)*/, callback);
+	
+	// добавляем новое хобби
+	var index = model('hobbies').length;
+	model('hobbies.'+ index, 'Music');
+</code>
+
+<a href="#" class="next">model.unfollow</a>

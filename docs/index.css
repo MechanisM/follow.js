@@ -7,7 +7,8 @@ html, body
 }
 a { color:#ccffcc; font-style:italic; }
 a:hover { color:#0CF; }
-a[target="_blank"] { display:inline-block; padding-right:20px; background:url(new_window.gif) no-repeat right; }
+a[target="_blank"] { display:inline-block; padding-right:20px; background:url(images/new_window.gif) no-repeat right; }
+p + p { margin-top:1em; }
 
 .left { float:left; }
 .pre { white-space:pre; }
@@ -63,11 +64,12 @@ code, .code {
 .code-comment,
 .code-comment * { color:gray !important; }
 
-.string:before { content:"(string) "; }
-.object:before { content:"(object) "; }
-.boolean:before { content:"(boolean) "; }
-.function:before { content:"(function) "; color:#0FF; }
+.string:before { content:"(string) "; font-weight:normal; }
+.object:before { content:"(object) "; font-weight:normal; }
+.boolean:before { content:"(boolean) "; font-weight:normal; }
+.function:before { content:"(function) "; font-weight:normal; }
 .notext:before { content:""; }
+.mixed { font-weight:normal; }
 
 .argument { font-weight:bold; }
 .argument:after { content:": "; }
@@ -75,4 +77,4 @@ code, .code {
 a.next { position:absolute; right:0; top:0; }
 a.next:after { content:" →"; }
 
-.run-code { position:absolute; right:0; top:0; margin:1em; cursor:pointer; width:16px; height:16px; background:url(exec.png) no-repeat; }
+.run-code { position:absolute; right:0; top:0; margin:1em; cursor:pointer; width:16px; height:16px; background:url(images/exec.png) no-repeat; }

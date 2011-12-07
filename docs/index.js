@@ -20,8 +20,29 @@ $(function()
 								return '<li><span>'+ line.substr(extra) +'</span></li>'; // remove prefix spaces (not all!)
 						  }),
 					icon_exec = $('<span class="run-code" title="Выполнить код примера"></span>')
-						.click(function(){
-							eval($(this).parent().text());
+						.click(function()
+						{
+							var 
+								code = $(this).parent(),
+								dependents = code.attr('dependent-on'),
+								expr = [code.text()];
+							
+							if( dependents )
+							{
+								var d = dependents.split(' ').reverse();
+								$.each(d, function(index, id){
+									expr.unshift(
+										$('#'+ id).text()
+									);
+								});
+							}
+							
+							// execute code
+							try {
+								Function(expr.join('\n'))();
+							} catch(e){
+								alert(e)
+							}
 						});
 		
 				// simple highlighter
@@ -32,12 +53,20 @@ $(function()
 						.replace(/\b(return|true|false|new|null|var)\b/g, '<span class="code-keyword">$&</span>')
 						.replace(/\/\/.*?$/gm, '<span class="code-comment">$&</span>')
 						;
-		
-				$('<ol class="code" />')
+				
+				var ol = $('<ol class="code" />')
 					.html( code.replace(/\t/g, Array(8).join('&nbsp;')) )
 					.replaceAll( this )
 					.find('li:even').addClass('colored').end()
-					.append(icon_exec)
+					.append(icon_exec);
+				
+				// copy attributes
+				var attrs = this.attributes;
+				for( var i = 0; i < attrs.length; i++ )
+				{
+					var attr = attrs[i];
+					ol.attr(attr.nodeName, attr.nodeValue);
+				}
 			});
 		})
 		.bind('loadhtml', function( evt, url )
