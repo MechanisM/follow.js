@@ -4,6 +4,12 @@ html, body
 	height:100%; 
 	color:white; 
 	font:14px/160% Arial, Helvetica, sans-serif;
+	background-color:#8B11FF;
+	background-image: linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
+	background-image: -o-linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
+	background-image: -moz-linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
+	background-image: -webkit-linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
+	background-attachment:fixed;
 }
 a { color:#ccffcc; font-style:italic; }
 a:hover { color:#0CF; }
@@ -15,11 +21,6 @@ p + p { margin-top:1em; }
 .main {
 	position:relative;
 	min-height:100%;
-	background-color:#8B11FF;
-	background-image: linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
-	background-image: -o-linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
-	background-image: -moz-linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
-	background-image: -webkit-linear-gradient(top, #8B11FF 0%,  #b05ebd 70%);
 	padding-bottom:20px;
 }
 h1 {

@@ -1,0 +1,47 @@
+<!-- Follow.js: collection's helper -->
+
+<h3>follow.helper.js</h3>
+
+<p>
+	Предназначен для облегчения работы с коллекциями (массивами) в модели.<br />
+	Каждый раз при получении свойства модели, являющегося массивом, хелпер 
+	перегружает его стандартные методы <em>push, pop, shift, unshift и splice</em>, 
+	чтобы те в свою очередь рассылали оповещения об изменившихся элементах массива.
+</p>
+
+<h3>Пример</h3>
+<code>
+	var model = Follow('sample', {});
+	model('items', [
+		1, 2, 'Three', 'Four'
+	]);
+	
+	// вешаем колбэк на изменение непосредственных потомков для цепочки "items"
+	model.follow('items', function( value, params )
+	{
+		var index = params.match[1];
+		alert([
+			'Element at position '+ index +
+			' was changed to '+ this.toJSON(params.chain),
+			'Model: '+ this
+		].join('\n'));
+	}, 'children');
+	
+	// добавляем новый элемент в конец списка
+	model('items').push({
+		title: "New item"
+	});
+	
+	// добавляем 2 новых элемента в начало списка
+	model('items').unshift(
+		"I'm first!",
+		"I'm second!"
+	);
+	
+	// удалим 2 элемента, начиная с третьего
+	// поскольку после удаленных элементов находятся еще несколько других, 
+	// то они смещаются но новые позиции и в колбэк постают их значения (а не undefined)
+	model('items').splice(2,2);
+</code>
+
+<a href="#" class="next">collections.mapper</a>

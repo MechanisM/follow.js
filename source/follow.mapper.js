@@ -114,7 +114,7 @@ Follow.extend(
 		};
 		
 		stack.remove = function( every ){
-			this.update(undefined, every);
+			return this.update(undefined, every);
 		};
 		
 		return stack;
