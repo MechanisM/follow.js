@@ -1,0 +1,42 @@
+<!-- Follow.js: model.clear -->
+
+<h3 class="pre"><span class="function">model</span> model.clear(
+    <span class="object">[chain]</span>,
+    <span class="boolean">[all]</span>
+)</h3>
+
+<p>
+	Метод <em>model.clear</em> удаляет всю модель или её часть, переданную цепочкой первым аргументом (<em>chain</em>).<br />
+    Если передан второй аргумент (<em>all</em>), то будут удалены также все колбэки, созданные с помощью <a href="#">model.follow</a> и <a href="#">model.composite</a>.
+</p>
+
+<h3>Пример</h3>
+<code>
+    var model = Follow('sample');
+    
+    model({
+        title: 'Hello world',
+        data: [{x: 0}, {x: 1}, {y: 2}]
+    });
+    
+    model.follow('data', function(data){
+    	alert(data);
+    });
+    
+    // удалим цепочку "title", что аналогично в данном случае model('title', undefined);
+    model.clear('title');
+    alert( model );
+    
+    // изменяем значение для цепочки "data", так что сработает колбэк с алертом
+    model('data', 'New value');
+    
+    // очистим всю модель со всеми колбэками
+    model.clear(false, true);
+    alert( model );
+
+    // изменяем еще раз значение "data", но никаких колбэков это не влечет, т.к все они удалены выше
+    model('data', [1,2,3]);
+    alert( model );
+</code>
+
+<a href="#" class="next">model.backup</a>

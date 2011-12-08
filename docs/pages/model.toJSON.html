@@ -1,0 +1,33 @@
+<!-- Follow.js: model.toJSON -->
+
+<h3 class="pre"><span class="function">model</span> model.toJSON(
+    <span class="string">[chain]</span>
+)</h3>
+
+<p>
+	Метод <em>model.toJSON</em> является алиасом для <em>model.toString</em>, таким образом при обращении к <em>model</em> 
+    в контексте строки, мы автоматически получаем полное JSON-представление модели, что особенно удобно при отладке программы.
+</p>
+<p>
+	Если передать второй необязательный аргумент (<em>chain</em>), то можно получить JSON-представление модели для указанной цепочки.
+</p>
+
+<h3>Пример</h3>
+<code>
+    var model = Follow('sample');
+    model({
+        pos: {x: 0, y: 0},
+        rand: [1,2,3,4,5]
+    });
+    
+    // получим JSON для цепочки "pos"
+    alert( model.toJSON('pos') );
+
+    // получим JSON для цепочки "test", результатом будет "null" т.к она не существует
+    alert( model.toJSON('test') );
+    
+    // обращаемся к model в контексте строки, поэтому автоматически вызывается model.toJSON
+    alert( model );
+</code>
+
+<a href="#" class="next">model.clear</a>

@@ -1,0 +1,37 @@
+<!-- Follow.js: model.unfollow -->
+
+<h3 class="pre"><span class="function">model</span> model.unfollow(
+    <span class="string">chain</span>,
+    <span class="function">[callback]</span>
+)</h3>
+
+<p>
+	Метод <em>model.unfollow</em>, как понятно из его названия, является противоположностью для <a href="#">model.follow</a>.
+    Данный метод необходим для отписки (удаления колбэков) для отслеживаемых свойств модели.
+</p>
+<p>
+    Первым аргументом (<em>chain</em>) можно передать несколько цепочек через пробел.
+    В случае, если <em>model.follow</em> применялся с использованием регулярного выражения, то необходимо передать аналогичную строку или выражение для отписки.
+</p>
+<p>
+	Если передать ссылку на колбэк-функцию во втором необязательном аргументе (<em>callback</em>), то будет удален только этот обработчик.
+</p>
+
+<h3>Пример</h3>
+<code>
+    var model = Follow('sample');
+    
+    model.follow('x.y', function( value ){
+        alert('New value is '+ value);
+    });
+    
+    model('x.y', 10);
+    model('x.y', 20);
+    
+    model.unfollow('x.y');
+    model('x.y', 30);
+    
+    alert(model);
+</code>
+
+<a href="#" class="next">model.toJSON</a>
