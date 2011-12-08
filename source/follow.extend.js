@@ -213,7 +213,26 @@ Follow.extend(
 					func: typeof filter == 'function'
 				},
 				args = [].slice.call(arguments),
-				params = this.extend(true, args, data);
+				params = this.extend(true, args, function( model, data )
+				{
+					if( data[0] !== undefined )
+					{
+						var 
+							val = data.shift(),
+							branch = model.constructor('params', {}),
+							path = chain.indexOf('.') == -1
+								? chain
+								: chain.split('.').slice(1).join('.');
+						
+						branch(data.shift() || {});
+						branch('value', val);
+						branch('parent.'+ path, val);
+						
+						return [val, branch()];
+					}
+					
+					return data;
+				}( this, data || [] ));
 			
 			this.broadcast(chain, params, function( follower, index )
 			{

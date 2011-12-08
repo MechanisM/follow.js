@@ -47,11 +47,11 @@
 					{
 						var 
 							current = parent[prop],
+							not_defined = current === undefined,
 							params = {
 								chain: chain,
 								prop: prop,
-								parent: parent,
-								model: model
+								parent: parent
 							},
 							new_value = typeof value == 'function' 
 								? value.apply(__, [
@@ -60,28 +60,31 @@
 								])
 								: value;
 						
-						if( __.toJSON(chain) !== makeJSON(new_value) )
+						(
+							(__.toJSON(chain) !== makeJSON(new_value)) ||
+							(not_defined && new_value === null)
+						) &&
+						( !if_not_defined || not_defined ) && 
+						function()
 						{
-							if( !if_not_defined || current === undefined )
-							{
-								(new_value === undefined && parent instanceof Array)
-									? parent.splice(prop, 1)
-									: (parent[prop] = new_value);
-								
-								storage[modelName] = makeJSON( model );
-								
-								__.tracking(chain);
-								__.broadcast(chain, [
-									new_value,
-									extend({
-										value: {
-											prev: current,
-											current: new_value
-										}
-									}, params)
-								]);
-							}
-						}
+							(new_value === undefined && parent instanceof Array)
+								? parent.splice(prop, 1)
+								: (parent[prop] = new_value);
+							
+							storage[modelName] = makeJSON( model );
+							
+							__.tracking(chain);
+							__.broadcast(chain, [
+								new_value,
+								extend({
+									value: {
+										prev: current,
+										current: new_value
+									}
+								}, params)
+							]);
+							
+						}();
 					}
 					else {
 						!parent[prop] && (parent[prop] = {});

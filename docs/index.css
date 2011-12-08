@@ -65,6 +65,7 @@ code, .code {
 .code-comment * { color:gray !important; }
 
 .string:before { content:"(string) "; font-weight:normal; }
+.array:before { content:"(array) "; font-weight:normal; }
 .object:before { content:"(object) "; font-weight:normal; }
 .boolean:before { content:"(boolean) "; font-weight:normal; }
 .function:before { content:"(function) "; font-weight:normal; }

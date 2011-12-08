@@ -1,0 +1,63 @@
+<!-- Follow.js: model.dispatch -->
+
+<h3 class="pre"><span class="function">model</span> model.dispatch(
+    <span class="string">chain</span>,
+    <span class="array">[data]</span>,
+    <span class="mixed">(function | number)</span> [filter]
+)</h3>
+
+<p>
+	Иногда, после указания слушателей для цепочек модели через <a href="#">model.follow</a>, 
+    необходимо вызвать обработчики вручную, без изменения значения свойства.<br />
+</p>
+
+<p>
+	Первым аргументом (<em>chain</em>) идет цепочка свойств в модели, для которой необходимо вызвать колбэки.<br />
+    Вторым аргументом (<em>data</em>) можно передать кастомные значения для аргументов, поступаемых в колбэк, т.е мы можем переопределить <em>["value", {params}]</em>.<br />
+    Третий аргумент (<em>filter</em>) позволяет передать ссылку на колбэк или его индекс в списке (начиная с нуля).
+</p>
+
+<h3>Пример</h3>
+<code>
+    var 
+        storage = {
+            sample: '{"title": "Awesome!"}'
+        },
+        model = Follow('sample', storage);
+    
+    // чтобы сработал колбэк, значение цепочки "x" должно быть изменено,
+    // но данные уже существуют в модели, поэтому необходимо вызвать колбэки вручную
+    model.follow('title', function( value, params )
+    {
+        // обновляем UI
+        alert([
+            value,
+            JSON.stringify(params, null, 3)
+        ].join('\n'));
+        
+        if( params.secret ){
+        	alert('Secret message: '+ params.secret);
+        }
+    });
+    
+    model.dispatch('title');
+    
+    // вызов с перегрузкой аргументов, значение в модели не изменится
+    model.dispatch('title', [
+        "Custom value", 
+        {secret: 'Hello there!'}
+    ]);
+    
+    alert( model );
+</code>
+
+<h3>Совет</h3>
+<p>
+	Если имеется много цепочек, обработчики которых нужно вызвать после создания модели 
+    (т.е данные уже были сохранены ранее, например в <em>HTML5 Web Storage</em>), то
+    целесообразнее использовать вызов конструктора <a href="#">Follow</a> с третьим аргументом (<em>clean=true</em>) и 
+    последующим вызовом <a href="#">model.init</a> в нужное время выполнения программы.
+</p>
+
+<a href="#" class="next">model.merge</a>
+
