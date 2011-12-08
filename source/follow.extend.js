@@ -344,7 +344,7 @@ Follow.extend(
 		chains.forEach(function( chain )
 		{
 			var value = branch(chain);
-			typeof value != 'object' && this(chain, value);
+			(typeof value != 'object' || value === null) && this(chain, value);
 		}, this);
 		branch.clear();
 		
