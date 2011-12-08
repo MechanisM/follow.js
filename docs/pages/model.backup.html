@@ -1,0 +1,61 @@
+<!-- Follow.js: model.backup, model.restore -->
+
+<h3 class="pre"><span class="function">model</span> model.backup(
+    <span class="string">[name]</span>
+)</h3>
+
+<h3 class="pre"><span class="function">model</span> model.restore(
+    <span class="mixed">(string | number)</span> [key]
+)</h3>
+
+<p>
+	Данная пара методов служит для сохранения/восстановление промежуточных состояний модели со всеми колбэками.
+</p>
+<p>
+	Первым аргументом для <em>model.backup</em> можно указать информативное название бэкапа, которое можно передать в дальнейшем в качестве ключа для <em>model.restore</em>.<br />
+    Также в качестве ключа (<em>key</em>) для <em>model.restore</em> можно передавать числа (в том числе отрицательные) для восстановления по индексу из массива с бэкапами.<br />
+    По-умолчанию (вызов без аргументов) <em>model.restore</em> восстанавливает последнюю резервную копию.
+</p>
+
+
+<h3>Пример</h3>
+<code>
+    var model = Follow('sample', {});
+    
+    model({
+        message: 'Ping? Pong!',
+        data: {
+        	position: ["auto", "auto", 'bottom', 'left']
+        }
+    });
+    
+    model.backup();
+    model.follow('message', function( value ){
+    	alert( value );
+    });
+    
+    // изменяем некоторые значения в модели
+    model({
+        "message": "I was changed!",
+        "user.style": "color: red"
+    });
+    
+    model.backup('with-user-style');
+    alert( model );
+    
+    // восстанавливаем модель в первичное состояние
+    model.restore(0);
+    
+    // колбэк не срабатывает, т.к он был назначен после создания бэкапа
+    model('message', 'New one');
+    alert( model );
+
+    // приводим модель к виду с пользовательским стилем
+    model.restore('with-user-style');
+    alert( model );
+    
+    // снова сработает колбэк на изменение "message"
+    model('message', 'Cool!');
+</code>
+
+<a href="#" class="next">model.composite</a>

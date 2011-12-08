@@ -1,0 +1,88 @@
+<!-- Follow.js: model.composite -->
+
+<h3 class="pre"><span class="function">model</span> model.composite(
+    <span class="string">chain</span>,
+    <span class="mixed">(function | false)</span> callback,
+    <span class="boolean">[sensible]</span>
+)</h3>
+
+<p>
+	Метод <em>model.composite</em> предназначен для создания составных свойств модели (т.н. &laquo;dependent observable property&raquo;), зависящих от других данных модели.<br />
+    Таким образом, при изменении зависимого свойства, композитное обновится автоматически и вызовет все колбэки, назначенные на него через <a href="#">model.follow</a>.
+</p>
+<p>
+	Третий аргумент (<em>sensible</em>) предоставляет дополнительную чувствительность к изменениям свойства, если это объект или массив.<br />
+    Чтобы удалить зависимость для назначенного свойства, можно передать значение <em>false</em> вторым аргументом (<em>callback</em>).
+</p>
+
+<code id="model">
+    var model = Follow('sample', {});
+    model({
+        name: {
+            first: 'Alex',
+            last: 'Wilson'
+        }
+    });
+</code>
+
+<h3>Простой пример</h3>
+<code dependent-on="model">
+    // назначаем обработчик для будущего составного свойства
+    model.follow('fullName', function( name ){
+        alert(name);
+    });
+    
+    // после создания композитного свойства, оно сразу обновляет модель
+    // поэтому срабатывает колбэк, созданный выше
+    model.composite('fullName', function( params ){
+        return [
+            this('name.first'),
+            this('name.last')
+        ].join(' ');
+    });
+    
+    // проверим структуру модели
+    alert( model );
+    
+    // изменим зависимое свойство для "fullName"
+    model('name.first', 'James');
+</code>
+
+<h3>Пример c использованием sensible="true"</h3>
+<code dependent-on="model">
+    model.follow('greeting', function(){
+        alert(this);
+    });
+    
+    // без третьего аргумента колбэк бы срабатывал только на непосредственное изменение "name"
+    model.composite('greeting', function()
+    {
+        var name = this('name');
+        if( name.first && name.last )
+        {
+            return [
+                'Hello,',
+                name.first,
+                name.last
+            ].join(' ') + '!';
+        }
+    }, 'sensible');
+    
+    model.clear('name.first');
+    model({
+        name: {
+            first: 'Brad',
+            last: 'Pitt'
+        }
+    });
+    
+    // удаляем зависимость
+    model.composite('greeting', false);
+    model('name.last', 'Johnson');
+    
+    // свойство "greeting" содержит последнее значение, до удаления колбэка
+    alert( model );
+</code>
+
+<a href="#" class="next">model.dispatch</a>
+
