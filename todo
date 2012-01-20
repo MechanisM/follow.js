@@ -1,6 +1,9 @@
 TODO:
 
 * xml/xsl агрегатор данных для прокидывания в модель
-* model.load(['path.to.first.collection', 'path.to.obj', 'etc'], '/js/modules/') - подгрузка внешних файлов для обработки данных модели (при их наличии)
+
+* model.load(['path.one', 'path.etc'], '/path/to/js/modules/') 
+	- подгрузка внешних файлов для обработки данных модели (при их наличии)
+    - init() модуля будет представлять из себя скорее всего model.dispatch или model.follow + mode="once"
 
 * покрыть тестами основной функционал библиотеки (http://docs.jquery.com/QUnit)
