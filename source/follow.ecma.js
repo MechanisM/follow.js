@@ -83,3 +83,25 @@
 		return this.replace(/^\s+|\s+$/g, '');
 	}
 );
+
+!Function.prototype.bind && (
+	Function.prototype.bind = function( context )
+	{
+		var
+			self = this,
+			args = [].slice.call(arguments, 1),
+			F = function(){},
+			func = function() {
+				return self.apply(
+					this instanceof F ? this : (context || window), 
+					args.concat( [].slice.call(arguments) )
+				)
+			};
+		
+		F.prototype = this.prototype;
+		func.prototype = new F;
+		
+		return func;
+	}
+);
+

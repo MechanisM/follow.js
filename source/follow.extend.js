@@ -275,53 +275,7 @@ Follow.extend(
 	
 	wrap: function( path, callback, mode )
 	{
-		var 
-			regexp = function( wrapper, self_context )
-			{
-				return function( path )
-				{
-					var 
-						chain = path,
-						path = path.replace(/[\[\]\(\)\.\*\+\\\{\}\^\$]/g, '\\$&');
-					return {
-						path: wrapper.call(this, path),
-						callback: function()
-						{
-							self_context
-								? callback.apply(this, arguments)
-								: this(chain, function( value, params )
-								{
-									callback.apply(this, arguments);
-									return value;
-								});
-						}
-					}
-				}
-			},
-			wrapper = this.extend({}, this.wrappers, 
-			{
-				'once': function( path, callback )
-				{
-					var handler = function(){
-						callback.apply(this, arguments);
-						this.unfollow(path, handler);
-					};
-					return {
-						path: path,
-						callback: handler
-					}
-				},
-				
-				// descendants or self + always own context
-				'sensible': regexp(function( path ){
-					return RegExp('^('+ path +'|'+ path +'\\..*)$');
-				}),
-				
-				'children': regexp(function( path ){
-					return RegExp('^'+ path +'\.([^\.]+)$');
-				}, true)
-			});
-		
+		var wrapper = this.extend({}, this.wrappers);
 		return wrapper[mode] 
 			? wrapper[mode].apply(this, arguments) 
 			: {
