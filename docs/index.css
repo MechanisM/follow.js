@@ -18,6 +18,7 @@ p + p { margin-top:1em; }
 
 .left { float:left; }
 .pre { white-space:pre; }
+.space { padding:.3em; }
 .main {
 	position:relative;
 	min-height:100%;

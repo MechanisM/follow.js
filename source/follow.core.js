@@ -17,7 +17,7 @@
 		// we can restore default-json through "model.init", when we need
 		make_clean && (storage[modelName] = '');
 		
-		var observable = function( chain, value, if_not_defined )
+		var observable = function( chain, value, mode )
 		{
 			var 
 				__ = observable,
@@ -25,7 +25,11 @@
 				model = JSON.parse(__.toJSON()),
 				chain = chain instanceof Array ? chain.join('.') : chain,
 				path = typeof chain == 'object' ? {} : String(chain).split('.'),
-				prop, parent = model;
+				prop, parent = model,
+				mode = {
+					if_not_defined: mode == 'safe',
+					is_forced: mode == 'force'
+				};
 			
 			function getter()
 			{
@@ -60,11 +64,15 @@
 								])
 								: value;
 						
+						// conditions
 						(
-							(__.toJSON(chain) !== makeJSON(new_value)) ||
-							(not_defined && new_value === null)
+							( __.toJSON(chain) !== makeJSON(new_value) ) ||
+							( new_value === null && not_defined ) || 
+							( mode.is_forced )
 						) &&
-						( !if_not_defined || not_defined ) && 
+						( !mode.if_not_defined || not_defined ) && 
+						
+						// actions
 						function()
 						{
 							(new_value === undefined && parent instanceof Array)

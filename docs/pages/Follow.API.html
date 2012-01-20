@@ -3,14 +3,18 @@
 <h3 class="pre"><span class="mixed">(mixed)</span> model(
 	<span class="mixed">(string | mapped-object)</span> [chain], 
 	<span class="mixed">(boolean | number | string | callback)</span> [value], 
-	<span class="boolean">[if_not_defined]</span>
+	<span class="string">[mode]</span>
 );</h3>
 
 <h3>Примечания</h3>
 <ol>
     <li>
-    	Аргумент <em>[if_not_defined]</em> смещается на 2-ю позицию в случае использования <em>mapped-object</em> <em>[chain]</em>.<br />
-        Данный аргумент, в значении true, предотвращает запись свойства, если оно уже ранее создавалось.
+    	Аргумент <em>[mode]</em> смещается на 2-ю позицию в случае использования <em>mapped-object</em> <em>[chain]</em>.<br />
+        Данный аргумент имеет 2 предустановленных значения:
+        <ul class="space">
+            <li><em>"safe"</em> &mdash; новое значение для цепочки <em>chain</em> будет записано в модель только в случае, если оно еще не существует</li>
+            <li><em>"force"</em> &mdash; принудительный вызов колбэков <a href="#">model.follow</a> и трэкинг зависимостей <a href="#">model.composite</a> даже в случае, если значение не изменилось</li>
+        </ul>
     </li>
     <li>
     	Возвращаемое значение функции зависит от переданных аргументов, так в случае "<strong>get</strong>" будет возвращено текущее значение свойства или null, если оно не существует,
@@ -42,7 +46,7 @@
     model({
         color: 'green',
         fonts: ['Arial', 'Verdana', 'Tahoma']
-    }, true);
+    }, 'safe');
     
     // модификация существующего значения
     model('data.checkboxes', function( value, params )
