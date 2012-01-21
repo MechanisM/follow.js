@@ -11,12 +11,13 @@
         * @context можно будет задавать у элементов js:model, js:map и js:obj
         * @module можно будет задавать у элементов с @chain, т.е у js:map и js:obj
         * type="string" для js:prop будет по-умолчанию
+		* js:model будет иметь также 2 необязательных аргумента @name и @storage
     -->
     
     <!-- Общие настройки для сборщика данных из XML -->
     <js:settings modules-path="/js/blocks/"/>
 	
-    <js:model context="/page">
+    <js:model name="users" context="/page">
     	<!-- коллекция из объектов, ожидаемый результат [{}, {}, ... {}] -->
         <js:map chain="my.collection" for-each="my/data/object">
             <js:obj>
