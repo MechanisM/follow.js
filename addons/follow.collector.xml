@@ -5,51 +5,39 @@
     xmlns:xi="http://www.w3.org/2003/XInclude"
     xmlns:js="https://github.com/extensible/follow.js"
 >
-    <!--
-        * предусмотреть слияние данных из разных кусков js:model с одинаковыми chain
-        * мейби возможность сортировки для xpath-выражений (для обработки в dyn:evaluate)
-        * @context можно будет задавать у элементов js:model, js:map и js:obj
-        * @module можно будет задавать у элементов с @chain, т.е у js:map и js:obj
-        * type="string" для js:prop будет по-умолчанию
-		* js:model будет иметь также 2 необязательных аргумента @name и @storage
-    -->
-    
-    <!-- Общие настройки для сборщика данных из XML -->
-    <js:settings modules-path="/js/blocks/"/>
-	
-    <js:model name="users" context="/page">
-    	<!-- коллекция из объектов, ожидаемый результат [{}, {}, ... {}] -->
-        <js:map chain="my.collection" for-each="my/data/object">
+
+    <!-- Sample -->
+    <js:model context="/page" name="user-data" storage="window.localStorage">
+        <js:map chain="models.top" context="mx:component[@id='market:top-models']//model" module="my-models-top">
             <js:obj>
                 <js:prop name="id" value="@id" type="number"/>
-                <js:prop name="title" value="@title"/>
-                <js:prop name="text" value="desc/text()"/>
+                <js:prop name="name" value="@name"/>
+                <js:prop name="prices">
+                    <js:map context="prices">
+                        <js:prop value="@currency"/>
+                        <js:prop value="@min"/>
+                        <js:prop value="@max"/>
+                    </js:map>
+                </js:prop>
             </js:obj>
         </js:map>
-
-    	<!-- коллекция из простых типов данных, т.к нету враппера js:obj и не указан @name для js:prop -->
-        <js:map chain="user.data" for-each="my/data/object">
-            <js:prop value="@id" type="number"/>
-            <js:prop value="concat(@name, '-', generate-id(.))" type="string"/>
-        </js:map>
         
-        <!-- подгрузка модуля для обработки данных (если есть в наличии при выборке нод) -->
-        <js:map chain="custom.data.array" context="user/profile" module="user-data">
-        	<!-- первый элемент в коллекции будет объект -->
-            <js:obj>
-                <js:prop name="name" value="name/text()"/>
-                <js:prop name="age" value="age/text()" type="number"/>
-            </js:obj>
-        	<!-- второй элемент в коллекции будет также коллекция (массив) -->
-            <js:map>
-                <js:prop value="other-param1" type="number"/>
-                <js:prop value="other-param2" type="boolean"/>
-                <js:prop value="other-param3" type="string"/>
-            </js:map>
-            <!-- третий элемент - простой тип данных -->
-            <js:prop value="/page/@title" type="string"/>
-        </js:map>
-        
+        <js:obj chain="test" context="mx:component[@id='market:top-models']">
+            <js:prop name="title" value="/page/@title"/>
+            <js:prop name="id" value="mx:resource/@id"/>
+            <js:prop name="key" value="generate-id(.)"/>
+            <js:prop name="prices">
+                <js:obj context="//model[@id='3995343']/prices">
+                    <js:prop name="currency" value="@currency"/>
+                    <js:prop name="values">
+                        <js:obj>
+                            <js:prop name="min" value="@min" type="number"/>
+                            <js:prop name="max" value="@max" type="number"/>
+                        </js:obj>
+                    </js:prop>
+                </js:obj>
+            </js:prop>
+        </js:obj>
     </js:model>
-    
+
 </page>
