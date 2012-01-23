@@ -275,7 +275,7 @@ Follow.extend(
 	
 	wrap: function( path, callback, mode )
 	{
-		var wrapper = this.extend({}, this.wrappers);
+		var wrapper = this.wrappers;
 		return wrapper[mode] 
 			? wrapper[mode].apply(this, arguments) 
 			: {

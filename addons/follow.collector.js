@@ -1,6 +1,6 @@
 /*!
  * Follow.js
- * Simple unpacker of raw-data for "follow.collector.xsl"
+ * A simple unpacker of data, collected by follow.collector.xsl
  * Dependencies: jQuery or other library for downloading files using AJAX
  */
 
@@ -35,4 +35,4 @@
         Follow(opt.model, opt.storage)
             .follow(opt.chain, opt.init, 'once');
     };
-}(jQuery));
+}(window.jQuery));
