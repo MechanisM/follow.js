@@ -15,34 +15,42 @@
     exclude-result-prefixes="js exsl dyn func mx x ya"
 >
 
-<xsl:variable name="follow.js_modules_path" select="'/js/modules/'"/>
-
 <xsl:template name="follow.js">
-	<xsl:param name="name"/>
+    <xsl:param name="name"/>
+    <xsl:param name="modules">/js/modules/</xsl:param>
+    
     <script type="text/javascript">
         <xsl:choose>
         	<xsl:when test="$name">
-                <xsl:apply-templates select="/*//js:model[@name = $name]" />
+                <xsl:apply-templates select="/*//js:model[@name = $name]">
+                	<xsl:with-param name="modules_path" select="$modules" />
+        		</xsl:apply-templates>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:apply-templates select="/*//js:model" />
+                <xsl:apply-templates select="/*//js:model">
+                	<xsl:with-param name="modules_path" select="$modules" />
+                </xsl:apply-templates>
             </xsl:otherwise>
         </xsl:choose>
     </script>
 </xsl:template>
 
 <xsl:template match="js:model">
-	<xsl:variable name="context" select="@context" />
-    <xsl:text>Follow(</xsl:text>
+    <xsl:param name="modules_path"/>
     
-    <xsl:if test="@name">
-        <xsl:value-of select="concat('&quot;', @name, '&quot;')"/>
-    </xsl:if>
-    <xsl:if test="@storage">
-        <xsl:value-of select="concat(', ', @storage)"/>
-    </xsl:if>
+    <xsl:variable name="context" select="@context" />
+    <xsl:variable name="name">
+        <xsl:if test="@name">
+            <xsl:value-of select="concat('&quot;', @name, '&quot;')"/>
+        </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="storage">
+        <xsl:if test="@storage">
+            <xsl:value-of select="concat(', ', @storage)"/>
+        </xsl:if>
+    </xsl:variable>
     
-    <xsl:text>).load([</xsl:text>
+    <xsl:value-of select="concat('Follow(', $name, $storage, ').load([')" />
     
     <xsl:for-each select="js:*[@chain]">
         <xsl:apply-templates select=".">
@@ -51,12 +59,15 @@
         <xsl:value-of select="js:comma()" />
     </xsl:for-each>
     
-    <xsl:value-of select="concat('], &quot;', $follow.js_modules_path, '&quot;);')" />
+    <xsl:text>], {</xsl:text>
+        "modules_path": "<xsl:value-of select="$modules_path"/>",
+        "model_args": "<xsl:value-of select="js:escape(concat($name, $storage))"/>"
+    <xsl:text>});</xsl:text>
 </xsl:template>
 
 <!-- TOP-level items: map, obj -->
 <xsl:template match="js:model/js:*[ @chain ]">
-	<xsl:param name="context"/>
+    <xsl:param name="context"/>
     
     <xsl:variable name="name" select="local-name()" />
     <xsl:variable name="self"><xsl:copy-of select="*" /></xsl:variable>

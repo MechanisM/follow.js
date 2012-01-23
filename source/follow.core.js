@@ -5,17 +5,24 @@
  
 (function()
 {
-	var models = {};
+	var 
+		models = {},
+		instances = {};
 	
 	function Follow( modelName, storage, make_clean )
 	{
 		var 
 			storage = storage || models,
 			modelName = modelName || 'default',
-			json = storage[modelName];
+			json = storage[modelName],
+			instance = instances[modelName];
 		
 		// we can restore default-json through "model.init", when we need
 		make_clean && (storage[modelName] = '');
+		
+		if( instance ){
+			return instance.model;
+		}
 		
 		var observable = function( chain, value, mode )
 		{
@@ -156,6 +163,11 @@
 					: storage[modelName] || '{}';
 			}
 		}, Follow.prototype);
+		
+		instances[modelName] = {
+			model: observable,
+			storage: storage
+		};
 		
 		return observable;
 	}
