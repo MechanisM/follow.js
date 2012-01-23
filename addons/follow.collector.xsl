@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0" 
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	
     xmlns:js="https://github.com/extensible/follow.js"
     xmlns:exsl="http://exslt.org/common"
     xmlns:dyn="http://exslt.org/dynamic"
@@ -62,9 +63,13 @@
     <xsl:variable name="tmpl" select="exsl:node-set($self)"/>
     <xsl:variable name="path" select="concat($context, js:addslash(@context))"/>
     <xsl:variable name="node" select="dyn:evaluate($path)"/>
-    {
-    	"chain": "<xsl:value-of select="@chain"/>",
-        "json":
+    <xsl:text>{</xsl:text>
+    	
+        <xsl:text>"chain": "</xsl:text>
+        <xsl:value-of select="@chain"/>
+        <xsl:text>",</xsl:text>
+        
+        <xsl:text>"json":</xsl:text>
         <xsl:if test="$name = 'obj'">{</xsl:if>
         <xsl:if test="$name = 'map'">[</xsl:if>
         	
@@ -97,9 +102,12 @@
         <xsl:if test="$name = 'map'">]</xsl:if>
             
         <xsl:if test="@module">
-        , "module": "<xsl:value-of select="@module"/>"
+        	<xsl:text>, "module": "</xsl:text>
+        	<xsl:value-of select="@module" />
+        	<xsl:text>"</xsl:text>
         </xsl:if>
-    }
+        
+    <xsl:text>}</xsl:text>
 </xsl:template>
 
 <!-- Third-level data structures -->
@@ -200,34 +208,30 @@
 <func:function name="js:escape">
 	<xsl:param name="text"/>
     <func:result>
-        <xsl:call-template name="escape">
-            <xsl:with-param name="substr" select="translate($text, '&#10;', ' ')"/>
-            <xsl:with-param name="char" select="'&#34;'"/>
-        </xsl:call-template>
+    	<xsl:value-of select="js:replace(
+        	'&quot;', '\&quot;', js:replace(
+            	'&#10;', '\&#10;', string($text)
+            )
+        )"/>
     </func:result>
 </func:function>
 
-<xsl:template name="escape">
-	<xsl:param name="substr"/>
-	<xsl:param name="char"/>
-    
-    <xsl:choose>
-    	<xsl:when test="contains($substr, $char)">
-        	<xsl:variable name="b" select="substring-before($substr, $char)" />
-             
-            <xsl:variable name="a">
-                <xsl:call-template name="escape">
-                    <xsl:with-param name="substr" select="substring-after($substr, $char)"/>
-                    <xsl:with-param name="char" select="$char"/>
-                </xsl:call-template>
-            </xsl:variable>
-            
-            <xsl:value-of select="concat($b, '\', $char, $a)" />
-        </xsl:when>
-        <xsl:otherwise>
-        	<xsl:value-of select="$substr" />
-        </xsl:otherwise>
-    </xsl:choose>
-</xsl:template>
+<func:function name="js:replace">
+	<xsl:param name="search"/>
+	<xsl:param name="replace"/>
+	<xsl:param name="subject"/>
+    <func:result>
+        <xsl:choose>
+            <xsl:when test="contains($subject, $search)">
+                <xsl:variable name="b" select="substring-before($subject, $search)" />
+                <xsl:variable name="a" select="js:replace($search, $replace, substring-after($subject, $search))" />
+                <xsl:value-of select="concat($b, $replace, $a)" />
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$subject" />
+            </xsl:otherwise>
+        </xsl:choose>
+    </func:result>
+</func:function>
 
 </xsl:stylesheet>

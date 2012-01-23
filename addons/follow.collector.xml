@@ -7,7 +7,7 @@
 >
 
     <!-- Sample -->
-    <js:model context="/page" name="user-data" storage="window.localStorage">
+    <js:model context="/page" name="user-data">
         <js:map chain="models.top" context="mx:component[@id='market:top-models']//model" module="my-models-top">
             <js:obj>
                 <js:prop name="id" value="@id" type="number"/>
@@ -27,8 +27,9 @@
             <js:prop name="id" value="mx:resource/@id"/>
             <js:prop name="key" value="generate-id(.)"/>
             <js:prop name="prices">
-                <js:obj context="//model[@id='3995343']/prices">
+                <js:obj context="//model[test]/prices">
                     <js:prop name="currency" value="@currency"/>
+                    <js:prop name="test" value="../test"/>
                     <js:prop name="values">
                         <js:obj>
                             <js:prop name="min" value="@min" type="number"/>
