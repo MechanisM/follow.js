@@ -208,14 +208,6 @@
 </xsl:template>
 
 <!-- Custom functions -->
-<func:function name="js:addslash">
-	<xsl:param name="path"/>
-    <func:result>
-    	<xsl:if test="not(starts-with($path, '/')) and $path != ''">/</xsl:if>
-    	<xsl:value-of select="$path" />
-    </func:result>
-</func:function>
-
 <func:function name="js:comma">
     <func:result>
     	<xsl:if test="position() != last()">, </xsl:if>
