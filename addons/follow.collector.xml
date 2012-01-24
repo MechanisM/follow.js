@@ -6,9 +6,9 @@
     xmlns:js="https://github.com/extensible/follow.js"
 >
 
-    <!-- Sample -->
+    <!-- Samples -->
     <js:model context="/page" name="user-data">
-        <js:map chain="models.top" context="mx:component[@id='market:top-models']//model" module="my-models-top">
+        <js:map chain="models.top" context="mx:component[@id='market:top-models']//model" module="follow.module">
             <js:obj>
                 <js:prop name="id" value="@id" type="number"/>
                 <js:prop name="name" value="@name"/>
@@ -40,5 +40,19 @@
             </js:prop>
         </js:obj>
     </js:model>
+    
+    <hello title="world">
+        <js:model context="..">
+            <js:map chain="other" context="test">
+                <js:prop value="@title"/>
+                <js:obj context="..">
+                    <js:prop name="id" value="generate-id()"/>
+                    <js:prop name="title" value="@title"/>
+                </js:obj>
+                <js:prop value="/page/@title"/>
+            </js:map>
+        </js:model>
+        <test title="Yo!"/>
+    </hello>
 
 </page>

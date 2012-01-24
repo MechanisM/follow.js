@@ -17,63 +17,53 @@
 
 <xsl:template name="follow.js">
     <xsl:param name="name"/>
-    <xsl:param name="modules">/js/modules/</xsl:param>
+    <xsl:param name="modules" select="'/js/modules/'" />
+    <xsl:variable name="models" select="/*//js:model" />
     
     <script type="text/javascript">
-        <xsl:choose>
-        	<xsl:when test="$name">
-                <xsl:apply-templates select="/*//js:model[@name = $name]">
-                	<xsl:with-param name="modules_path" select="$modules" />
-        		</xsl:apply-templates>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates select="/*//js:model">
-                	<xsl:with-param name="modules_path" select="$modules" />
-                </xsl:apply-templates>
-            </xsl:otherwise>
-        </xsl:choose>
+        Follow.load([
+            <xsl:choose>
+                <xsl:when test="$name">
+                    <xsl:apply-templates select="$models[@name = $name]"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="$models"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        ], "<xsl:value-of select="$modules"/>");
     </script>
 </xsl:template>
 
 <xsl:template match="js:model">
-    <xsl:param name="modules_path"/>
+    <xsl:variable name="context" select="js:ctx(@context)" />
+    <xsl:variable name="node" select="dyn:evaluate($context)" />
     
-    <xsl:variable name="context" select="@context" />
-    <xsl:variable name="name">
-        <xsl:if test="@name">
-            <xsl:value-of select="concat('&quot;', @name, '&quot;')"/>
-        </xsl:if>
-    </xsl:variable>
-    <xsl:variable name="storage">
-        <xsl:if test="@storage">
-            <xsl:value-of select="concat(', ', @storage)"/>
-        </xsl:if>
-    </xsl:variable>
+    <xsl:text>{</xsl:text>
     
-    <xsl:value-of select="concat('Follow(', $name, $storage, ').load([')" />
-    
-    <xsl:for-each select="js:*[@chain]">
-        <xsl:apply-templates select=".">
-            <xsl:with-param name="context" select="$context" />
-        </xsl:apply-templates>
-        <xsl:value-of select="js:comma()" />
-    </xsl:for-each>
-    
-    <xsl:text>], {</xsl:text>
-        "modules_path": "<xsl:value-of select="$modules_path"/>",
-        "model_args": "<xsl:value-of select="js:escape(concat($name, $storage))"/>"
-    <xsl:text>});</xsl:text>
+        <xsl:if test="@name">"name": "<xsl:value-of select="@name"/>",</xsl:if>
+        <xsl:if test="@storage">"storage": <xsl:value-of select="@storage"/>,</xsl:if>
+            
+        <xsl:text>"chains": [</xsl:text>
+        <xsl:for-each select="js:*[@chain]">
+            <xsl:apply-templates select=".">
+                <xsl:with-param name="node" select="$node" />
+            </xsl:apply-templates>
+            <xsl:value-of select="js:comma()" />
+        </xsl:for-each>
+        
+    <xsl:text>]}</xsl:text>
+    <xsl:value-of select="js:comma()"/>
 </xsl:template>
 
 <!-- TOP-level items: map, obj -->
 <xsl:template match="js:model/js:*[ @chain ]">
-    <xsl:param name="context"/>
+    <xsl:param name="node"/>
     
     <xsl:variable name="name" select="local-name()" />
+    <xsl:variable name="ctx" select="@context" />
     <xsl:variable name="self"><xsl:copy-of select="*" /></xsl:variable>
     <xsl:variable name="tmpl" select="exsl:node-set($self)"/>
-    <xsl:variable name="path" select="concat($context, js:addslash(@context))"/>
-    <xsl:variable name="node" select="dyn:evaluate($path)"/>
+    
     <xsl:text>{</xsl:text>
     	
         <xsl:text>"chain": "</xsl:text>
@@ -85,28 +75,33 @@
         <xsl:if test="$name = 'map'">[</xsl:if>
         	
             <xsl:for-each select="$node">
-                <xsl:choose>
-                	<xsl:when test="$name = 'obj'">
-                    	<xsl:for-each select="$tmpl/js:prop">
-                        
-                            <xsl:apply-templates select=".">
-                                <xsl:with-param name="node" select="$node"/>
-                                <xsl:with-param name="parent" select="$name"/>
-                            </xsl:apply-templates>
-                            <xsl:value-of select="js:comma()"/>
-                            
-                        </xsl:for-each>
-                    </xsl:when>
-                    
-                    <xsl:otherwise>
-                        <xsl:apply-templates select="$tmpl/*">
-                            <xsl:with-param name="node" select="."/>
-                            <xsl:with-param name="parent" select="$name"/>
-                        </xsl:apply-templates>
-                    </xsl:otherwise>
-                </xsl:choose>
+            	<xsl:variable name="context" select="dyn:evaluate( js:ctx($ctx) )"/>
+            	<xsl:for-each select="$context">
                 
-                <xsl:value-of select="js:comma()"/>
+                    <xsl:choose>
+                        <xsl:when test="$name = 'obj'">
+                            <xsl:for-each select="$tmpl/js:prop">
+                            
+                                <xsl:apply-templates select=".">
+                                    <xsl:with-param name="node" select="$context"/>
+                                    <xsl:with-param name="parent" select="$name"/>
+                                </xsl:apply-templates>
+                                <xsl:value-of select="js:comma()"/>
+                                
+                            </xsl:for-each>
+                        </xsl:when>
+                        
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="$tmpl/*">
+                                <xsl:with-param name="node" select="."/>
+                                <xsl:with-param name="parent" select="$name"/>
+                                <xsl:with-param name="top" select="'true'"/>
+                            </xsl:apply-templates>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                	
+                    <xsl:value-of select="js:comma()" />
+                </xsl:for-each>
             </xsl:for-each>
 
         <xsl:if test="$name = 'obj'">}</xsl:if>
@@ -124,6 +119,8 @@
 <!-- Third-level data structures -->
 <xsl:template match="js:obj | js:map">
 	<xsl:param name="node"/>
+	<xsl:param name="top"/>
+
     <xsl:variable name="context" select="@context" />
     <xsl:variable name="name" select="local-name()" />
     
@@ -153,10 +150,15 @@
 
     <xsl:if test="$name = 'obj'">}</xsl:if>
     <xsl:if test="$name = 'map'">]</xsl:if>
+
+    <xsl:if test="$top">
+    	<xsl:value-of select="js:comma()" />
+    </xsl:if>
 </xsl:template>
 
 <xsl:template match="js:prop">
 	<xsl:param name="node"/>
+	<xsl:param name="top"/>
 	<xsl:param name="parent" select="local-name(..)"/>
     
 	<xsl:variable name="prop" select="."/>
@@ -199,6 +201,10 @@
         <xsl:text>": </xsl:text>
     </xsl:if>
     <xsl:value-of select="$value" />
+
+    <xsl:if test="$top">
+    	<xsl:value-of select="js:comma()" />
+    </xsl:if>
 </xsl:template>
 
 <!-- Custom functions -->
@@ -213,6 +219,20 @@
 <func:function name="js:comma">
     <func:result>
     	<xsl:if test="position() != last()">, </xsl:if>
+    </func:result>
+</func:function>
+
+<func:function name="js:ctx">
+	<xsl:param name="context"/>
+    <func:result>
+    	<xsl:choose>
+    	    <xsl:when test="$context">
+    	    	<xsl:value-of select="$context"/>
+    	    </xsl:when>
+            <xsl:otherwise>
+            	<xsl:text>.</xsl:text>
+            </xsl:otherwise>
+    	</xsl:choose>
     </func:result>
 </func:function>
 

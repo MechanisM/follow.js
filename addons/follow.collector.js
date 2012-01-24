@@ -1,34 +1,52 @@
 /*!
  * Follow.js
- * A simple unpacker of data, collected by follow.collector.xsl
+ * A simple unpacker for raw-data of "follow.collector.xsl"
  * Dependencies: jQuery or other library for downloading files using AJAX
  */
 
 (function($)
 {
-    Follow.extend(
-    {
-        load: function( json, params )
-        {
-            json.forEach(function( obj )
-            {
+	Follow.load = function( models, modules_path )
+	{
+		var common = {};
+		
+		models.forEach(function(M)
+		{
+			var model = Follow(M.name, M.storage);
+			M.chains.forEach(function( obj )
+			{
+				var chain = common[obj.chain] || (common[obj.chain] = {
+					model: model,
+					chain: obj.chain,
+					module: obj.module
+				});
+				chain.json 
+					= chain.json instanceof Array
+					? chain.json.concat(obj.json)
+					: obj.json;
+			});
+		});
+		
+		for(var chain in common) {
+			common.hasOwnProperty(chain) && function( obj )
+			{
+				var model = obj.model;
                 if( obj.module )
                 {
                     $.ajax({
-                        url: params.modules_path + obj.module + '.js',
-                        context: this,
+                        url: modules_path + obj.module + '.js',
                         dataType: 'script',
                         complete: function(){
-                            this(obj.chain, obj.json);
+                            model(obj.chain, obj.json);
                         }
                     });
                 }
                 else {
-                    this(obj.chain, obj.json);
+                    model(obj.chain, obj.json);
                 }
-            }, this);
-        }
-    });
+			}( common[chain] );
+		}
+	};
     
     Follow.module = function( opt )
     {
