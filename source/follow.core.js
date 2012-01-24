@@ -20,7 +20,7 @@
 		// we can restore default-json through "model.init", when we need
 		make_clean && (storage[modelName] = '');
 		
-		if( instance ){
+		if( instance && storage == instance.storage ){
 			return instance.model;
 		}
 		
