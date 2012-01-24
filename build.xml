@@ -17,7 +17,7 @@
 				<file name="follow.helper.js"/>
 				<file name="follow.wrappers.js"/>
 			</filelist>
-			<filelist dir="addons">
+			<filelist dir="source/addons">
 				<file name="follow.collector.js"/>
 			</filelist>
 		</concat>

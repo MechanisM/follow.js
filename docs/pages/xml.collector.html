@@ -1,0 +1,83 @@
+<!-- XML-маппинг и модульность -->
+
+<h3>Сборка данных и модульность</h3>
+
+<p>
+	Для проектов, работающих с использованием <em>XML/XSL</em>, библиотека имеет 
+    официальное дополнение в виде 2 файлов <em>follow.collector.xsl</em> и <em>follow.collector.js</em>.
+</p>
+<ol class="space">
+    <li>В XML-файлах проекта размещаем специальным образом составленные мапперы для агрегации данных</li>
+    <li>В XSL-файле перед <em>&lt;/body&gt;</em> вызываем специальный шаблон из <em>follow.collector.xsl</em> для обработки XML-мапперов из всего проекта</li>
+</ol>
+
+<h3>Зависимости</h3>
+<ol>
+    <li>XSLT-процессор должен поддерживать модули <a href="http://exslt.org/" target="_blank">EXSLT</a>, как минимум <em>common, functions и dynamic</em></li>
+    <li>Для загрузки внешних JS-модулей в <em>follow.collector.js</em> используется <a href="http://jquery.com/" target="_blank">jQuery</a></li>
+</ol>
+
+<h3>XMLNS</h3>
+<p>
+	<em>xmlns:js="https://github.com/extensible/follow.js"</em>
+</p>
+
+<h3>&lt;js:model&gt;</h3>
+<div class="space-left">
+    <strong>Аттрибуты</strong> &mdash; <em>@context</em>, @name, @storage<br />
+    <strong>Потомки</strong> &mdash; <em>&lt;js:map&gt;</em> или <em>&lt;js:obj&gt;</em> с аттрибутом <em>@chain</em>
+</div>
+
+<h3>&lt;js:map&gt;, &lt;js:obj&gt;</h3>
+<div class="space-left">
+    <strong>Аттрибуты</strong>
+    <ul>
+        <li>@chain - задает "цепочку" в модели, <strong>только для прямых потомков &lt;js:model&gt;</strong></li>
+        <li>@context - XPath-выражение для формирования массива данных, также задает контекст</li>
+        <li>@module - название модуля (без расширения), будет подключен для обработки данных модели для указанной @chain,<strong> только для прямых потомков &lt;js:model&gt;</strong></li>
+    </ul>
+    
+    <br />
+    <strong>Потомки для js:map</strong> &mdash; <em>&lt;js:map&gt;</em>, <em>&lt;js:obj&gt;</em>, <em>&lt;js:prop&gt;</em><br />
+    <strong>Потомки для js:obj</strong> &mdash; <em>&lt;js:prop&gt;</em> с аттрибутом <em>@name</em>
+</div>
+
+<h3>&lt;js:prop&gt;</h3>
+<div class="space-left">
+    <strong>Аттрибуты</strong>
+    <ul>
+        <li>@name - задает название свойства, если родитель был &lt;js:obj&gt;, можно опустить, если родителем является &lt;js:map&gt;</li>
+        <li>@value - XPath-выражение для значения свойства, не следует его указывать, если свойство имеет потоков</li>
+        <li>@type - приведение типа данных к <em>number</em> или <em>boolean</em>, по-умолчанию <em>string</em></li>
+    </ul>
+    <strong>Потомки</strong> &mdash; <em>&lt;js:map&gt;</em> или <em>&lt;js:obj&gt;</em>
+</div>
+
+<h3>XSL</h3>
+<ol>
+    <li>Подключите файл <em>follow.collector.xsl</em> через <em>&lt;xsl:import&gt;</em> в общий XSL-файл проекта</li>
+    <li>Подключите файл <em>follow.collector.js</em> в &lt;head&gt; в HTML</li>
+    <li>
+    	В нужном месте в шаблоне проекта (рекомендуется в конце <em>&lt;body&gt;</em>) необходимо вызвать шаблон <em>&lt;xsl:call-template name="follow.js"/&gt;</em>.<br />
+        Параметром <em>&lt;xsl:with-param name="modules"/&gt;</em> можно пробросить путь для загрузки модулей, по-умолчанию <em>"/js/modules/"</em>
+    </li>
+</ol>
+
+<h3>Оформление модулей в JavaScript</h3>
+<code>
+// Sample
+Follow.module(
+{
+    model: "user-data",
+    chain: "models.top",
+    init: function( value, params )
+    {
+        alert('Hello world!');
+        // this == Follow('user-data')
+        // value - this(params.chain) - собранные данные из XML-а для цепочки "models.top"
+        // params - тот же набор параметров, что поступает в model.follow
+    }
+});
+</code>
+
+<a href="../source/addons/follow.collector.xml" target="_blank">Пример XML-маппинга</a>

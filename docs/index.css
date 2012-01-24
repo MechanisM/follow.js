@@ -19,6 +19,7 @@ p + p { margin-top:1em; }
 .left { float:left; }
 .pre { white-space:pre; }
 .space { padding:.3em; }
+.space-left { padding-left:1em; }
 .main {
 	position:relative;
 	min-height:100%;
@@ -40,7 +41,7 @@ ol, ul { list-style-position:inside; }
 .content { padding:0 100px; padding-top:30px; }
 .text { position:relative; overflow:hidden; padding-left:30px; }
 
-code, .code {
+code, .code, xmp {
 	position:relative;
 	font:15px "Lucida Console", Monaco, monospace;
 	background: black;
@@ -54,6 +55,7 @@ code, .code {
 	border-radius:10px;
 	overflow-x:auto;
 }
+xmp { line-height:150%; padding:0 1.5em 1.5em 0; }
 .code li { line-height:150%; margin:-7px 0; color:gray; }
 .code li > span { color:white; padding-left:10px; }
 
