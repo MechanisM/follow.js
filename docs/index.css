@@ -76,8 +76,8 @@ xmp { line-height:150%; padding:0 1.5em 1.5em 0; }
 .notext:before { content:""; }
 .mixed { font-weight:normal; }
 
-.argument { font-weight:bold; }
-.argument:after { content:": "; }
+.argument { font-style:italic; }
+.argument:after { content:" — "; }
 
 a.next { position:absolute; right:0; top:0; }
 a.next:after { content:" →"; }
