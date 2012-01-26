@@ -20,18 +20,20 @@
     <xsl:param name="modules" select="'/js/modules/'" />
     <xsl:variable name="models" select="/*//js:model" />
     
-    <script type="text/javascript">
-        Follow.load([
-            <xsl:choose>
-                <xsl:when test="$name">
-                    <xsl:apply-templates select="$models[@name = $name]"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates select="$models"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        ], "<xsl:value-of select="$modules"/>");
-    </script>
+    <xsl:if test="count($models) > 0">
+		<script type="text/javascript">
+            Follow.load([
+                <xsl:choose>
+                    <xsl:when test="$name">
+                        <xsl:apply-templates select="$models[@name = $name]"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="$models"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            ], "<xsl:value-of select="$modules"/>");
+        </script>
+    </xsl:if>
 </xsl:template>
 
 <xsl:template match="js:model">
