@@ -1,3 +1,3 @@
-h3. Follow.js (beta)
+h4. Follow.js (beta)
 
-h3. "Документация, демо, примеры":http://extensible.github.com/follow.js/docs/
+h4. "Документация, демо, примеры":http://extensible.github.com/follow.js/docs/
