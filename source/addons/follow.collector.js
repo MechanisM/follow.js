@@ -1,12 +1,41 @@
 /*!
  * Follow.js
  * A simple unpacker for raw-data of "follow.collector.xsl"
- * Dependencies: jQuery or other library for downloading files using AJAX
+ * Dependencies: jQuery or yepnope.js for loading external JS-files
  */
 
-(function($)
+(function($, window)
 {
-	Follow.load = function( models, modules_path )
+	function loader( files, callback )
+	{
+		var files = [].concat(files);
+		
+		if( window.yepnope ) {
+			yepnope({
+				load: files,
+				complete: callback
+			});
+		}
+		else if( window.jQuery )
+		{
+			$.when.apply(this, files.map(function( file )
+			{
+				return $.ajax({
+					url: file,
+					dataType: 'script'
+				});
+			})).then(callback);
+		}
+		// fallback (maybe not works in IE)
+		else {
+			files.forEach(function( file ){
+				document.write('<script type="text/javascript" src="'+ file +'"></script>');
+			});
+			callback();
+		}
+	}
+	
+	Follow.load = function( models, path )
 	{
 		var common = [];
 		
@@ -37,6 +66,7 @@
 						model: model,
 						chain: obj.chain,
 						module: module,
+						external: M.dependency,
 						json: data
 					});
 				}
@@ -46,19 +76,25 @@
 		// loading data to the models
 		common.forEach(function( obj )
 		{
-			var model = obj.model;
-			if( obj.module )
+			var inject = function()
 			{
-				$.ajax({
-					url: modules_path + obj.module + '.js',
-					dataType: 'script',
-					complete: function(){
+				var model = obj.model;
+				obj.module
+					? loader(path.modules + obj.module + '.js', function(){
 						model(obj.chain, obj.json);
-					}
+					})
+					: model(obj.chain, obj.json);
+			}
+			// apply data
+			if( obj.external )
+			{
+				var files = obj.external.split(' ').map(function( name ){
+					return path.external + name + '.js';
 				});
+				loader(files, inject);
 			}
 			else {
-				model(obj.chain, obj.json);
+				inject();
 			}
 		});
 	};
@@ -68,4 +104,4 @@
         Follow(opt.model, opt.storage)
             .follow(opt.chain, opt.init, 'once');
     };
-}(window.jQuery));
+}( window.jQuery, window ));

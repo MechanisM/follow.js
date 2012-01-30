@@ -14,7 +14,11 @@
 <h3>Зависимости</h3>
 <ol>
     <li>XSLT-процессор должен поддерживать модули <a href="http://exslt.org/" target="_blank">EXSLT</a>, как минимум <em>common, functions и dynamic</em></li>
-    <li>Для загрузки внешних JS-модулей в <em>follow.collector.js</em> используется <a href="http://jquery.com/" target="_blank">jQuery</a></li>
+    <li>
+    	Для загрузки внешних модулей и зависимостей используется 
+        <a href="http://jquery.com/" target="_blank">jQuery</a> или 
+        <a href="http://yepnopejs.com/" target="_blank">YepNope.js</a>
+    </li>
 </ol>
 
 <h3>XMLNS</h3>
@@ -24,7 +28,17 @@
 
 <h3>&lt;js:model&gt;</h3>
 <div class="space-left">
-    <strong>Аттрибуты</strong> &mdash; <em>@context</em>, @name, @storage<br />
+    <strong>Аттрибуты</strong>
+    <ul>
+        <li>@context - XPath-выражение для формирования массива данных, также задает контекст</li>
+        <li>@name - название модели (первый аргумент конструктора <a href="#Follow">Follow</a>)</li>
+        <li>@storage - JS-объект для хранения модели (например <em>window.localStorage</em>)</li>
+        <li>
+        	@dependency - список имен файлов через пробел (без расширения ".js"), которые необходимо загрузить прежде, 
+            чем данные из маппера <em>js:model</em> попадут в JS-модель. <br />
+            <strong>Файлы будут загружены перед загрузкой модулей, указанных через @module для <em>js:map</em> или <em>js:obj</em> верхнего уровня</strong> (см. ниже).
+        </li>
+    </ul>
     <strong>Потомки</strong> &mdash; <em>&lt;js:map&gt;</em> или <em>&lt;js:obj&gt;</em> с аттрибутом <em>@chain</em>
 </div>
 
@@ -59,7 +73,8 @@
     <li>Подключите файл <em>follow.collector.js</em> в &lt;head&gt; в HTML</li>
     <li>
     	В нужном месте в шаблоне проекта (рекомендуется в конце <em>&lt;body&gt;</em>) необходимо вызвать шаблон <em>&lt;xsl:call-template name="follow.js"/&gt;</em>.<br />
-        Параметром <em>&lt;xsl:with-param name="modules"/&gt;</em> можно пробросить путь для загрузки модулей, по-умолчанию <em>"/js/modules/"</em>
+        Параметром <em>&lt;xsl:with-param name="modules"/&gt;</em> задается путь для загрузки модулей, по-умолчанию <em>"/js/modules/"</em><br />
+        Параметр <em>&lt;xsl:with-param name="external"/&gt;</em> необходим для указания пути для загрузки зависимостей (@dependecy у <em>js:model</em>), по-умолчанию <em>"/js/external/"</em><br />
     </li>
 </ol>
 

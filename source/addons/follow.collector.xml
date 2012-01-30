@@ -7,7 +7,7 @@
 >
 
     <!-- Samples -->
-    <js:model context="/page" name="user-data">
+    <js:model context="/page" name="user-data" dependency="jquery.ui modernizr">
         <js:map chain="models.top" context="mx:component[@id='market:top-models']//model" module="follow.module">
             <js:obj>
                 <js:prop name="id" value="@id" type="number"/>

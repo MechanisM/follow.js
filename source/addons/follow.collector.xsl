@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0" 
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	
+    
     xmlns:js="https://github.com/extensible/follow.js"
     xmlns:exsl="http://exslt.org/common"
     xmlns:dyn="http://exslt.org/dynamic"
@@ -17,11 +17,15 @@
 
 <xsl:template name="follow.js">
     <xsl:param name="name"/>
-    <xsl:param name="modules" select="'/js/modules/'" />
-    <xsl:variable name="models" select="/*//js:model" />
     
+    <!-- A path to load modules -->
+    <xsl:param name="modules" select="'/js/modules/'" />
+    <!-- A path to load external files that will be taken from @dependency  -->
+    <xsl:param name="external" select="'/js/external/'" />
+    
+    <xsl:variable name="models" select="/*//js:model" />
     <xsl:if test="count($models) > 0">
-		<script type="text/javascript">
+        <script type="text/javascript">
             Follow.load([
                 <xsl:choose>
                     <xsl:when test="$name">
@@ -31,7 +35,10 @@
                         <xsl:apply-templates select="$models"/>
                     </xsl:otherwise>
                 </xsl:choose>
-            ], "<xsl:value-of select="$modules"/>");
+            ], {
+                "modules": "<xsl:value-of select="$modules"/>",
+                "external": "<xsl:value-of select="$external"/>"
+            });
         </script>
     </xsl:if>
 </xsl:template>
@@ -42,8 +49,14 @@
     
     <xsl:text>{</xsl:text>
     
-        <xsl:if test="@name">"name": "<xsl:value-of select="@name"/>",</xsl:if>
-        <xsl:if test="@storage">"storage": <xsl:value-of select="@storage"/>,</xsl:if>
+        <xsl:if test="@name">"name": "<xsl:value-of select="@name"/>", </xsl:if>
+        <xsl:if test="@storage">"storage": <xsl:value-of select="@storage"/>, </xsl:if>
+
+        <xsl:if test="@dependency">
+            <xsl:text>"dependency": "</xsl:text>
+            <xsl:value-of select="@dependency" />
+            <xsl:text>", </xsl:text>
+        </xsl:if>
             
         <xsl:text>"chains": [</xsl:text>
         <xsl:for-each select="js:*[@chain]">
@@ -67,7 +80,7 @@
     <xsl:variable name="tmpl" select="exsl:node-set($self)"/>
     
     <xsl:text>{</xsl:text>
-    	
+        
         <xsl:text>"chain": "</xsl:text>
         <xsl:value-of select="@chain"/>
         <xsl:text>",</xsl:text>
@@ -75,10 +88,10 @@
         <xsl:text>"json":</xsl:text>
         <xsl:if test="$name = 'obj'">{</xsl:if>
         <xsl:if test="$name = 'map'">[</xsl:if>
-        	
+            
             <xsl:for-each select="$node">
-            	<xsl:variable name="context" select="dyn:evaluate( js:ctx($ctx) )"/>
-            	<xsl:for-each select="$context">
+                <xsl:variable name="context" select="dyn:evaluate( js:ctx($ctx) )"/>
+                <xsl:for-each select="$context">
                 
                     <xsl:choose>
                         <xsl:when test="$name = 'obj'">
@@ -101,7 +114,7 @@
                             </xsl:apply-templates>
                         </xsl:otherwise>
                     </xsl:choose>
-                	
+                    
                     <xsl:value-of select="js:comma()" />
                 </xsl:for-each>
             </xsl:for-each>
@@ -110,9 +123,9 @@
         <xsl:if test="$name = 'map'">]</xsl:if>
             
         <xsl:if test="@module">
-        	<xsl:text>, "module": "</xsl:text>
-        	<xsl:value-of select="@module" />
-        	<xsl:text>"</xsl:text>
+            <xsl:text>, "module": "</xsl:text>
+            <xsl:value-of select="@module" />
+            <xsl:text>"</xsl:text>
         </xsl:if>
         
     <xsl:text>}</xsl:text>
@@ -120,8 +133,8 @@
 
 <!-- Third-level data structures -->
 <xsl:template match="js:obj | js:map">
-	<xsl:param name="node"/>
-	<xsl:param name="top"/>
+    <xsl:param name="node"/>
+    <xsl:param name="top"/>
 
     <xsl:variable name="context" select="@context" />
     <xsl:variable name="name" select="local-name()" />
@@ -154,24 +167,24 @@
     <xsl:if test="$name = 'map'">]</xsl:if>
 
     <xsl:if test="$top">
-    	<xsl:value-of select="js:comma()" />
+        <xsl:value-of select="js:comma()" />
     </xsl:if>
 </xsl:template>
 
 <xsl:template match="js:prop">
-	<xsl:param name="node"/>
-	<xsl:param name="top"/>
-	<xsl:param name="parent" select="local-name(..)"/>
+    <xsl:param name="node"/>
+    <xsl:param name="top"/>
+    <xsl:param name="parent" select="local-name(..)"/>
     
-	<xsl:variable name="prop" select="."/>
-	<xsl:variable name="type" select="@type"/>
+    <xsl:variable name="prop" select="."/>
+    <xsl:variable name="type" select="@type"/>
     <xsl:variable name="value">
-    	<!-- getting context -->
-    	<xsl:for-each select="$node">
-        	
+        <!-- getting context -->
+        <xsl:for-each select="$node">
+            
             <!-- simple types -->
-        	<xsl:if test="$prop/@value">
-            	<xsl:variable name="value" select="dyn:evaluate($prop/@value)" />
+            <xsl:if test="$prop/@value">
+                <xsl:variable name="value" select="dyn:evaluate($prop/@value)" />
                 <xsl:choose>
                     <xsl:when test="$type = 'number'">
                         <xsl:value-of select="number($value)" />
@@ -180,16 +193,16 @@
                         <xsl:value-of select="boolean($value)" />
                     </xsl:when>
                     <xsl:otherwise>
-                    	<xsl:text>"</xsl:text>
-                    	<xsl:value-of select="js:escape($value)" />
-                    	<xsl:text>"</xsl:text>
+                        <xsl:text>"</xsl:text>
+                        <xsl:value-of select="js:escape($value)" />
+                        <xsl:text>"</xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:if>
-        	
+            
             <!-- inner objects and arrays -->
-        	<xsl:if test="count($prop/*) > 0 and not($prop/@value)">
-            	<xsl:apply-templates select="$prop/js:*">
+            <xsl:if test="count($prop/*) > 0 and not($prop/@value)">
+                <xsl:apply-templates select="$prop/js:*">
                     <xsl:with-param name="node" select="$node" />
                 </xsl:apply-templates>
             </xsl:if>
@@ -205,46 +218,46 @@
     <xsl:value-of select="$value" />
 
     <xsl:if test="$top">
-    	<xsl:value-of select="js:comma()" />
+        <xsl:value-of select="js:comma()" />
     </xsl:if>
 </xsl:template>
 
 <!-- Custom functions -->
 <func:function name="js:comma">
     <func:result>
-    	<xsl:if test="position() != last()">, </xsl:if>
+        <xsl:if test="position() != last()">, </xsl:if>
     </func:result>
 </func:function>
 
 <func:function name="js:ctx">
-	<xsl:param name="context"/>
+    <xsl:param name="context"/>
     <func:result>
-    	<xsl:choose>
-    	    <xsl:when test="$context">
-    	    	<xsl:value-of select="$context"/>
-    	    </xsl:when>
+        <xsl:choose>
+            <xsl:when test="$context">
+                <xsl:value-of select="$context"/>
+            </xsl:when>
             <xsl:otherwise>
-            	<xsl:text>.</xsl:text>
+                <xsl:text>.</xsl:text>
             </xsl:otherwise>
-    	</xsl:choose>
+        </xsl:choose>
     </func:result>
 </func:function>
 
 <func:function name="js:escape">
-	<xsl:param name="text"/>
+    <xsl:param name="text"/>
     <func:result>
-    	<xsl:value-of select="js:replace(
-        	'&quot;', '\&quot;', js:replace(
-            	'&#10;', '\&#10;', string($text)
+        <xsl:value-of select="js:replace(
+            '&quot;', '\&quot;', js:replace(
+                '&#10;', '\&#10;', string($text)
             )
         )"/>
     </func:result>
 </func:function>
 
 <func:function name="js:replace">
-	<xsl:param name="search"/>
-	<xsl:param name="replace"/>
-	<xsl:param name="subject"/>
+    <xsl:param name="search"/>
+    <xsl:param name="replace"/>
+    <xsl:param name="subject"/>
     <func:result>
         <xsl:choose>
             <xsl:when test="contains($subject, $search)">
