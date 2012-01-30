@@ -8,7 +8,9 @@
 
 		<concat destfile="${output}">
 			<filelist files="header" />
-			<fileset dir="source/external"/>
+			<filelist dir="source/external">
+				<file name="json2.js"/>
+			</filelist>
 			<filelist dir="source">
 				<file name="follow.ecma.js"/>
 				<file name="follow.core.js"/>
