@@ -6,6 +6,8 @@
 
 (function($, window)
 {
+	var raw_data_path;
+	
 	function loader( files, callback )
 	{
 		var files = [].concat(files);
@@ -18,13 +20,13 @@
 		}
 		else if( window.jQuery )
 		{
-			$.when.apply(this, files.map(function( file )
-			{
+			files = files.map(function( file ) {
 				return $.ajax({
 					url: file,
 					dataType: 'script'
 				});
-			})).then(callback);
+			});
+			$.when.apply(this, files).then(callback);
 		}
 		// fallback (maybe not works in IE)
 		else {
@@ -38,6 +40,9 @@
 	Follow.load = function( models, path )
 	{
 		var common = [];
+		
+		// saving extra data in upper level of the scope
+		raw_data_path = path;
 		
 		// preparation
 		models.forEach(function(M)
@@ -101,7 +106,11 @@
     
     Follow.module = function( opt )
     {
-        Follow(opt.model, opt.storage)
-            .follow(opt.chain, opt.init, 'once');
+        this(opt.model, opt.storage)
+			.follow(opt.chain, function()
+			{
+				var args = [].slice.call(arguments).concat(raw_data_path);
+				opt.init.apply(this, args);
+			}, 'once');
     };
 }( window.jQuery, window ));
