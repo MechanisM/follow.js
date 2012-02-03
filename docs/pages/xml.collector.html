@@ -30,13 +30,14 @@
 <div class="space-left">
     <strong>Аттрибуты</strong>
     <ul>
-        <li>@context - XPath-выражение для формирования массива данных, также задает контекст</li>
         <li>@name - название модели (первый аргумент конструктора <a href="#Follow">Follow</a>)</li>
         <li>@storage - JS-объект для хранения модели (например <em>window.localStorage</em>)</li>
+        <li>@context - XPath-выражение для формирования массива данных, также задает контекст</li>
+        <li>@module - Если указано значение "true", то будет произведена попытка загрузки модуля с названием модели (по-умолчанию "default")</li>
         <li>
         	@dependency - список имен файлов через пробел (без расширения ".js"), которые необходимо загрузить прежде, 
             чем данные из маппера <em>js:model</em> попадут в JS-модель. <br />
-            <strong>Файлы будут загружены перед загрузкой модулей, указанных через @module для <em>js:map</em> или <em>js:obj</em> верхнего уровня</strong> (см. ниже).
+            Файлы будут загружены перед загрузкой модуля, если аргумент @module = "true"
         </li>
     </ul>
     <strong>Потомки</strong> &mdash; <em>&lt;js:map&gt;</em> или <em>&lt;js:obj&gt;</em> с аттрибутом <em>@chain</em>
@@ -48,10 +49,7 @@
     <ul>
         <li>@chain - задает "цепочку" в модели, <strong>только для прямых потомков &lt;js:model&gt;</strong></li>
         <li>@context - XPath-выражение для формирования массива данных, также задает контекст</li>
-        <li>@module - название модуля (без расширения), будет подключен для обработки данных модели для указанной @chain,<strong> только для прямых потомков &lt;js:model&gt;</strong></li>
     </ul>
-    
-    <br />
     <strong>Потомки для js:map</strong> &mdash; <em>&lt;js:map&gt;</em>, <em>&lt;js:obj&gt;</em>, <em>&lt;js:prop&gt;</em><br />
     <strong>Потомки для js:obj</strong> &mdash; <em>&lt;js:prop&gt;</em> с аттрибутом <em>@name</em>
 </div>
@@ -84,13 +82,13 @@
 Follow.module(
 {
     model: "user-data",
-    chain: "models.top",
-    init: function( value, params )
+    init: function( model, params )
     {
         alert('Hello world!');
         // this == Follow('user-data')
-        // value - this(params.chain) - собранные данные из XML-а для цепочки "models.top"
-        // params - тот же набор параметров, что поступает в model.follow
+        // model == this()
+        // params.modules - содержит путь до директории с модулями
+        // params.external - содержит путь до директории, откуда загружать зависимости (внешние файлы, требуемые для работы модуля)
     }
 });
 </code>

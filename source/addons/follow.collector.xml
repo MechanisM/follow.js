@@ -6,9 +6,9 @@
     xmlns:js="https://github.com/extensible/follow.js"
 >
 
-    <!-- Samples -->
-    <js:model context="/page" name="user-data" dependency="jquery.ui modernizr">
-        <js:map chain="models.top" context="mx:component[@id='market:top-models']//model" module="follow.module">
+    <!-- Sample 1 -->
+    <js:model name="user-data" dependency="jquery.ui modernizr" context="/page">
+        <js:map chain="models.top" context="mx:component[@id='market:top-models']//model">
             <js:obj>
                 <js:prop name="id" value="@id" type="number"/>
                 <js:prop name="name" value="@name"/>
@@ -41,6 +41,7 @@
         </js:obj>
     </js:model>
     
+    <!-- Sample 2 -->
     <hello title="world">
         <js:model context="..">
             <js:map chain="other" context="test">
@@ -54,5 +55,34 @@
         </js:model>
         <test title="Yo!"/>
     </hello>
+
+    <!-- Sample 3 -->
+    <js:model name="b-gallery" is-module="true" dependency="jsrender">
+        
+        <js:obj chain="params">
+            <js:prop name="css_selector" value="string('.b_gallery_trigger')"/>
+        </js:obj>
+    
+        <js:map chain="gallery" context="../images/ya_guru_modelcard">
+            <js:obj>
+                <js:prop name="title" value="title"/>
+                <js:prop name="images">
+                    <js:map context=".//big_picture">
+                        <js:obj>
+                            <js:prop name="url">
+                                <js:obj>
+                                    <js:prop name="normal" value="normalize-space(.)"/>
+                                    <js:prop name="small" value="concat(normalize-space(.), '&amp;size=1')"/>
+                                </js:obj>
+                            </js:prop>
+                            <js:prop name="width" value="@SizeX"/>
+                            <js:prop name="height" value="@SizeY"/>
+                        </js:obj>
+                    </js:map>
+                </js:prop>
+            </js:obj>
+        </js:map>
+        
+    </js:model>
 
 </page>

@@ -6,8 +6,6 @@
 
 (function($, window)
 {
-	var raw_data_path;
-	
 	function loader( files, callback )
 	{
 		var files = [].concat(files);
@@ -39,78 +37,49 @@
 	
 	Follow.load = function( models, path )
 	{
-		var common = [];
-		
-		// saving extra data in upper level of the scope
-		raw_data_path = path;
-		
-		// preparation
 		models.forEach(function(M)
 		{
-			var model = Follow(M.name, M.storage);
-			M.chains.forEach(function( obj )
+			var 
+				model = Follow(M.name, M.storage),
+				externals = M.dependency,
+				is_module = M.isModule;
+			
+			// save extra data for init-module
+			Follow.module.params = Follow.module.params || {};
+			Follow.module.params[ model.modelName ] = path;
+			
+			// insert data to the model
+			M.chains.forEach(function(C) {
+				model(C.chain, C.json);
+			});
+			
+			// loading modules & externals
+			if( is_module )
 			{
-				var 
-					data = obj.json,
-					module = obj.module,
-					chain = common.filter(function(C) {
-						return C.chain == obj.chain && C.model == model;
-					}).shift();
+				var inject = function() {
+					loader(path.modules + model.modelName + '.js');
+				};
 				
-				// gluing
-				if( chain )
+				if( externals )
 				{
-					module && !chain.module && (chain.module = module);
-					chain.json 
-						= chain.json instanceof Array
-						? chain.json.concat(data)
-						: data;
+					var files = externals.split(' ').map(function( name ){
+						return path.external + name + '.js';
+					});
+					loader(files, inject);
 				}
 				else {
-					common.push({
-						model: model,
-						chain: obj.chain,
-						module: module,
-						external: M.dependency,
-						json: data
-					});
+					inject();
 				}
-			});
-		});
-		
-		// loading data to the models
-		common.forEach(function( obj )
-		{
-			var inject = function()
-			{
-				var model = obj.model;
-				obj.module
-					? loader(path.modules + obj.module + '.js', function(){
-						model(obj.chain, obj.json);
-					})
-					: model(obj.chain, obj.json);
-			}
-			// apply data
-			if( obj.external )
-			{
-				var files = obj.external.split(' ').map(function( name ){
-					return path.external + name + '.js';
-				});
-				loader(files, inject);
-			}
-			else {
-				inject();
 			}
 		});
 	};
     
-    Follow.module = function( opt )
+    Follow.module = function( conf )
     {
-        this(opt.model, opt.storage)
-			.follow(opt.chain, function()
-			{
-				var args = [].slice.call(arguments).concat(raw_data_path);
-				opt.init.apply(this, args);
-			}, 'once');
+		var 
+			model = Follow(conf.model, conf.storage),
+			params = this.module.params[ model.modelName ];
+		
+		conf.init.call(model, model(), params);
     };
 }( window.jQuery, window ));

@@ -51,6 +51,7 @@
     
         <xsl:if test="@name">"name": "<xsl:value-of select="@name"/>", </xsl:if>
         <xsl:if test="@storage">"storage": <xsl:value-of select="@storage"/>, </xsl:if>
+        <xsl:if test="@is-module">"isModule": true, </xsl:if>
 
         <xsl:if test="@dependency">
             <xsl:text>"dependency": "</xsl:text>
@@ -77,7 +78,7 @@
     <xsl:variable name="ctx" select="@context" />
     <xsl:variable name="self"><xsl:copy-of select="*" /></xsl:variable>
     <xsl:variable name="tmpl" select="exsl:node-set($self)"/>
-    <xsl:variable name="top" select="@chain"/>
+    <xsl:variable name="top" select="'js:model' = name(..) and @chain"/>
     
     <xsl:if test="$top">
         <xsl:text>{"chain": "</xsl:text>
@@ -127,11 +128,6 @@
     <xsl:if test="$name = 'map'">]</xsl:if>
     
     <xsl:if test="$top">
-        <xsl:if test="@module">
-            <xsl:text>, "module": "</xsl:text>
-            <xsl:value-of select="@module" />
-            <xsl:text>"</xsl:text>
-        </xsl:if>
         <xsl:text>}</xsl:text>
     </xsl:if>
     
