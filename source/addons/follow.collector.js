@@ -4,7 +4,7 @@
  * Dependencies: jQuery or yepnope.js for loading external JS-files
  */
 
-(function($, window)
+(function( window )
 {
 	function loader( files, callback )
 	{
@@ -82,4 +82,4 @@
 		
 		conf.init(model, params);
     };
-}( window.jQuery, window ));
+}( this ));

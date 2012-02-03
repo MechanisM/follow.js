@@ -3,7 +3,7 @@
  * Core of the library.
  */
  
-(function()
+(function( global )
 {
 	var 
 		models = {},
@@ -228,6 +228,6 @@
 	};
 	
 	// exports to the global scope
-	window.Follow = Follow;
-}());
+	global.Follow = Follow;
+}( this ));
 
