@@ -84,9 +84,8 @@ Follow.module(
     model: "user-data",
     init: function( model, params )
     {
-        alert('Hello world!');
-        // this == Follow('user-data')
-        // model == this()
+        // this - ссылается на родительский объект (т.е this.model == 'user-data')
+        // model == Follow(this.model, this.storage)
         // params.modules - содержит путь до директории с модулями
         // params.external - содержит путь до директории, откуда загружать зависимости (внешние файлы, требуемые для работы модуля)
     }

@@ -80,6 +80,6 @@
 			model = Follow(conf.model, conf.storage),
 			params = this.module.params[ model.modelName ];
 		
-		conf.init.call(model, model(), params);
+		conf.init(model, params);
     };
 }( window.jQuery, window ));
