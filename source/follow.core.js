@@ -73,7 +73,7 @@
 						
 						// conditions
 						(
-							( __.toJSON(chain) !== makeJSON(new_value) ) ||
+							( __.toJSON(chain) !== serialize(new_value) ) ||
 							( new_value === null && not_defined ) || 
 							( mode.is_forced )
 						) &&
@@ -86,7 +86,7 @@
 								? parent.splice(prop, 1)
 								: (parent[prop] = new_value);
 							
-							storage[modelName] = makeJSON( model );
+							storage[modelName] = serialize( model );
 							
 							__.tracking(chain);
 							__.broadcast(chain, [
@@ -148,9 +148,9 @@
 			__get: function( value ){ return value },
 			
 			extend: extend,
-			clone: function( obj ){
-				return JSON.parse( JSON.stringify(obj) );
-			},
+			serialize: serialize,
+			clone: clone,
+			
 			init: function( defaults ) {
 				this(json ? JSON.parse(json) : defaults || {});
 				return this;
@@ -159,7 +159,7 @@
 			toString: function( path )
 			{
 				return path
-					? makeJSON( this(path) )
+					? serialize( this(path) )
 					: storage[modelName] || '{}';
 			}
 		}, Follow.prototype);
@@ -172,12 +172,10 @@
 		return observable;
 	}
 
-	function makeJSON( obj ){
-		return JSON.stringify( obj, null, "\t");
-	}	
-	function array( obj ){
-		return [].slice.call(obj);
-	}
+	function serialize( obj ){ return JSON.stringify( obj, null, "\t") }
+	function array( obj ){ return [].slice.call(obj) }
+	function clone( obj ){ return JSON.parse( JSON.stringify(obj) ); }
+	
 	function extend( deep, source )
 	{
 		var 
@@ -197,25 +195,22 @@
 				if( obj.hasOwnProperty(i) )
 				{
 					var 
-						struct = null, 
-						prop = obj[i];
-					is_deep && typeof prop == 'object' && prop !== null && (
-						struct = 
-							prop.constructor == Array ? [] :
-							prop.constructor == Object ? {} :
-						''
-					);
-
-					var path, params = [true, struct, source[i], prop];
-					callback && (
-						path = chain ? chain +'.'+ i : String(i),
-						callback(path),
-						params.push(callback, path)
-					);
+						current = source[i],
+						value = obj[i],
+						simple = value == null || String(typeof value).match(/string|number|boolean/),
+						copycat = [true, source[i], value]
+						;
 					
-					source[i] = struct 
-						? extend.apply(this, params)
-						: prop;
+					if( callback ) {
+						var path = chain ? chain +'.'+ i : String(i);
+						callback(path);
+						copycat.push(callback, path)
+					}
+					
+					current == null || simple || !is_deep
+						? (source[i] = value)
+						: extend.apply(this, copycat)
+						;
 				}
 			}
 		});
