@@ -150,7 +150,94 @@ module('follow.core.js');
 		);
 	});
 	
-	test('Get/Set API', function()
+	test('Getter API: model(), model("chain"), model(["parts", "of", "path"])', function()
 	{
+		var model = Follow('Getter API');
+		var data = {
+			x: 1,
+			y: Math.random(),
+			z: null,
+			tree: {one: {two: 2}}
+		};
+		model(data);
+		
+		equal(
+			model.serialize( model() ),
+			model.serialize( data )
+			,
+			'Текущее представление модели в виде объекта (JSON.parse) можно получить при вызове объекта модели без аргументов, т.е model()'
+		);
+		
+		ok(
+			model('unknown.path.in.model') === null &&
+			model('x') === data.x &&
+			model('y') === data.y &&
+			model('z') === data.z
+			,
+			'Попытка получить несуществующую цепочку в модели должна возвращать значение null'
+		);
+		
+		ok(
+			model() != model() &&
+			model.serialize( model() ) == model.serialize( model() )
+			,
+			'Объект модели, возвращаемый при помощи model() всегда возвращает новый объект, созданный на основе JSON-а модели'
+		);
+		
+		ok(
+			model(['tree', 'one', 'two']) === data.tree.one.two
+			,
+			'Если передать в качестве первого аргумента не строку, а массив со строками (частями пути), то в последствии части будут склеены через .join(".")'
+		);
 	});
 	
+	test('Setter API: model("chain", value|callback, "mode"), model(object, "mode")', function()
+	{
+		var model = Follow('Setter API');
+		var obj = { x: 0, y: 0 };
+		var arr = [Math.random(), 1, "2", true, false, null, {zzz: 'Yo!'}, ['Hello world']];
+		var data = { hello: Math.random(), world: obj, test: 'hello world' };
+		var test = "just a string";
+		
+		model('num', 1);
+		model('obj', obj);
+		model('arr', arr);
+		model('bool', true);
+		model('null', null);
+		
+		ok(
+			model('num') === 1 &&
+			model('bool') === true &&
+			model('null') === null && 
+			model.toString('obj') == model.serialize(obj) &&
+			model.toString('arr') == model.serialize(arr) && 
+			model == model.serialize({num: 1, obj: obj, arr: arr, bool: true, "null": null}) // важен порядок, как при сохранении в модель
+			,
+			'Проверка на присваивание значений разных типов при помощи model("chain", value)'
+		);
+		
+		model('test', test)
+		model(data, 'safe');
+		ok(
+			model('hello') === data.hello &&
+			model.toString('world') === model.serialize(data.world) &&
+			model('test') === test // old value was not affected
+			,
+			'Передача объекта со списком свойств заменяет несколько вызовов model("chain", value), при этом третий аргумент mode смещается на вторую позицию'
+		);
+		
+		model('obj.x', function( value, params )
+		{
+			ok(
+				this == model &&
+				value == params.value && // для простых типов
+				params.prop == 'x' &&
+				params.chain == 'obj.x' &&
+				model.serialize(params.parent) == model.toString('obj') &&
+				model.serialize(value) == model.toString(params.chain)
+				,
+				'При использовании callback-функции в качестве значения цепочки в модели, первым аргументом внутри неё будет текущее значение цепочки, второй аргумент - набор параметров'
+			);
+			return Math.random();
+		});
+	});

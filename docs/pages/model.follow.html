@@ -45,6 +45,13 @@
 <code dependent-on="model">
 	model.follow('name.first', function(value, params)
 	{
+        // this == model
+        // params.parent == объект model('name')
+        // params.chain == 'name.first'
+        // params.prop == 'first'
+        // params.value.current == value == this(params.chain)
+        // params.value.prev == предыдущее значение или undefined
+        
 		alert([
 			value,
 			JSON.stringify(params, null, 3)
