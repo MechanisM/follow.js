@@ -69,15 +69,17 @@
 									typeof current != 'object' ? current : __.clone(current),
 									extend({ value: current }, params)
 								])
-								: value;
+								: value,
+							deleting = new_value === undefined;
 						
 						// conditions
+						( !mode.if_not_defined || not_defined ) &&
+						(( deleting && !not_defined ) || !deleting) &&
 						(
 							( __.toJSON(chain) !== serialize(new_value) ) ||
 							( new_value === null && not_defined ) || 
 							( mode.is_forced )
 						) &&
-						( !mode.if_not_defined || not_defined ) && 
 						
 						// actions
 						function()

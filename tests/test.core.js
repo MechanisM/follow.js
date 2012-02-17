@@ -52,7 +52,7 @@ module('follow.core.js');
 	test('model.extend([deep], object, source1[, source2, sourceN])', function()
 	{
 		var 
-			model = Follow(),
+			model = Follow('[model.extend]'),
 			x = {
 				a: 1,
 				b: [2,3],
@@ -91,8 +91,8 @@ module('follow.core.js');
 	
 	test('model.clone(obj)', function()
 	{
+		var model = Follow('[model.clone]');
 		var data = {x: Math.random(), y: 'Hello world', z: [1,2,3]};
-		var model = Follow();
 		var clone = model.clone(data);
 		ok(
 			data !== clone &&
@@ -104,15 +104,16 @@ module('follow.core.js');
 	
 	test('model.init([defaults])', function()
 	{
-		var storage = { model: '{"x": 1, "y": '+ Math.random() +'}' };
-		var model = Follow('model', storage, true);
+		var storage = { "model_json": '{"x": 1, "y": '+ Math.random() +'}' };
+		var model = Follow("model_json", storage, true);
 		
 		ok(model.toString() == '{}', 'При вызове конструктора Follow с третьим аргументом clean=true JSON модели равен {}');
 		
 		model.init();
 		
-		ok(
-			model.serialize(JSON.parse(storage.model)) == model.toString()
+		equal(
+			model.toString(),
+			storage["model_json"]
 			,
 			'При вызове model.init восстанавливает данные модели (если они уже хранились в storage[modelName]'
 		);
@@ -240,4 +241,18 @@ module('follow.core.js');
 			);
 			return Math.random();
 		});
+		
+		model('hello', undefined);
+		ok(
+			model('hello') === null &&
+			model().hello === undefined
+			,
+			'Удалить цепочку из модели можно путем присвоения ей значения undefined'
+		);
 	});
+
+
+
+
+
+
