@@ -208,27 +208,150 @@ module('follow.extend.js');
 			,
 			'Чтобы удалить слушателей для множества цепочек, указанного в виде регулярного выражения, необходимо передать аналогичное выражение или строку первым аргументом'
 		);
+
+		ok(
+			model.unfollow('my.chain') === model,
+			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
 	});
 	
+	
+	test('model.toJSON([chain])', function()
+	{
+		var model = Follow('[model.toJSON]');
+		model({
+			x: Math.random(),
+			y: [1, 2, "3", null, {z: true}, false, ['test']]
+		});
+		
+		ok(
+			model.toString() == model.toJSON() &&
+			model.toString('y') == model.toJSON('y')
+			,
+			'Метод model.toJSON является алиасом для model.toString, следовательно, поведение этих методов должно быть идентично'
+		);
+	});
+	
+	
+	test('model.dispatch(chain, [data], [filter])', function()
+	{
+		var model = Follow('[model.dispatch]');
+		var test = [];
+		var callbacks = {
+			1: function(){ test.push('one') },
+			2: function(){ test.push('two') }
+		};
+		
+		model({ 
+			x: ['one', 'two', 3],
+			y: 'test'
+		});
+		
+		model
+			.follow('x.0', function( value, params )
+			{
+				ok(
+					value === 'one' &&
+					params.chain === 'x.0' && 
+					params.prop === '0' &&
+					this.serialize(params.parent) == this.toJSON('x')
+					,
+					'Ручной вызов колбэков без перегрузки параметров работает корректно'
+				);
+			})
+			.dispatch('x.0');
+		
+		model
+			.follow('x.1', function( value, params )
+			{
+				ok(
+					value === 'test' &&
+					params.chain === 'test' && 
+					params.prop === '1' &&
+					params.parent[1] === 'test'
+					,
+					'Ручной вызов слушателей с перегрузкой параметров работает корректно'
+				);
+			})
+			.dispatch('x.1', ['test', {chain: 'test'}]);
+		
+		
+		model
+			.follow('y', callbacks[1])
+			.follow('y', callbacks[2]);
+		
+		model.dispatch('y', [], 3); // callback with index "3" not exists
+		model.dispatch('y', [], 1); // second callback, gives "two"
+		model.dispatch('y', [], callbacks[1]);
+		model.dispatch('y');
+		
+		ok(
+			test.join(' ') == 'two one one two',
+			'Возможность фильтрации колбэков по ссылкам на колбэки или порядковым индексам работает корректно'
+		);
 
+		ok(
+			model.dispatch('my.chain') === model,
+			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
+	});
+	
+	
+	test('model.composite(chain, callback, [sensible])', function()
+	{
+		var model = Follow('[model.composite]');
+		model({
+			name: {
+				first: 'Alex',
+				last: 'Wilson'
+			}
+		});
+		
+		var times = 0;
+		model.composite('fullName', function( params ) {
+			times++;
+			return this('name.first') +" "+ this('name.last');
+		});
+		
+		model('name.first', 'Joe');
+		model('name.last', 'Black');
+		
+		ok(
+			times === 3 &&
+			model('fullName') == 'Joe Black'
+			,
+			'Простые составные свойства модели обновляются корректно, при изменении зависимых частей'
+		);
+		
+		model.composite('fullName', false);
+		model('name.first', 'Alice');
+		ok(
+			model('fullName') == 'Joe Black' &&
+			model('name.first') == 'Alice'
+			,
+			'Удаление отслеживания зависимостей для составных цепочек модели работает корректно'
+		);
+		
+		model('numbers', [1,2,3]);
+		model.composite('summ', function()
+		{
+			var 
+				summ = 0,
+				numbers = this('numbers') || [];
+			numbers.forEach(function( num ){ summ += num });
+			return summ;
+		}, true);
+		
+		model('numbers.3', 4);
+		ok(
+			model('summ') === 10,
+			'Сложные составные свойства с использованием третьего аргумента sensible=true, работают корректно'
+		);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		ok(
+			model.composite('my.chain', function(){ return 'test' }) === model,
+			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
+	});
 
 
