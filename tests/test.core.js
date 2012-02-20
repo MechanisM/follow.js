@@ -109,13 +109,15 @@ module('follow.core.js');
 		
 		ok(model.toString() == '{}', 'При вызове конструктора Follow с третьим аргументом clean=true JSON модели равен {}');
 		
-		model.init();
+		var init = model.init();
 		
-		equal(
-			model.toString(),
-			storage["model_json"]
-			,
-			'При вызове model.init восстанавливает данные модели (если они уже хранились в storage[modelName]'
+		ok(
+			init === model,
+			'Метод должен возвращать ссылку на модель'
+		);
+		ok(
+			model.toString() === storage["model_json"],
+			'При вызове model.init восстанавливает данные модели (если они уже хранились в storage["my_model_name"]'
 		);
 	});
 	

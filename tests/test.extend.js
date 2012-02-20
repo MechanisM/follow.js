@@ -147,6 +147,88 @@ module('follow.extend.js');
 		});
 		model('test.1.hello', 'world');
 		
+		ok(
+			model.follow('test', function(){}) === model,
+			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
+		
+		var test = [];
+		model
+			.follow('xxx', function(v){ test.push(2) })
+			.follow('xxx', function(v){ test.push(1) })
+			;
+		model('xxx', 'test');
+		ok(
+			test[0] === 2 && test[1] === 1,
+			'Последовательность срабатывания колбэков работает корректно'
+		);
 	});
 	
+	
+	test('model.unfollow(chain, [callback])', function()
+	{
+		var model = Follow('[model.unfollow]');
+		var callback = function( value ){ test.push(value) };
+		var callback2 = function( value ){ test.push(value + value) };
+		var callback3 = function( value ){ test2.push(value) };
+		var test = [];
+		var test2 = [];
+		var matcher = /x\.\d+/;
+		
+		model
+			.follow('my.data hello', callback)
+			.follow('hello', callback)
+			.follow('my.data', callback2)
+			.follow(matcher, callback3)
+			;
+		
+		model.unfollow('hello');
+		model('hello', 'test');
+		ok(
+			test.length == 0,
+			'Удаление всех колбэков для указанной цепочки работает корректно'
+		);
+		
+		model.unfollow('my.data', callback);
+		model('my.data', 10);
+		ok(
+			test[0] === 20 
+			&& test.length == 1
+			,
+			'Выборочное удаление коллбэков работает корректно'
+		);
+		
+		model('x.1', 1);
+		model.unfollow('/x\\.\\d+/');
+		model('x.1', 2);
+		
+		ok(
+			test2[0] === 1 &&
+			test2.length == 1
+			,
+			'Чтобы удалить слушателей для множества цепочек, указанного в виде регулярного выражения, необходимо передать аналогичное выражение или строку первым аргументом'
+		);
+	});
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
