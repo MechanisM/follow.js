@@ -353,5 +353,93 @@ module('follow.extend.js');
 			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
 		);
 	});
+	
+	
+	test('model.clear([path], [all])', function()
+	{
+		var model = Follow('[model.clear]');
+		var test = [];
+		var test2 = [];
+		var data = {
+			title: 'Hello world',
+			points: [{x: 0}, {x: 1}, {y: 2}]
+		};
+		
+		model(data);
+		model
+			.follow('title', function( value ){
+				test.push( value );
+			})
+			.follow(/points\.\d+/, function(){
+				test.push('test');
+			});
+		
+		model.clear('title');
+		ok(
+			model('title') === null &&
+			test[0] === undefined
+			,
+			'Удаление данных модели для определенной цепочки, аналогично model("chain", undefined)'
+		);
+		
+		model('title', 123);
+		ok(
+			test[1] === 123,
+			'Очистка модели без второго аргумента all=true не затрагивает слушателей от model.follow и model.composite'
+		);
+		
+		model('test', Math.random());
+		model.clear();
+		ok(
+			model.toJSON() == '{}' &&
+			model.storage[ model.modelName ] === undefined
+			,
+			'Вызов метода без каких-либо аргументов очищает все данные модели, таким образом строковое представление модели (JSON) удаляется из объекта-хранилища'
+		);
+		
+		model(data);
+		model
+			.composite('greeting', function(){
+				return this('title') + '!';
+			})
+			.follow('greeting', function( value ){
+				test2.push(value);
+			});
+		
+		model.clear('greeting', true);
+		model('title', 'Yo');
+		
+		ok(
+			model('greeting') === null &&
+			test2.length == 0
+			,
+			'Вызов метода при передаче второго аргумента all=true также очищает все колбэки от model.follow и model.composite для данной цепочки'
+		);
+		
+		test = [];
+		model.clear(false, true);
+		model('title', 'test');
+		
+		ok(
+			test.length == 0 &&
+			model.toJSON() == model.serialize({title: 'test'})
+			,
+			'Чтобы очистить модель полностью от данных и всех слушателей, необходимо вызвать метод с аргументами [false, true]'
+		);
 
+		ok(
+			model.clear() === model,
+			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
+	});
+	
+	
+	test('model.backup([name]), model.restore([key])', function()
+	{
+	});
+	
+	
+	test('model.merge(data)', function()
+	{
+	});
 

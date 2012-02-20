@@ -3,7 +3,7 @@
  * Core of the library.
  */
  
-(function( global )
+(function()
 {
 	var 
 		models = {},
@@ -177,6 +177,7 @@
 	function serialize( obj ){ return JSON.stringify( obj, null, "\t") }
 	function array( obj ){ return [].slice.call(obj) }
 	function clone( obj ){ return JSON.parse( JSON.stringify(obj) ); }
+	function type( obj ){ return Object.prototype.toString.call( obj ) }
 	
 	function extend( deep, source )
 	{
@@ -199,7 +200,8 @@
 					var 
 						current = source[i],
 						value = obj[i],
-						simple = value == null || String(typeof value).match(/string|number|boolean/),
+						is_empty = current == null,
+						simple = ! type(value).match(/\[object (Array|Object)\]/),
 						copycat = [true, source[i], value]
 						;
 					
@@ -209,10 +211,17 @@
 						copycat.push(callback, path)
 					}
 					
-					current == null || simple || !is_deep
-						? (source[i] = value)
-						: extend.apply(this, copycat)
-						;
+					if( simple || !is_deep ) source[i] = value;
+					else if( is_deep )
+					{
+						if( is_empty || typeof current != 'object' ){
+							copycat[1] = value instanceof Array ? [] : {};
+							source[i] = extend.apply(this, copycat);
+						}
+						else {
+							extend.apply(this, copycat)
+						}
+					}
 				}
 			}
 		});
@@ -221,10 +230,10 @@
 	}
 	
 	Follow.extend = function() {
-		extend.apply(null, [true].concat(this.prototype, array(arguments)));
+		extend.apply(this, [true].concat(this.prototype, array(arguments)));
 	};
 	
-	// exports to the global scope
-	global.Follow = Follow;
-}( this ));
+	// export to the global scope
+	this.Follow = Follow;
+}());
 

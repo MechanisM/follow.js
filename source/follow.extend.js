@@ -54,7 +54,7 @@ Follow.extend(
 		{
 			if( path )
 			{
-				var index, depend = this.dependency;
+				var depend = this.dependency;
 				
 				delete this.followers[path];
 				delete depend.composite[path];
