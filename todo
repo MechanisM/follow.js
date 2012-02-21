@@ -1,7 +1,6 @@
 
 TODO
 
-    * покрыть тестами функционал библиотеки ( http://docs.jquery.com/QUnit )
     * пощупать jsonselect.org на предмет возможной интеграцией в маппинг (follow.mapper.js)
 
     Коллекции

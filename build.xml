@@ -8,16 +8,16 @@
 
 		<concat destfile="${output}">
 			<filelist files="header" />
-			<filelist dir="source/external">
-				<file name="json2.js"/>
-			</filelist>
 			<filelist dir="source">
+				<file name="external/json2.js"/>
 				<file name="follow.ecma.js"/>
 				<file name="follow.core.js"/>
 				<file name="follow.extend.js"/>
+				<file name="follow.wrappers.js"/>
+			</filelist>
+			<filelist dir="source">
 				<file name="follow.mapper.js"/>
 				<file name="follow.helper.js"/>
-				<file name="follow.wrappers.js"/>
 			</filelist>
 			<filelist dir="source/addons">
 				<file name="follow.collector.js"/>
