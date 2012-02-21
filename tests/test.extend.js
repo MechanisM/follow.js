@@ -436,10 +436,119 @@ module('follow.extend.js');
 	
 	test('model.backup([name]), model.restore([key])', function()
 	{
+		var model = Follow('[model.backup, model.restore]');
+		var test = [];
+		var data = {
+			message: 'Ping? Pong!',
+			data: {
+				position: ["auto", "auto", 'bottom', 'left']
+			}
+		};
+		
+		model(data);
+		model.backup();
+		
+		ok(
+			model.backups instanceof Array,
+			'Внутренний объект модели model.backups является хранилищем всех будущих бэкапов модели и ссылок на слушателей'
+		);
+		
+		model
+			.follow('message', function( value ){
+				test.push(value)
+			})
+			.composite('data.mirror', function( params ){
+				return this('data.position').reverse();
+			})
+			.backup('test');
+		
+		ok(
+			model.backups.length == 2 &&
+			model.backups['test']
+			,
+			'Сохранение бэкапов работает корректно'
+		);
+		
+		model.restore(0); // get first by index
+		model('message', 'hello');
+		model('data.position', [1,2,3,4]);
+		
+		ok(
+			test.length == 0 &&
+			model('data.mirror') === null
+			,
+			'Восстановление бэкапа по индексу работает корректно'
+		);
+		
+		model.restore('test'); // get backup by id
+		model('message', 'cool');
+		model('data.position', [10,20]);
+		
+		ok(
+			test.length == 1 &&
+			test[0] === 'cool' &&
+			model('data.mirror').join('-') == '20-10'
+			,
+			'Второе восстановление модели по ключу (named id) работает корректно' 
+		);
+		
+		ok(
+			model.backup() === model &&
+			model.restore() === model
+			,
+			'Методы должны возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
 	});
 	
 	
 	test('model.merge(data)', function()
 	{
-	});
+		var model = Follow('[model.merge]');
+		var test = [];
+		var data = {
+			x: true,
+			y: {
+				y1: "One",
+				y2: "Two"
+			},
+			z: [1,2,3]
+		};
+		var branch = {
+			x: false,
+			y: {
+				y3: "Three"
+			},
+			z: [4]
+		};
+		
+		model(data);
+		model
+			.follow('y', function( value, params )
+			{
+				test.push({
+					chain: params.chain,
+					value: value
+				});
+			}, 'children')
+			.composite('max_int', function()
+			{
+				return Math.max.apply(this, this('z'));
+			}, true);
 
+		model.merge(branch);
+		
+		ok(
+			test.length == 1 &&
+			test[0].chain == 'y.y3' &&
+			test[0].value == 'Three' &&
+			model('max_int') === 4 &&
+			model.toJSON() == model.serialize( model.extend(true, {}, data, branch, {max_int: 4}) )
+			,
+			'Слияние модели с новыми данными работает корректно'
+		);
+		
+		ok(
+			model.merge({}) === model,
+			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
+		);
+	});

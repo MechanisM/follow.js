@@ -284,23 +284,18 @@ Follow.extend(
 			};
 	},
 	
-	merge: function( model )
+	merge: function( data )
 	{
 		var 
-			branch = this.constructor('merge'),
-			chains = [];
+			model = this,
+			branch = this.constructor('data', {
+				data: this.serialize(data)
+			});
 		
-		branch(model);
-		this.extend(true, {}, model, function( chain ){
-			chains.push(chain);
-		});
-		
-		chains.forEach(function( chain )
-		{
+		this.extend(true, {}, data, function( chain ) {
 			var value = branch(chain);
-			(typeof value != 'object' || value === null) && this(chain, value);
-		}, this);
-		branch.clear();
+			(typeof value != 'object' || value === null) && model(chain, value);
+		});
 		
 		return this;
 	}
