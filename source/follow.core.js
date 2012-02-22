@@ -45,8 +45,17 @@
 					if( prop && parent[prop] !== undefined ){
 						parent = parent[prop];
 					}
-					else return null;
+					else {
+						parent = null;
+						break;
+					}
 				}
+				
+				var type = gettype(parent);
+				if( __.__get[type] ){
+					parent = __.get[type].apply(__, [parent, args]);
+				}
+				
 				return parent;
 			}
 		
@@ -70,7 +79,11 @@
 									extend({ value: current }, params)
 								])
 								: value,
+							type = gettype(value),
 							deleting = new_value === undefined;
+						
+						// preparation for different types
+						__.__set[type] && (new_value = __.__set[type].apply(__, [new_value, args]));
 						
 						// conditions
 						( !mode.if_not_defined || not_defined ) &&
@@ -121,7 +134,7 @@
 				return __;
 			}
 			else if( args.length == 1 ) {
-				return __.__get(getter(), args);
+				return getter();
 			}
 			else if( args.length >= 2 ) {
 				setter();
@@ -146,12 +159,13 @@
 			backups: [],
 			wrappers: [],
 			
-			__hook: null,
-			__get: function( value ){ return value },
+			__set: {},
+			__get: {},
 			
 			extend: extend,
 			serialize: serialize,
 			clone: clone,
+			gettype: gettype,
 			
 			init: function( defaults ) {
 				this(json ? JSON.parse(json) : defaults || {});
@@ -177,7 +191,10 @@
 	function serialize( obj ){ return JSON.stringify( obj, null, "\t") }
 	function array( obj ){ return [].slice.call(obj) }
 	function clone( obj ){ return JSON.parse( JSON.stringify(obj) ); }
-	function type( obj ){ return Object.prototype.toString.call( obj ) }
+	function gettype( obj ){
+		var result = Object.prototype.toString.call( obj ).match(/\[object (\w+)\]/) || [];
+		return String(result[1]).toLowerCase();
+	}
 	
 	function extend( deep, source )
 	{
@@ -201,7 +218,7 @@
 						current = source[i],
 						value = obj[i],
 						is_empty = current == null,
-						simple = ! type(value).match(/\[object (Array|Object)\]/),
+						simple = ['array', 'object'].indexOf(gettype(value)) == -1,
 						copycat = [true, source[i], value]
 						;
 					

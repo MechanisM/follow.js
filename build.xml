@@ -14,10 +14,10 @@
 				<file name="follow.core.js"/>
 				<file name="follow.extend.js"/>
 				<file name="follow.wrappers.js"/>
+				<file name="follow.hooks.js"/>
 			</filelist>
 			<filelist dir="source">
 				<file name="follow.mapper.js"/>
-				<file name="follow.helper.js"/>
 			</filelist>
 			<filelist dir="source/addons">
 				<file name="follow.collector.js"/>

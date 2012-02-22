@@ -298,5 +298,57 @@ Follow.extend(
 		});
 		
 		return this;
+	},
+	
+	sizeof: function( chain )
+	{
+		var 
+			value = this(chain),
+			type = this.gettype(value),
+			size = 0;
+		
+		if( ['array', 'object'].indexOf(type) !== -1 ){
+			for(var i in value){
+				value.hasOwnProperty(i) && size++;
+			}
+		}
+		
+		return size;
+	},
+	
+	map: function( chain, callback, filter )
+	{
+		var 
+			value = this(chain),
+			type = this.gettype(value),
+			result = [];
+
+		if( ['array', 'object'].indexOf(type) !== -1 )
+		{
+			for(var key in value)
+			{
+				var 
+					item = value[key],
+					path = [chain, key].join('.'),
+					args = [item, key, path, value],
+					add = function(){ result.push(callback.apply(this, args)) }.bind(this);
+				
+				if( callback ){
+					!filter && add();
+					filter && filter.apply(this, args) && add();
+				}
+				else {
+					result.push({
+						key: key,
+						value: item
+					});
+				}
+			}
+		}
+		else {
+			result.push(value);
+		}
+		return result;
 	}
 });
+
