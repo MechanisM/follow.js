@@ -1,0 +1,56 @@
+<!-- Follow.js: model.map -->
+
+<h3 class="pre"><span class="array">data</span> model.map(
+    <span class="string">[chain]</span>,
+    <span class="function">[callback]</span>,
+    <span class="function">[filter]</span>
+)</h3>
+
+<p>
+	Метод <em>model.map</em> получает значение цепочки <em>chain</em> в модели и возвращает его в виде массива.<br />
+    В случае, если <em>model(chain)</em> не является объектом или массивом, то будет возвращен массив с единственным значением.<br />
+    Если второй аргумент опущен, то метод вернет массив из объектов вида <em>{"key": key, "value": value}</em> для всех свойств в объекте.<br />
+</p>
+<p>
+	Второй и третий аргументы - функции. Если <em>filter</em> возвращает <em>false, 0, NaN, "", null или undefined</em>, 
+    то результат выполнения <em>callback</em> не будет выполнен и его результат не попадет в результирующий массив.
+    Внутри данных функций доступны аргументы: <em>[value, property, chain, object]</em>.
+</p>
+
+<h3>Пример</h3>
+<code>
+    var model = Follow('sample', {});
+    
+    model({
+        numbers: [0, 1, 2, 3, 4, "5", "6", 7, 8, 9],
+        other: {
+            'one': {x: 1, y: Math.random()},
+            'two': {x: 1, y: Math.random()},
+            3: {x: 3, y: Math.random()},
+            4: {x: 4, y: Math.random()}
+        }
+    });
+    
+    alert(model.serialize(
+        model.map('other')
+    ));
+    
+    alert(model.serialize(
+        model.map('numbers', function( num ){ return num * 2 })
+    ));
+    
+    alert(model.serialize(
+        model.map(
+            'other', 
+            function( obj, prop, chain ) {
+                obj.chain = chain;
+                return obj;
+            },
+            function( obj, prop ) {
+                return Number(prop).toString() != 'NaN';
+            }
+        )
+    ));
+</code>
+
+<!-- <a href="#" class="next"></a> -->

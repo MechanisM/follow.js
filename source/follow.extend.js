@@ -303,7 +303,7 @@ Follow.extend(
 	sizeof: function( chain )
 	{
 		var 
-			value = this(chain),
+			value = arguments.length ? this(chain) : this(),
 			type = this.gettype(value),
 			size = 0;
 		
@@ -319,7 +319,7 @@ Follow.extend(
 	map: function( chain, callback, filter )
 	{
 		var 
-			value = this(chain),
+			value = arguments.length ? this(chain) : this(),
 			type = this.gettype(value),
 			result = [];
 

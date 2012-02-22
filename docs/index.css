@@ -68,10 +68,11 @@ xmp { line-height:150%; padding:0 1.5em 1.5em 0; }
 .code-comment,
 .code-comment * { color:gray !important; }
 
+.boolean:before { content:"(boolean) "; font-weight:normal; }
 .string:before { content:"(string) "; font-weight:normal; }
+.number:before { content:"(number) "; font-weight:normal; }
 .array:before { content:"(array) "; font-weight:normal; }
 .object:before { content:"(object) "; font-weight:normal; }
-.boolean:before { content:"(boolean) "; font-weight:normal; }
 .function:before { content:"(function) "; font-weight:normal; }
 .notext:before { content:""; }
 .mixed { font-weight:normal; }

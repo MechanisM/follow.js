@@ -16,12 +16,12 @@
 				<file name="follow.wrappers.js"/>
 				<file name="follow.hooks.js"/>
 			</filelist>
-			<filelist dir="source">
+			<!-- <filelist dir="source">
 				<file name="follow.mapper.js"/>
-			</filelist>
-			<filelist dir="source/addons">
+			</filelist> -->
+			<!-- <filelist dir="source/addons">
 				<file name="follow.collector.js"/>
-			</filelist>
+			</filelist> -->
 		</concat>
 		<yuicompress/>
 		

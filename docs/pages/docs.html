@@ -1,6 +1,6 @@
 <!-- Documentation -->
 
-<h3>Библиотека состоит из 5 основных частей</h3>
+<h3>Библиотека состоит из следующих частей</h3>
 <ol>
 	<li>
 		<strong>Ядро (follow.core.js)</strong> &mdash; 
@@ -11,18 +11,14 @@
 		основной набор методов для работы с моделью (follow, composite, итд.)
 	</li>
 	<li>
-		<strong>Расширение ECMA-262</strong> &mdash; поддержка обратной совместимости стандарта для старых браузеров. 
+		<strong>Расширение ECMA-262 (follow.ecma.js)</strong> &mdash; поддержка обратной совместимости стандарта для старых браузеров. 
 		Расширяет прототип <em>Array</em> методами <em>forEach, map, filter, some, every, indexOf</em>, а также реализует методы <em>String.trim()</em> и <em>Function.bind()</em>.
 		Более подробно об изменениях в JavaScript 1.6 можно почитать на <a href="https://developer.mozilla.org/en/JavaScript/New_in_JavaScript/1.6" target="_blank" title="Mozilla Development Network">MDN</a>.
 	</li>
-	<li>
+	<!-- <li>
 		<strong>Маппер для коллекций (<a href="#collections.mapper">follow.mapper.js</a>)</strong> &mdash; 
 		для дополнительного удобства выборки/обновления данных в массивах модели.
-	</li>
-	<li>
-		<strong>Хелпер для коллекций (<a href="#collections.helper">follow.helper.js</a>)</strong> &mdash;
-		также, как и маппер, облегчает работу с коллекциями в модели, перегружая стандартные методы <em>splice, push, pop, shift и unshift</em> для отслеживания изменений.
-	</li>
+	</li> -->
 </ol>
 
 <h3>Конструктор</h3>
@@ -43,6 +39,8 @@
 	<li><a href="#model.composite">model.composite(chain, callback, [sensible])</a></li>
 	<li><a href="#model.dispatch">model.dispatch(chain, [data], [filter])</a></li>
 	<li><a href="#model.merge">model.merge(data)</a></li>
+	<li><a href="#model.sizeof">model.sizeof(chain)</a></li>
+	<li><a href="#model.map">model.map(chain, [callback], [filter])</a></li>
 </ul>
 
 <h3>Дополнительно</h3>

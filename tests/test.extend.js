@@ -552,3 +552,65 @@ module('follow.extend.js');
 			'Метод должен возвращать ссылку на объект модели, возвращаемый классом Follow'
 		);
 	});
+	
+	
+	test('model.sizeof([chain])', function()
+	{
+		var model = Follow('[model.sizeof]');
+		var data = ['one', Math.random(), null, 0, false, NaN, ""];
+		model({
+			x: 1,
+			y: data,
+			z: {}
+		});
+		
+		ok(
+			model.sizeof() === 3 &&
+			model.sizeof('x') === 0 &&
+			model.sizeof('z') === 0 &&
+			model.sizeof('y') === data.length
+			,
+			'Подсчет количества свойств в объектах модели работает корректно'
+		);
+	});
+	
+	
+	test('model.map([chain], [callback], [filter])', function()
+	{
+		var model = Follow('[model.map]');
+		var callback = function( val ){ return val * 2 };
+		var data = {
+			x: 1,
+			y: [0,1,2,3,4,5],
+			z: {
+				1: {z: 1},
+				2: {z: 2},
+				3: {z: 4}
+			}
+		};
+		model(data);
+		
+		var all = model.map();
+		ok(
+			model.gettype(all) == 'array' &&
+			all.length === 3 &&
+			all.every(function( obj ){
+				return obj.hasOwnProperty('key') && obj.hasOwnProperty('value')
+			}),
+			'Преобразование объекта в массив работает корректно'
+		);
+		
+		ok(
+			model.map('y', callback).join('') == data.y.map(callback).join(''),
+			'Новые возвращаемые значения для callback корректны'
+		);
+		
+		ok(
+			model.map('z', 
+				function(obj){ return obj }, 
+				function(obj, key){ return key == obj.z }
+			).length == 2,
+			'Фильтрация данных работает правильно'
+		);
+	});
+

@@ -1,0 +1,33 @@
+<!-- Follow.js: model.sizeof -->
+
+<h3 class="pre"><span class="number">length</span> model.sizeof(
+    <span class="string">[chain]</span>
+)</h3>
+
+<p>
+	Метод возвращает количество свойств объекта или массива, находящего в цепочке <em>chain</em>.<br />
+    Если аргумент <em>chain</em> не был передан, то функция вернет количество верхних свойств модели.<br />
+    В случае, если <em>model(chain)</em> возвращает не объект, то <em>model.sizeof</em> вернет 0.
+</p>
+
+<h3>Пример</h3>
+<code>
+    var model = Follow('sample', {});
+    
+    model('test', {
+        x: 1,
+        y: "2",
+        z: ['Hello world']
+    });
+    
+    alert([
+        model.sizeof('test.x'),  // 0
+        model.sizeof('test'),    // 3
+        model.sizeof('test.z'),  // 1
+        model.sizeof()           // 1
+    ].join('\n'));
+    
+    alert(model);
+</code>
+
+<a href="#" class="next">model.map</a>
