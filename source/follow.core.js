@@ -3,7 +3,7 @@
  * Core of the library.
  */
  
-(function()
+(function( undefined )
 {
 	var 
 		models = {},
