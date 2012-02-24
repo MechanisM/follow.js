@@ -191,9 +191,14 @@
 	function serialize( obj ){ return JSON.stringify( obj, null, "\t") }
 	function array( obj ){ return [].slice.call(obj) }
 	function clone( obj ){ return JSON.parse( JSON.stringify(obj) ); }
-	function gettype( obj ){
-		var result = Object.prototype.toString.call( obj ).match(/\[object (\w+)\]/) || [];
-		return String(result[1]).toLowerCase();
+	function gettype( obj )
+	{
+		if( obj === null ) return 'null';
+		else if( obj === undefined ) return 'undefined';
+		else if( isNaN(obj) && obj.toString() == 'NaN' ) return 'NaN';
+		else return String(
+			(Object.prototype.toString.call( obj ).match(/\[object (\w+)\]/) || [])[1]
+		).toLowerCase();
 	}
 	
 	function extend( deep, source )
@@ -224,7 +229,7 @@
 					
 					if( callback ) {
 						var path = chain ? chain +'.'+ i : String(i);
-						callback(path);
+						callback(path, value, i);
 						copycat.push(callback, path)
 					}
 					
@@ -245,6 +250,14 @@
 		
 		return source;
 	}
+
+	Follow.utils = {
+		extend: extend,
+		serialize: serialize,
+		clone: clone,
+		type: gettype,
+		array: array
+	};
 	
 	Follow.extend = function() {
 		extend.apply(this, [true].concat(this.prototype, array(arguments)));
