@@ -18,6 +18,17 @@ Follow.utils.json_to_xml = function( json, return_xml_string )
 		utils = this,
 		xml = {
 			str: ['<model type="'+ this.type(json) +'">', '', '\n</model>'],
+			prop: {
+				open: function( name, type, chain, value ){
+					return '<p name="'+ name +'" type="'+ type +'" path="'+ chain +'"'+ value +'>'
+				},
+				close: function( level ){
+					while( --level > 1 ) xml.str[1] += this.offset( level ) + '</p>';
+				},
+				offset: function( level ){
+					return '\n' + Array( level ).join('\t');
+				}
+			},
 			doc: null
 		},
 		regexp = {
@@ -25,26 +36,24 @@ Follow.utils.json_to_xml = function( json, return_xml_string )
 			quote: /"/g
 		};
 	
-	var level = 1;
+	var _level = 1;
 	this.extend(true, {}, json, function( chain, value, name )
 	{
 		var 
-			_type = utils.type( value ),
-			_level = (chain.match(regexp.level) || []).length + 2,
-			_offset	= '\n' + Array( _level ).join('\t'),
-			is_object = ['array', 'object'].indexOf( _type ) !== -1,
-			value = ! is_object ? ' value="'+ String(value).replace(regexp.quote, '\\"') +'"/' : '',
-			property = {
-				opentag: '<p name="'+ name +'" type="'+ _type +'" path="'+ chain +'"'+ value +'>',
-				closetag: '</p>'
-			};
+			type = utils.type( value ),
+			level = (chain.match(regexp.level) || []).length + 2,
+			offset	= xml.prop.offset(level),
+			is_object = ['array', 'object'].indexOf( type ) !== -1,
+			value = ! is_object ? ' value="'+ String(value).replace(regexp.quote, '\\"') +'"/' : '';
 		
-		if( level > _level ) xml.str[1] += _offset + property.closetag;
-		xml.str[1] += _offset + property.opentag;
-		level = _level;
+		_level > level && xml.prop.close(_level);
+		_level = level;
+		xml.str[1] += offset + xml.prop.open(name, type, chain, value);
 	});
 	
+	_level > 1 && xml.prop.close(_level);
 	xml.str = xml.str.join('');
+	
 	return (
 		return_xml_string ? xml.str : this.parse_xml(xml.str)
 	);
