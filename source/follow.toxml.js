@@ -2,44 +2,8 @@
  * Follow.js
  * Convertor JSON to XML.
  */
-// Sample:
-//
-//	{
-//		a: 1,
-//		b: "2",
-//		c: null,
-//		d: true,
-//		e: [
-//			"first", 
-//			2, 
-//			"third"
-//		],
-//		f: {
-//			1: {1:1, 2:2},
-//			2: "test"
-//		}
-//	}
-//	
-//	<model type="object">
-//		<p name="a" type="number" value="1" path="a"/>
-//		<p name="b" type="string" value="2" path="b"/>
-//		<p name="c" type="null" value="null" path="c"/>
-//		<p name="d" type="boolean" value="true" path="d"/>
-//		<p name="e" type="array" path="e">
-//			<p name="0" type="string" value="first" path="e.0"/>
-//			<p name="1" type="number" value="2" path="e.1"/>
-//			<p name="2" type="string" value="third" path="e.2"/>
-//		</p>
-//		<p name="f" type="object" path="f">
-//			<p name="1" type="object" path="f.1">
-//				<p name="1" type="number" value="1" path="f.1.1"/>
-//				<p name="2" type="number" value="2" path="f.1.2"/>
-//			</p>
-//			<p name="2" type="string" value="test" path="f.2"/>
-//		</p>
-//	</model>
 
-Follow.JSON_to_XML = function( json, return_xml_string )
+Follow.utils.json_to_xml = function( json, return_xml_string )
 {
 	if( typeof json == "string" ){
 		try {
@@ -51,9 +15,9 @@ Follow.JSON_to_XML = function( json, return_xml_string )
 	}
 	
 	var 
-		type = this.utils.type,
+		utils = this,
 		xml = {
-			str: ['<model type="'+ type(json) +'">', '', '\n</model>'],
+			str: ['<model type="'+ this.type(json) +'">', '', '\n</model>'],
 			doc: null
 		},
 		regexp = {
@@ -62,10 +26,10 @@ Follow.JSON_to_XML = function( json, return_xml_string )
 		};
 	
 	var level = 1;
-	this.utils.extend(true, {}, json, function( chain, value, name )
+	this.extend(true, {}, json, function( chain, value, name )
 	{
 		var 
-			_type = type( value ),
+			_type = utils.type( value ),
 			_level = (chain.match(regexp.level) || []).length + 2,
 			_offset	= '\n' + Array( _level ).join('\t'),
 			is_object = ['array', 'object'].indexOf( _type ) !== -1,
@@ -80,26 +44,32 @@ Follow.JSON_to_XML = function( json, return_xml_string )
 		level = _level;
 	});
 	
-	//alert( xml.str.join('') )
+	xml.str = xml.str.join('');
+	return (
+		return_xml_string ? xml.str : this.parse_xml(xml.str)
+	);
 };
 
-
-Follow.JSON_to_XML(
+Follow.utils.parse_xml = function( text )
 {
-    a: 1,
-    b: "2",
-    c: null,
-    d: true,
-    e: [
-        "first", 
-        2, 
-        "third"
-    ],
-    f: {
-        1: {1:1, 2:2},
-        2: "test"
-    },
-	g: 'last value'
-});
-
-
+	if (typeof DOMParser != "undefined") {
+		return (new DOMParser()).parseFromString(text, "text/xml");
+	}
+	else if(document.implementation || typeof ActiveXObject != "undefined")
+	{
+		var doc;
+		try { doc = document.implementation.createDocument(); }
+		catch(e){
+			doc = new ActiveXObject("MSXML2.DOMDocument");
+		}
+		doc.loadXML(text);
+		return doc;
+	}
+	else {
+		var url = "data:text/xml;charset=utf8," + encodeURIComponent(text);
+		var request = new XMLHttpRequest();
+		request.open("GET", url, false);
+		request.send(null);
+		return request.responseXML;
+	}
+};

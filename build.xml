@@ -15,7 +15,10 @@
 				<file name="follow.extend.js"/>
 				<file name="follow.hooks.js"/>
 				<file name="follow.wrappers.js"/>
-                <!-- <file name="follow.select.js"/> -->
+			</filelist>
+			<filelist dir="source">
+				<file name="follow.toxml.js"/>
+				<file name="follow.select.js"/>
 			</filelist>
 			<!-- <filelist dir="source/addons">
 				<file name="follow.collector.js"/>

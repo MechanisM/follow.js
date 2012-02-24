@@ -15,7 +15,9 @@ $files = array(
 	'follow.hooks.js',
 	'follow.wrappers.js',
 	
-	//'follow.select.js',
+	'follow.toxml.js',
+	'follow.select.js',
+	
 	'addons/follow.collector.js'
 );
 
