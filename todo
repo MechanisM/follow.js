@@ -1,7 +1,7 @@
 
 TODO
 
-    * пощупать jsonselect.org на предмет возможной интеграцией в маппинг (follow.mapper.js)
+    * JSONSelect.forEach (??), подумать над идеей JSON -> (XML + XPath) -> Results
     * переделать/починить демо
 
     XML-маппинг

@@ -11,11 +11,11 @@ $files = array(
 	
 	'follow.ecma.js',
 	'follow.core.js',
-	'follow.hooks.js',
 	'follow.extend.js',
+	'follow.hooks.js',
 	'follow.wrappers.js',
-	'follow.mapper.js',
 	
+	//'follow.select.js',
 	'addons/follow.collector.js'
 );
 

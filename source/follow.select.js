@@ -1,6 +1,6 @@
 /*!
  * Follow.js
- * Data-mapper for collections (arrays) in the model.
+ * Helper to easy find and update data in the model
  */
  
 Follow.extend(
