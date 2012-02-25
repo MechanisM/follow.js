@@ -3,7 +3,7 @@
  * Convertor JSON to XML.
  */
 
-Follow.utils.json_to_xml = function( json, return_xml_string )
+Follow.utils.json_to_xml = function( json, prefix_chain )
 {
 	if( typeof json == "string" ){
 		try {
@@ -15,9 +15,23 @@ Follow.utils.json_to_xml = function( json, return_xml_string )
 	}
 	
 	var 
+		prefix_chain = prefix_chain || '',
+		xml_content = ['<model type="'+ this.type(json) +'">', '', '\n', '</model>'];
+
+	if( prefix_chain )
+	{
+		var branch = Follow('slice', {});
+		branch( json );
+		json = branch( prefix_chain );
+		
+		xml_content[0] = '<slice context="'+ prefix_chain +'">';
+		xml_content[xml_content.length - 1] = '</slice>';
+	}
+	
+	var 
 		utils = this,
 		xml = {
-			str: ['<model type="'+ this.type(json) +'">', '', '\n</model>'],
+			str: xml_content,
 			prop: {
 				open: function( name, type, chain, value ){
 					return '<p name="'+ name +'" type="'+ type +'" path="'+ chain +'"'+ value +'>'
@@ -43,7 +57,8 @@ Follow.utils.json_to_xml = function( json, return_xml_string )
 			type = utils.type( value ),
 			level = (chain.match(regexp.level) || []).length + 2,
 			offset	= xml.prop.offset(level),
-			is_object = ['array', 'object'].indexOf( type ) !== -1;
+			is_object = ['array', 'object'].indexOf( type ) !== -1,
+			chain = prefix_chain ? prefix_chain +'.'+ chain : chain;
 			
 		if( is_object ){
 			var empty = true;
@@ -66,10 +81,13 @@ Follow.utils.json_to_xml = function( json, return_xml_string )
 	
 	_level > 1 && xml.prop.close(_level);
 	xml.str = xml.str.join('');
+	xml.doc = this.parse_xml(xml.str);
 	
-	return (
-		return_xml_string ? xml.str : this.parse_xml(xml.str)
-	);
+	return {
+		str: xml.str,
+		doc: xml.doc,
+		toString: function(){ return this.str }
+	};
 };
 
 Follow.utils.parse_xml = function( text )

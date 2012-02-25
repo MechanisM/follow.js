@@ -1,10 +1,6 @@
 
 TODO
-    * model.select(selector, [context_chain])
-    * model.select(regexp, callback, [context_chain])
-    
-    * тесты для model.select
-    * обновить доки для model.select и Follow.utils
+    * тесты и доки для model.select
     * обновить демо-примеры
 
     XML-маппинг

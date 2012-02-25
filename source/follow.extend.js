@@ -319,31 +319,36 @@ Follow.extend(
 	map: function( chain, callback, filter )
 	{
 		var 
-			value = arguments.length ? this(chain) : this(),
-			type = this.gettype(value),
+			value 
+				= typeof chain != 'object' 
+				? arguments.length ? this(chain) : this()
+				: chain,
+			type = this.constructor.utils.type(value),
+			is_object = ['array', 'object'].indexOf(type) !== -1,
 			result = [];
 
-		if( ['array', 'object'].indexOf(type) !== -1 )
+		if( is_object )
 		{
 			for(var key in value)
-			{
-				var 
-					item = value[key],
-					path = [chain, key].join('.'),
-					args = [item, key, path, value],
-					add = function(){ result.push(callback.apply(this, args)) }.bind(this);
-				
-				if( callback ){
-					!filter && add();
-					filter && filter.apply(this, args) && add();
+				if( value.hasOwnProperty(key) )
+				{
+					var 
+						item = value[key],
+						path = [chain, key].join('.'),
+						args = [item, key, path, value],
+						add = function(){ result.push(callback.apply(this, args)) }.bind(this);
+					
+					if( callback ){
+						!filter && add();
+						filter && filter.apply(this, args) && add();
+					}
+					else {
+						result.push({
+							key: key,
+							value: item
+						});
+					}
 				}
-				else {
-					result.push({
-						key: key,
-						value: item
-					});
-				}
-			}
 		}
 		else {
 			result.push(value);

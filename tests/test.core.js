@@ -83,7 +83,7 @@ module('follow.core.js');
 	{
 		var model = Follow('Setter API');
 		var obj = { x: 0, y: 0 };
-		var arr = [Math.random(), 1, "2", true, false, null, {zzz: 'Yo!'}, ['Hello world']];
+		var arr = [Math.random(), 1, "2", true, false, null, {zzz: 'Yo!'}, ['Hello world']].__hook(model);
 		var data = { hello: Math.random(), world: obj, test: 'hello world' };
 		var test = "just a string";
 		
@@ -141,7 +141,7 @@ module('follow.core.js');
 	
 	test('model.serialize(obj)', function()
 	{
-		var model = Follow();
+		var model = Follow('[model.serialize]');
 		var data = {x: 1, y: Math.random()};
 		model(data);
 		
@@ -233,7 +233,7 @@ module('follow.core.js');
 		var model = Follow();
 		var data = {
 			title: 'Just great!',
-			numbers: [1, "2", Math.random(), null]
+			numbers: [1, "2", Math.random(), null].__hook(model)
 		};
 		model(data);
 		
@@ -259,3 +259,9 @@ module('follow.core.js');
 			'Сериализации пути, который не существует в модели должен быть равен строке "null"'
 		);
 	});
+
+Array.prototype.__hook = function( model ){
+	return model.__set['array']
+		? model.__set['array'](this)
+		: this
+};

@@ -338,7 +338,7 @@ module('follow.extend.js');
 			var 
 				summ = 0,
 				numbers = this('numbers') || [];
-			numbers.forEach(function( num ){ summ += num });
+			model.map(numbers, function( num ){ summ += num });
 			return summ;
 		}, true);
 		
@@ -457,8 +457,11 @@ module('follow.extend.js');
 			.follow('message', function( value ){
 				test.push(value)
 			})
-			.composite('data.mirror', function( params ){
-				return this('data.position').reverse();
+			.composite('data.mirror', function( params )
+			{
+				return this.map('data.position', function(v){ return v })
+					.reverse()
+					.__hook(model);
 			})
 			.backup('test');
 		
@@ -487,7 +490,7 @@ module('follow.extend.js');
 		ok(
 			test.length == 1 &&
 			test[0] === 'cool' &&
-			model('data.mirror').join('-') == '20-10'
+			model.map('data.mirror', function(v){ return v }).join('-') == '20-10'
 			,
 			'Второе восстановление модели по ключу (named id) работает корректно' 
 		);
@@ -511,14 +514,14 @@ module('follow.extend.js');
 				y1: "One",
 				y2: "Two"
 			},
-			z: [1,2,3]
+			z: [1,2,3].__hook(model)
 		};
 		var branch = {
 			x: false,
 			y: {
 				y3: "Three"
 			},
-			z: [4]
+			z: [4].__hook(model)
 		};
 		
 		model(data);
@@ -532,7 +535,10 @@ module('follow.extend.js');
 			}, 'children')
 			.composite('max_int', function()
 			{
-				return Math.max.apply(this, this('z'));
+				return Math.max.apply(
+					this,
+					this.map('z', function(v){ return v })
+				);
 			}, true);
 
 		model.merge(branch);
