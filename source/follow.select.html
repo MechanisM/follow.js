@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Untitled Document</title>
+    <script type="text/javascript" src="../follow.inc.php"></script>
+    <script type="text/javascript">
+    	
+		var model = Follow();
+		model({
+			x: 1,
+			y: ['one', "test", "testing", 2, "3", 4, false],
+			z: {
+				1: "1",
+				2: 2,
+				x: {}
+			}
+		});
+		
+		document.write( '<xmp>'+ Follow.utils.json_to_xml(model(), true) +'</xmp>' );
+    
+    </script>
+</head>
+<body>
+	<!--
+        	css: model > *
+            xpath: /*/*
+
+       		css: *
+            xpath: /*//*
+            
+            css: [value]
+            xpath: /*//*[@value]
+            
+            css: [value = "1"]
+            xpath: /*//*[@value = "1"]
+       
+       		css: [name="z"] [name="x"]
+            xpath: /*//*[@name="z"]//*[@name="x"]
+
+       		css: [name="z"] > [name="x"]
+            xpath: /*//*[@name="z"]/*[@name="x"]
+        
+        	css: [name="x"], [name="y"]
+            xpath: /*//*[@name="x"] | /*//*[@name="y"]
+            
+            css: [value="1"][type="number"]
+            xpath: /*//*[@value = "1" and @type="number"]
+    -->
+</body>
+</html>

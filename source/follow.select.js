@@ -5,29 +5,31 @@
  
 Follow.extend(
 {
-	select: function( xpath, css )
+	select: function( css, xpath )
 	{
 		var 
 			model = this,
 			stack = [],
-			doc = Follow.utils.json_to_xml( model() );
+			doc = Follow.utils.json_to_xml( model() ),
+			ctx = doc.documentElement;
 		
 		// CSS selectors (needed to use it for the fucking IE9 that because it doesn't understand XPath)
 		if( css && doc.querySelectorAll ){
-			stack = [].slice.call(doc.querySelectorAll(css));
+			stack = [].slice.call(ctx.querySelectorAll(css));
 		}
 		// Try to use XPath
-		else {
+		else if( xpath )
+		{
 			if( document.evaluate ){
 				// W3C-browsers
-				var result = doc.evaluate( xpath, doc, null, XPathResult.ANY_TYPE, null );
+				var result = doc.evaluate( xpath, ctx, null, XPathResult.ANY_TYPE, null );
 				while( node = result.iterateNext() ) {
 					stack.push(node);
 				}
 			}
 			else {
 				// IE
-				var result = doc.documentElement.selectNodes(xpath);
+				var result = ctx.selectNodes(xpath);
 				for( var i = 0; i < result.length; i++ ) {
 					stack.push(result[i]);
 				}

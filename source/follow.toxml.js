@@ -43,8 +43,21 @@ Follow.utils.json_to_xml = function( json, return_xml_string )
 			type = utils.type( value ),
 			level = (chain.match(regexp.level) || []).length + 2,
 			offset	= xml.prop.offset(level),
-			is_object = ['array', 'object'].indexOf( type ) !== -1,
-			value = ! is_object ? ' value="'+ String(value).replace(regexp.quote, '\\"') +'"/' : '';
+			is_object = ['array', 'object'].indexOf( type ) !== -1;
+			
+		if( is_object ){
+			var empty = true;
+			for(var i in value) {
+				if( value.hasOwnProperty(i) ) {
+					empty = false;
+					break;
+				}
+			}
+			value = empty ? '/' : '';
+		}
+		else {
+			value = ' value="'+ String(value).replace(regexp.quote, '&quot;') +'"/';
+		}
 		
 		_level > level && xml.prop.close(_level);
 		_level = level;

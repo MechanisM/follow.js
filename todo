@@ -1,7 +1,11 @@
 
 TODO
-
-    * tests: model.select, fix: demo-samples
+    * model.select(/regexp/, callback)
+    * model.select('selector', 'context.chain')
+    
+    * тесты для model.select
+    * обновить доки для model.select и Follow.utils
+    * обновить демо-примеры
 
     XML-маппинг
     	* для коллекций, если список выбранных нод равен нулю, то не сохранять это свойство в модели вообще, вместо сохранения {}
