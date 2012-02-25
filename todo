@@ -1,7 +1,7 @@
 
 TODO
-    * model.select(/regexp/, callback)
-    * model.select('selector', 'context.chain')
+    * model.select(selector, [context_chain])
+    * model.select(regexp, callback, [context_chain])
     
     * тесты для model.select
     * обновить доки для model.select и Follow.utils

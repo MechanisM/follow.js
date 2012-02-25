@@ -36,11 +36,19 @@ Follow.extend(
 			}
 		}
 		
+		stack = stack.map(function( node ){
+			return {
+				name: node.getAttribute('name'),
+				type: node.getAttribute('type'),
+				path: node.getAttribute('path'),
+				value: node.getAttribute('value')
+			};
+		});
+		
 		this.extend(stack, {
 			update: function( value ){
 				this.forEach(function( node ) {
-					var chain = node.getAttribute('path');
-					model(chain, value);
+					model(node.path, value);
 				});
 			},
 			remove: function(){
