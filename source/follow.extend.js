@@ -300,18 +300,18 @@ Follow.extend(
 		return this;
 	},
 	
-	sizeof: function( chain )
+	sizeof: function( chain, deep )
 	{
 		var 
-			value = arguments.length ? this(chain) : this(),
-			type = this.gettype(value),
-			size = 0;
+			deep = chain === true || deep,
+			data = typeof chain == 'object'
+				? chain
+				: chain && chain !== true ? this(chain) : this(),
+			size = 0,
+			args = [deep, {}, data, function(){ size++ }];
 		
-		if( ['array', 'object'].indexOf(type) !== -1 ){
-			for(var i in value){
-				value.hasOwnProperty(i) && size++;
-			}
-		}
+		!deep && args.shift();
+		this.extend.apply(this, args);
 		
 		return size;
 	},

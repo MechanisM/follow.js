@@ -22,40 +22,48 @@ Follow.extend(
 		if( mode.selector )
 		{
 			var
-				selector = utils.css2xpath( actor ),
-				xml = utils.json_to_xml( data, ctx_chain ),
-				ctx = xml.doc/*.documentElement*/;
+				root = ctx_chain ? 'slice' : 'model',
+				selector = utils.css2xpath( actor, root ),
+				xmlstr = utils.json_to_xml( data, ctx_chain ),
+				xml = utils.parse_xml( xmlstr ),
+				ctx = xml.documentElement;
 			
 			// CSS selectors (note: ie9 doesn't understand XPath, but can use query selectors)
-			if( ctx.querySelectorAll ){
-				stack = [].slice.call(
-					ctx.querySelectorAll( selector.css )
-				);
+			if( ctx.querySelectorAll ) {
+				var expr = selector.css;
+				stack = utils.array(ctx.querySelectorAll( expr ));
 			}
 			// Try to use XPath
-			else if( document.evaluate ){
-				// W3C-browsers
-				var result = ctx.evaluate( selector.xpath, ctx, null, XPathResult.ANY_TYPE, null );
-				while( node = result.iterateNext() ) {
-					stack.push(node);
-				}
-			}
 			else {
-				// IE (6?-7-8)
-				var result = ctx.selectNodes( selector.xpath );
-				for( var i = 0; i < result.length; i++ ) {
-					stack.push(result[i]);
+				var expr = selector.xpath;
+				if( document.evaluate ){
+					// W3C-browsers
+					var result = ctx.evaluate(expr, ctx, null, XPathResult.ANY_TYPE, null );
+					while( node = result.iterateNext() ) {
+						stack.push(node);
+					}
+				}
+				else {
+					// IE (6?-7-8)
+					var result = ctx.selectNodes( expr );
+					for( var i = 0; i < result.length; i++ ) {
+						stack.push(result[i]);
+					}
 				}
 			}
 			
 			stack = stack.map(function( node ){
 				return {
+					node: node.nodeName,
 					name: node.getAttribute('name'),
 					type: node.getAttribute('type'),
 					path: node.getAttribute('path'),
 					value: node.getAttribute('value')
 				};
 			});
+			
+			// save for debug
+			stack.selector = expr;
 		}
 		
 		// Using regular expression mask to check all possible chain for update their values after
@@ -90,43 +98,45 @@ Follow.extend(
 
 // A converter of simple CSS-queries to analog in XPath-expressions
 // You can find samples in the "tests/test.select.js"
-Follow.utils.css2xpath = function( expr )
+Follow.utils.css2xpath = function( expr, root )
 {
 	var 
+		root = root || 'root',
 		expr = expr.trim(),
-		css = expr.replace(/^:root\b/, 'model'),
+		css = expr.replace(/(^:root)|((,\s*):root)/g, '$3'+ root),
 		xpath = expr
-		.replace(/^(:root[\s>]+)?(.*)$/, function($0, is_root, selector)
-		{
-			var prefix = !is_root ? './/' : '';
-			return prefix + selector
-				// merge conditions
-				// fix attribute prefix with @ and value quotes (if not exists)
-				.replace(/(\*?)((?:\[.+?\])+)/g, function( $0, node, conditions )
-				{
-					var 
-						prefix = !node ? '*' : node,
-						conditions = conditions
-							.replace(
-								/\[(\w+)(?:\s*=\s*("?)([^"]+)\2)?\]/g, 
-								function( $0, attr, has_quote, value, offset ) {
-									return '@' + attr + (value ? ' = "'+ value +'"' : '')+ ' and ';
-								}
-							)
-							.replace(/ and $/, '');
-					return prefix + '['+ conditions +']';
-				})
-				// selectors " ", ">" and union ","
-				.replace(/((?:\[.+?\])|\*)([\s,>]+)/g, function( $0, cond_before, selector )
-				{
-					var s = selector.trim();
-					return cond_before + (
-						(s == '' && '//') ||
-						(s == '>' && '/') ||
-						(s == ',' && ' | .//')
-					);
-				})
-		});
+			// merge conditions
+			// fix attribute prefix with @ and value quotes (if not exists)
+			.replace(/(\*?)((?:\[.+?\])+)/g, function( $0, node, conditions )
+			{
+				var 
+					prefix = !node ? '*' : node,
+					conditions = conditions
+						.replace(
+							/\[(\w+)(?:\s*=\s*("?)([^"]+)\2)?\]/g, 
+							function( $0, attr, has_quote, value, offset ) {
+								return '@' + attr + (value ? ' = "'+ value +'"' : '')+ ' and ';
+							}
+						)
+						.replace(/ and $/, '');
+				return prefix + '['+ conditions +']';
+			})
+			// selectors " ", ">" and union ","
+			.replace(/((?:\[.+?\])|\*)([\s,>]+)(:root)?/g, function( $0, cond_before, selector, is_root )
+			{
+				var s = selector.trim();
+				return cond_before + (
+					(s == '' && '//') ||
+					(s == '>' && '/') || 
+					(s == ',' && ' | '+ (is_root ? is_root : './/')) ||
+					''
+				);
+			})
+			.replace(/:root([\s>]*)/, function( $0, selector ){
+				var s = selector.trim();
+				return selector ? (s == '' ? './/' : './') : '';
+			})
+			.replace(/^\*/, './/*')
 		
 	return {
 		css: css,

@@ -1,6 +1,6 @@
 
 TODO
-    * тесты и доки для model.select
+	* доки для model.size, model.map, model.select
     * обновить демо-примеры
 
     XML-маппинг

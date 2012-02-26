@@ -3,7 +3,7 @@
  * Convertor JSON to XML.
  */
 
-Follow.utils.json_to_xml = function( json, prefix_chain )
+Follow.utils.json_to_xml = function( json, prefix )
 {
 	if( typeof json == "string" ){
 		try {
@@ -15,29 +15,29 @@ Follow.utils.json_to_xml = function( json, prefix_chain )
 	}
 	
 	var 
-		prefix_chain = prefix_chain || '',
-		xml_content = ['<model type="'+ this.type(json) +'">', '', '\n', '</model>'];
-
-	if( prefix_chain )
-	{
-		var branch = Follow('slice', {});
-		branch( json );
-		json = branch( prefix_chain );
-		
-		xml_content[0] = '<slice context="'+ prefix_chain +'">';
-		xml_content[xml_content.length - 1] = '</slice>';
-	}
-	
-	var 
+		prefix = prefix || '',
 		utils = this,
 		xml = {
-			str: xml_content,
+			str: [
+				(
+					! prefix
+					? '<model type="'+ this.type(json) +'">'
+					: '<slice path="'+ prefix +'">'
+				), 
+				'', '\n', 
+				(
+					! prefix
+					? '</model>'
+					: '</slice>'
+				)
+			],
 			prop: {
 				open: function( name, type, chain, value ){
 					return '<p name="'+ name +'" type="'+ type +'" path="'+ chain +'"'+ value +'>'
 				},
-				close: function( level ){
-					while( --level > 1 ) xml.str[1] += this.offset( level ) + '</p>';
+				close: function( max, min ){
+					var times = max - min;
+					while( times-- ) xml.str[1] += this.offset( --max ) + '</p>';
 				},
 				offset: function( level ){
 					return '\n' + Array( level ).join('\t');
@@ -58,7 +58,7 @@ Follow.utils.json_to_xml = function( json, prefix_chain )
 			level = (chain.match(regexp.level) || []).length + 2,
 			offset	= xml.prop.offset(level),
 			is_object = ['array', 'object'].indexOf( type ) !== -1,
-			chain = prefix_chain ? prefix_chain +'.'+ chain : chain;
+			chain = prefix ? prefix +'.'+ chain : chain;
 			
 		if( is_object ){
 			var empty = true;
@@ -74,20 +74,14 @@ Follow.utils.json_to_xml = function( json, prefix_chain )
 			value = ' value="'+ String(value).replace(regexp.quote, '&quot;') +'"/';
 		}
 		
-		_level > level && xml.prop.close(_level);
+		_level > level && xml.prop.close(_level, level);
 		_level = level;
 		xml.str[1] += offset + xml.prop.open(name, type, chain, value);
 	});
 	
-	_level > 1 && xml.prop.close(_level);
-	xml.str = xml.str.join('');
-	xml.doc = this.parse_xml(xml.str);
+	_level > 2 && xml.prop.close(_level, 2);
 	
-	return {
-		str: xml.str,
-		doc: xml.doc,
-		toString: function(){ return this.str }
-	};
+	return xml.str.join('');
 };
 
 Follow.utils.parse_xml = function( text )
