@@ -1,7 +1,7 @@
 <!-- Follow.js: model.map -->
 
 <h3 class="pre"><span class="array">data</span> model.map(
-    <span class="string">[chain]</span>,
+    <span class="mixed">(string | object)</span> [chain],
     <span class="function">[callback]</span>,
     <span class="function">[filter]</span>
 )</h3>
@@ -15,6 +15,9 @@
 	Второй и третий аргументы - функции. Если <em>filter</em> возвращает <em>false, 0, NaN, "", null или undefined</em>, 
     то результат выполнения <em>callback</em> не будет выполнен и его результат не попадет в результирующий массив.
     Внутри данных функций доступны аргументы: <em>[value, property, chain, object]</em>.
+</p>
+<p>
+	В качестве первого аргумента <em>chain</em> может выступать любой объект JS, не имеющий отношения к модели.
 </p>
 
 <h3>Пример</h3>
@@ -51,6 +54,13 @@
             }
         )
     ));
+    
+    alert(
+    	model.map(
+            {1: 'one', 'two': 2},
+            function(val, key){ return key }
+        )
+    );
 </code>
 
-<!-- <a href="#" class="next"></a> -->
+<a href="#" class="next">model.select</a>

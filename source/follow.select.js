@@ -31,6 +31,7 @@ Follow.extend(
 			// CSS selectors (note: ie9 doesn't understand XPath, but can use query selectors)
 			if( ctx.querySelectorAll ) {
 				var expr = selector.css;
+				expr == root && (ctx = xml);
 				stack = utils.array(ctx.querySelectorAll( expr ));
 			}
 			// Try to use XPath
@@ -104,7 +105,10 @@ Follow.utils.css2xpath = function( expr, root )
 		root = root || 'root',
 		expr = expr.trim(),
 		css = expr.replace(/(^:root)|((,\s*):root)/g, '$3'+ root),
-		xpath = expr
+		xpath 
+			= expr == ':root'
+			? '/' + root
+			: expr
 			// merge conditions
 			// fix attribute prefix with @ and value quotes (if not exists)
 			.replace(/(\*?)((?:\[.+?\])+)/g, function( $0, node, conditions )

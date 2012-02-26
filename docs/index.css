@@ -20,6 +20,7 @@ p + p { margin-top:1em; }
 .pre { white-space:pre; }
 .space { padding:.3em; }
 .space-left { padding-left:1em; }
+.space-top { margin-top:1em; }
 .main {
 	position:relative;
 	min-height:100%;
@@ -84,3 +85,6 @@ a.next { position:absolute; right:0; top:0; }
 a.next:after { content:" →"; }
 
 .run-code { position:absolute; right:0; top:0; margin:1em; cursor:pointer; width:16px; height:16px; background:url(images/exec.png) no-repeat; }
+.sandbox { text-align:center; }
+.sandbox * { width:30%; padding:.2em; font:inherit; }
+

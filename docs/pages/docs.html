@@ -15,10 +15,11 @@
 		Расширяет прототип <em>Array</em> методами <em>forEach, map, filter, some, every, indexOf</em>, а также реализует методы <em>String.trim()</em> и <em>Function.bind()</em>.
 		Более подробно об изменениях в JavaScript 1.6 можно почитать на <a href="https://developer.mozilla.org/en/JavaScript/New_in_JavaScript/1.6" target="_blank" title="Mozilla Development Network">MDN</a>.
 	</li>
-	<!-- <li>
-		<strong>Маппер для коллекций (<a href="#collections.mapper">follow.mapper.js</a>)</strong> &mdash; 
-		для дополнительного удобства выборки/обновления данных в массивах модели.
-	</li> -->
+	<li>
+		<strong>Поиск данных в модели (follow.select.js)</strong> &mdash; 
+		метод, использующий простые CSS-селекторы или регулярное выражение для обновления множества свойств модели, 
+        более подробно о нем написано на странице <a href="#">model.select</a>.
+	</li>
 </ol>
 
 <h3>Конструктор</h3>
@@ -41,6 +42,7 @@
 	<li><a href="#model.merge">model.merge(data)</a></li>
 	<li><a href="#model.sizeof">model.sizeof(chain)</a></li>
 	<li><a href="#model.map">model.map(chain, [callback], [filter])</a></li>
+	<li><a href="#model.select">model.select(selector, [ctx_chain])</a></li>
 </ul>
 
 <h3>Дополнительно</h3>

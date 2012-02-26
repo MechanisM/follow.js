@@ -1,13 +1,21 @@
 <!-- Follow.js: model.sizeof -->
 
 <h3 class="pre"><span class="number">length</span> model.sizeof(
-    <span class="string">[chain]</span>
+    <span class="mixed">(string | object)</span> chain,
+    <span class="boolean">[deep]</span>
 )</h3>
 
 <p>
 	Метод возвращает количество свойств объекта или массива, находящего в цепочке <em>chain</em>.<br />
     Если аргумент <em>chain</em> не был передан, то функция вернет количество верхних свойств модели.<br />
-    В случае, если <em>model(chain)</em> возвращает не объект, то <em>model.sizeof</em> вернет 0.
+    В случае, если <em>model(chain)</em> возвращает не объект, то <em>model.sizeof</em> вернет 0.<br />
+</p>
+<p>
+	Если указать второй аргумент <em>deep=true</em>, то подсчет будет включать также свойства внутренних объектов.<br />
+    Если необходимо опустить первый аргумент, то его можно пропустить и указать первым значением <em>true</em> (т.е <em>deep</em>).<br />
+</p>
+<p>
+	Данный метод можно использовать для подсчета свойств в любом JS-объекте, не имеющего отношения к модели, если передать его первым аргументом.
 </p>
 
 <h3>Пример</h3>
@@ -23,6 +31,7 @@
     alert([
         model.sizeof('test.x'),  // 0
         model.sizeof('test'),    // 3
+        model.sizeof(true),      // 5
         model.sizeof('test.z'),  // 1
         model.sizeof()           // 1
     ].join('\n'));
