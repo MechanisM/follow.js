@@ -5,30 +5,25 @@
 
 Follow.utils.json_to_xml = function( json, prefix )
 {
-	if( typeof json == "string" ){
-		try {
-			json = JSON.parse(json);
-		}
-		catch(e){
-			json = Function('return '+ json)();
-		}
-	}
+	prefix = prefix || '';
+	typeof json == "string" && (
+		json = typeof JSON == 'object'
+			? JSON.parse(json)
+			: Function('return '+ json)()
+	);
 	
 	var 
-		prefix = prefix || '',
 		utils = this,
 		xml = {
 			str: [
-				(
-					! prefix
-					? '<model type="'+ this.type(json) +'">'
-					: '<slice path="'+ prefix +'">'
+				( ! prefix
+				  ? '<model type="'+ this.type(json) +'">'
+				  : '<slice path="'+ prefix +'">'
 				), 
 				'', '\n', 
-				(
-					! prefix
-					? '</model>'
-					: '</slice>'
+				( ! prefix
+				  ? '</model>'
+				  : '</slice>'
 				)
 			],
 			prop: {
@@ -42,8 +37,7 @@ Follow.utils.json_to_xml = function( json, prefix )
 				offset: function( level ){
 					return '\n' + Array( level ).join('\t');
 				}
-			},
-			doc: null
+			}
 		},
 		regexp = {
 			level: /\./g,
