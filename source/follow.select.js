@@ -117,7 +117,7 @@ Follow.utils.css2xpath = function( expr, root )
 					prefix = !node ? '*' : node,
 					conditions = conditions
 						.replace(
-							/\[(\w+)(?:\s*=\s*("?)([^"]+)\2)?\]/g, 
+							/\[(\w+)(?:\s*=\s*("?)([^"]+?)\2)?\]/g, 
 							function( $0, attr, has_quote, value, offset ) {
 								return '@' + attr + (value ? ' = "'+ value +'"' : '')+ ' and ';
 							}

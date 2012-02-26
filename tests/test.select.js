@@ -78,8 +78,8 @@ module('follow.select.js');
 			'.//*[@value = "1"]'
 		);
 		equal(
-			selector('[value = 1][type = "number"]'), 
-			'.//*[@value = "1" and @type = "number"]'
+			selector('[value = test][type = number]'), 
+			'.//*[@value = "test" and @type = "number"]'
 		);
 		equal(
 			selector('[name="z"] [name="x"]'), 

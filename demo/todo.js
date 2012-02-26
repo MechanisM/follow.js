@@ -51,21 +51,24 @@ todo.follow('init', function()
 	this.ui.list.block
 		.delegate(':checkbox', 'click', function( evt )
 		{
-			var index = $(this).closest('li').index();
-			model(['list', index, 'completed'], function( value ){
-				return !value;
-			});
+			var value = $(this).is(':checked');
+			var chain = $(this).closest('li').attr('data-follow');
+			model
+				.select(/completed/, chain)
+				.update( value );
 		})
 		.delegate('.delete', 'click', function( evt )
 		{
-			var index = $(this).closest('li').index();
-			model('list').splice(index, 1);
+			var chain = $(this).closest('li').attr('data-follow');
+			model.clear(chain);
 		});
 	
 	this.ui.completed.clear
 		.click(function()
 		{
-			model.select('list', 'completed[=true]').remove(true);
+			model.map('list', function( item, index, chain ){
+				item.completed && model.clear(chain);
+			})
 			return false;
 		});
 
@@ -84,15 +87,66 @@ todo.follow('init', function()
 		{
 			if( this.value && evt.which == 13 )
 			{
-				model('list').unshift({
+				var 
+					last = model.map('list').pop() || {key: 0},
+					index = Number(last.key) + 1;
+				// add new one
+				model(['list', index], {
 					title: this.value,
 					completed: false
 				});
 				this.value = '';
 			}
 		});
-	
 }, 'once');
+
+// колбэк для первоначальной отрисовки элементов
+todo.follow('list', function( items, params )
+{
+	this.map(params.chain, function( item, index, chain )
+	{
+		this.dispatch( chain ); // добавление объектов в DOM
+		this.dispatch( chain +'.completed' ); // отмечаем выполненные задачи
+	});
+
+	this.follow('list', function( items )
+	{
+		var
+			left = this.select('[name=completed][value=false]', 'list').length,
+			completed = this.sizeof(items) - left;
+		this({
+			left: left,
+			completed: completed
+		});
+	}, 'sensible');
+}, 'once');
+
+// добавляем/удаляем элементы из документа
+todo.follow('list', function( item, params )
+{
+	var 
+		items = this.ui.list,
+		chain = params.chain;
+	// add
+	if( item )
+	{
+		items.elem
+			.clone(true)
+			.attr('data-follow', chain)
+			.find('.text').text( item.title ).end()
+			.appendTo(items.block)
+			.delay(10)
+			.slideDown('fast')
+	}
+	// remove
+	else {
+		items.block
+			.find('[data-follow = "'+ chain +'"]')
+			.slideUp('fast', function(){
+				$(this).remove();
+			});
+	}
+}, 'children');
 
 // обновляем информационные блоки
 todo.follow('completed left', function( value, params )
@@ -104,69 +158,13 @@ todo.follow('completed left', function( value, params )
 	info.count.text( value );
 });
 
-// колбэк для первоначальной отрисовки элементов
-todo.follow('list', function( items, params )
-{
-	items.forEach(function( item, index )
-	{
-		var 
-			chain = [params.chain, index].join('.'),
-			completed = [chain, 'completed'].join('.');
-		this.dispatch(chain);
-		this.dispatch(completed);
-	}, this);
-}, 'once');
-
-// триггер на любое изменение внутри list
-todo.follow('list', function( items )
-{
-	var
-		left = this.select('list', 'completed[=false]').length,
-		completed = items.length - left;
-	this('left', left);
-	this('completed', completed);
-}, 'sensible');
-
-// триггер на изменения элементов массива, т.е флаг "children" просто шорткат для /list\.\d+/
-todo.follow('list', function( item, params )
-{
-	var 
-		items = this.ui.list,
-		index = params.match[1];
-	
-	// add new one
-	if( item )
-	{
-		var 
-			prev = items.block[0].childNodes[index],
-			elem = items.elem
-				.find('.text').text(item.title).end()
-				.clone(true);
-		prev 
-			? elem.insertBefore(prev) 
-			: elem.appendTo(items.block);
-		elem
-			.delay(10)
-			.slideDown('fast');
-	}
-	// remove
-	else {
-		items.block
-			.find('li:eq('+ index +')')
-			.slideUp('fast', function(){
-				$(this).remove();
-			});
-	}
-}, 'children');
-
 // отмечаем задачу выполненной (зачеркнутой линией)
-todo.follow(/list\.(\d+)\.completed/, function( value, params )
+todo.follow(/^(list\.\d+)\.completed$/, function( value, params )
 {
-	var index = params.match[1];
+	var chain = params.match[1];
 	this.ui.list.block
-		.find('li:eq('+ index +')')
+		.find('[data-follow = "'+ chain +'"]')
 		.find('.text').toggleClass('completed', value).end()
 		.find(':checkbox').attr('checked', value);
 });
-
 

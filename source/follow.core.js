@@ -195,7 +195,7 @@
 	{
 		if( obj === null ) return 'null';
 		else if( obj === undefined ) return 'undefined';
-		else if( isNaN(obj) && obj.toString() == 'NaN' ) return 'NaN';
+		else if( isNaN(obj) && String(obj) == 'NaN' ) return 'NaN';
 		else return String(
 			(Object.prototype.toString.call( obj ).match(/\[object (\w+)\]/) || [])[1]
 		).toLowerCase();

@@ -2,66 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Follow.js: dependent observable (model.composite)</title>
+	<title>Follow.js: model.composite (dependent observable)</title>
 	<script type="text/javascript" src="common/jquery.min.js"></script>
-	<script type="text/javascript" src="../source/external/json2.js"></script>
-	<script type="text/javascript" src="../source/follow.ecma.js"></script>
-	<script type="text/javascript" src="../source/follow.core.js"></script>
-	<script type="text/javascript" src="../source/follow.extend.js"></script>
-	<script type="text/javascript" src="../source/follow.mapper.js"></script>
-	<script type="text/javascript" src="../source/follow.helper.js"></script>
-	<script type="text/javascript" src="../source/follow.wrappers.js"></script>
-	<!-- <script type="text/javascript" src="../follow.min.js"></script> -->
-	<script type="text/javascript">
-		$(function()
-		{
-			var model = Follow('sample');
-			
-			model
-				.follow('init', function()
-				{
-					this.ui = {
-						greeting: $('#greeting'),
-						name: {
-							first: $(':input[name="name.first"]'),
-							second: $(':input[name="name.second"]')
-						}
-					};
-					
-					this.ui.name.first
-						.add(this.ui.name.second)
-						.change(function(){
-							model(this.name, this.value);
-						});
-				}, 'once')
-				.dispatch('init');
-			
-			model('name', function(){
-				return {
-					first: this.ui.name.first.val(),
-					second: this.ui.name.second.val()
-				}
-			});
-			
-			model.follow('name.full', function( value )
-			{
-				this.ui.greeting
-					.toggle( !!value )
-					.text('Hello, '+ value);
-			});
-			
-			model.composite('name.full', function()
-			{
-				var name = this('name');
-				if( name.first && name.second ){
-					return [name.first, name.second].join(' ');
-				}
-			}, true);
-		});
-	</script>
+	<script type="text/javascript" src="../follow.min.js"></script>
+	<script type="text/javascript" src="composite.js"></script>
 </head>
 <body>
-		
 		<style type="text/css">
 			* { font:17px "Times New Roman", Times, serif; }
 			h2 { font-weight:bold; }
@@ -83,6 +29,5 @@
 			</div>
 			<div id="greeting" style="display:none"></div>
 		</div>
-
 </body>
 </html>
