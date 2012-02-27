@@ -13,14 +13,14 @@
 </p>
 <ol>
     <li class="space-top">
-    	<strong><em>actor</em> - регулярное выражение</strong>
+    	Первый аргумент (<em>actor</em>) - <strong>регулярное выражение</strong>
         <p>
             В этом случае поиск происходит по всем возможным цепочкам, которые существуют в модели.<br />
             Т.е для объекта модели <em>{x: true, y: ['test']}</em> будут проверены цепочки <em>"x", "y", "y.0"</em> на соответствие регулярному выражению.
         </p>
     </li>
     <li class="space-top">
-    	<strong><em>actor</em> - CSS-селектор</strong>
+    	Первый аргумент (<em>actor</em>) - <strong>CSS-селектор</strong>
         <p>
         	Чтобы иметь возможность использовать селекторы, JSON конвертируется в XML-объект.<br />
             Каждое свойство в JSON переводится в элемент <em>&lt;p name="" type="" path="" value=""/></em><br />
@@ -44,6 +44,11 @@
         </ul>
     </li>
 </ol>
+
+<br />
+<p>
+	Примеры использования метода model.select можно найти в файле с юнит тестами <a href="../tests/test.select.js">test.select.js</a>
+</p>
 
 <h3>JSON</h3>
 <code id="model">

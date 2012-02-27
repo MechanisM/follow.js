@@ -79,7 +79,7 @@
 									extend({ value: current }, params)
 								])
 								: value,
-							type = gettype(value),
+							type = gettype(new_value),
 							deleting = new_value === undefined;
 						
 						// preparation for different types

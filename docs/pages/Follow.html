@@ -3,7 +3,7 @@
 <h3 class="pre"><span class="function">model</span> Follow(
     <span class="string">[model]</span>, 
     <span class="object">[storage]</span>,
-    <span class="boolean">[clean]</span>
+    <span class="boolean">[clean=true]</span>
 )</h3>
 
 <p>
@@ -20,7 +20,10 @@
     </li>
     <li>
     	<span class="argument">clean</span>
-    	<span class="desc">булевое значение, очистить содержимое модели после инициализации, необходимо для отложенного вызова колбэков (см. пример ниже)</span>
+    	<span class="desc">
+        	в случае указания этого аргумента в значении <em>true</em> данные модели будут удалены из объекта-хранилища,
+            использование этого флага актуально тогда, когда <em>storage</em> - внешний JS-объект (см. примеры ниже)
+        </span>
     </li>
 </ol>
 
