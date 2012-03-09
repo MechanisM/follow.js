@@ -78,6 +78,7 @@ $(function()
 				{
 					content.html(text);
 					$(document).trigger('highlight');
+					window.scrollTo(0,0);
 				},
 				error: function( xhr, error, thrown ){
 					content.html(thrown);
