@@ -17,16 +17,18 @@
 		<ul id="todo_list">
 			<!-- in this example we will use <li> below as template -->
 			<li style="display:none;">
-				<label>
-					<input type="checkbox" name="mark" />
-					<span class="text"></span>
-				</label>
+				<input type="checkbox" name="mark" />
+				<span class="text"></span>
 				<i class="delete" title="Remove this item">(x)</i>
 			</li>
 		</ul>
 		<div class="info">
 			<p class="right" id="todo_completed">
-				<a href="#" class="clear">Clear <span class="completed-count">0</span> completed item<i class="suffix">s</i></a>
+                <span>&nbsp;|&nbsp;</span>
+				<a href="#" class="clear pseudo">Clear <span class="completed-count">0</span> completed item<i class="suffix">s</i></a>
+			</p>
+			<p class="right" id="todo_all">
+                <a href="#" class="clear_all pseudo">Clear All</a>
 			</p>
 			<p id="todo_left">
 				<span class="left-count">0</span> item<i class="suffix">s</i> left.

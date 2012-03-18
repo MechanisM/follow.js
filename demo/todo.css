@@ -14,6 +14,6 @@
 .todo .info p { margin:0; padding:0; }
 .todo .right { float:right; }
 .todo .completed { text-decoration:line-through; color:gray; }
-.todo .text { cursor:pointer; }
-.todo .clear { color:gray; text-decoration:none; border-bottom:1px dashed gray; }
-.todo .clear:hover { color:black; border-bottom-color:black; }
+.todo .text { outline:none !important; }
+.todo .pseudo { color:gray; text-decoration:none; border-bottom:1px dashed gray; }
+.todo .pseudo:hover { color:black; border-bottom-color:black; }

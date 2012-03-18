@@ -44,7 +44,8 @@ todo.follow('init', function()
 				var tmpl = $('#todo_list li').first();
 				tmpl.parent().empty(); // clear once
 				return tmpl;
-			}()
+			}(),
+			clear: $('#todo_all a.clear_all')
 		}
 	};
 	
@@ -62,6 +63,13 @@ todo.follow('init', function()
 			var chain = $(this).closest('li').attr('data-follow');
 			model.clear(chain);
 		});
+	
+	this.ui.list.clear.click(function()
+	{
+		if( confirm('Are you sure want to clear all entries?') ) {
+			model.select(/^list\.(\d+)$/).remove();
+		}
+	});
 	
 	this.ui.completed.clear
 		.click(function()
@@ -89,13 +97,15 @@ todo.follow('init', function()
 			{
 				var 
 					last = model.map('list').pop() || {key: 0},
-					index = Number(last.key) + 1;
+					index = Number(last.key) + 1,
+					title = this.value;
+					
+				this.value = '';
 				// add new one
-				model(['list', index], {
-					title: this.value,
+				model('list.' + index, {
+					title: title,
 					completed: false
 				});
-				this.value = '';
 			}
 		});
 }, 'once');
@@ -114,6 +124,7 @@ todo.follow('list', function( items, params )
 		var
 			left = this.select('[name=completed][value=false]', 'list').length,
 			completed = this.sizeof(items) - left;
+		
 		this({
 			left: left,
 			completed: completed
@@ -126,17 +137,27 @@ todo.follow('list', function( item, params )
 {
 	var 
 		items = this.ui.list,
-		chain = params.chain;
-	// add
-	if( item )
+		chain = params.chain,
+		is_new = ! params.value.prev;
+
+	// add 
+	if( item && is_new )
 	{
-		items.elem
+		var 
+		elem = items.elem
 			.clone(true)
 			.attr('data-follow', chain)
 			.find('.text').text( item.title ).end()
 			.appendTo(items.block)
 			.delay(10)
-			.slideDown('fast')
+			.slideDown('fast'),
+		text = elem.find('.text');
+		
+		// make editable
+		text[0].contentEditable = true;
+		text.blur(function( evt ) {
+			todo(chain + '.title', text.text()); // save
+		});
 	}
 	// remove
 	else {
@@ -168,3 +189,69 @@ todo.follow(/^(list\.\d+)\.completed$/, function( value, params )
 		.find(':checkbox').attr('checked', value);
 });
 
+/*todo.follow('list', function(){
+	// hide "clear-all" if no items
+	this.ui.list.clear.toggle( !(!left && !completed) );
+})*/
+		
+/*
+	.keydown(function( evt )
+	{
+		var 
+			get_item_data = function( elem ){
+				return {
+					elem: elem,
+					text: elem.find('.text'),
+					chain: elem.attr('data-follow')
+				}
+			},
+			
+			current = get_item_data( elem ),
+			prev = get_item_data( elem.prev() ),
+			next = get_item_data( elem.next() ),
+			
+			code = evt.which || evt.keyCode,
+			key = {
+				ctrl: evt.ctrlKey && code != 17,
+				enter: code == 13,
+				arrow: {
+					up: code == 38,
+					down: code == 40
+				}
+			};
+		
+		// saving
+		if( key.enter )
+		{
+			current.text.blur();
+			next.text.focus();
+			return false;
+		}
+		
+		// sortable
+		if( key.ctrl )
+		{
+			var 
+				up = key.arrow.up && prev.elem.length,
+				down = key.arrow.down && next.elem.length;
+			
+			// сортировка глючит при множественной перестановке
+			up && (
+				elem.insertBefore( prev.elem ),
+				current.data = todo( current.chain ),
+				prev.data = todo( prev.chain ),
+				todo(current.chain, prev.data),
+				todo(prev.chain, current.data),
+				console.log( todo )
+			);
+			
+			down && (
+				elem.insertAfter( next )
+			);
+			
+			(up || down) && setTimeout(function(){
+				elem.find('.text').focus();
+			}, 0);
+		}
+	});
+*/
