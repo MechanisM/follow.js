@@ -8,13 +8,14 @@
 // jQuery DOM ready
 $(function()
 {
-	todo.init({
-		init: true, // must be first (in this sample)
-		list: [],
-		completed: 0,
-		left: 0
-	});
-	todo.dispatch('list');
+	todo
+		.init({
+			init: true, // must be first (in this sample)
+			list: [],
+			completed: 0,
+			left: 0
+		})
+		.dispatch('list');
 });
 
 // в качестве объекта для хранения данных (JSON) можно указать любой объект JS
@@ -67,9 +68,9 @@ todo.follow('init', function()
 	
 	this.ui.list.clear.click(function()
 	{
-		if( confirm('Are you sure want to clear all entries?') ) {
-			model.select(/^list\.(\d+)$/).remove();
-		}
+		confirm('Are you sure want to clear all entries?') &&
+		model.select(/^list\.(\d+)$/).remove();
+		return false;
 	});
 	
 	this.ui.completed.clear
@@ -163,6 +164,7 @@ todo.follow('list', function( item, params )
 			.editable(elem, params)
 			.sortable(elem);
 	}
+	
 	// remove
 	else if( !item ) {
 		items.block
@@ -193,25 +195,31 @@ todo.follow(/^(list\.\d+)\.completed$/, function( value, params )
 		.find(':checkbox').attr('checked', value);
 });
 
-// other stuff
+
+// usability stuff
 var make = {
 	editable: function( elem )
 	{
-		var 
-			text = elem.find('.text'),
-			chain = elem.attr('data-follow');
+		var text = elem.find('.text');
 
 		text[0].contentEditable = true;
 		text
 			.blur(function( evt ) {
-				todo(chain + '.title', text.text()); // save
-			})
-			.keypress(function( evt ) {
-				evt.which == 13 && (
-					text.blur(),
-					elem.next().find('.text').focus(),
-					evt.preventDefault()
+				todo(
+					elem.attr('data-follow') + '.title',
+					text.text()
 				);
+			})
+			.keypress(function( evt )
+			 {
+				var code = evt.which || evt.keyCode;
+				if( code == 13 /* Enter */ )
+				{
+					var next = elem[ evt.shiftKey ? 'prev' : 'next' ]();
+					text.blur();
+					next.find('.text').focus();
+					evt.preventDefault();
+				}
 			});
 		
 		return this;
@@ -230,9 +238,6 @@ var make = {
 		elem.find('.text').keydown(function( evt )
 		{
 			var 
-				current = data( elem ),
-				prev = data( elem.prev() ),
-				next = data( elem.next() ),
 				code = evt.which || evt.keyCode,
 				key = {
 					ctrl: evt.ctrlKey && code != 17,
@@ -245,17 +250,30 @@ var make = {
 			if( key.ctrl )
 			{
 				var 
-					up = key.arrow.up && prev.elem.length,
-					down = key.arrow.down && next.elem.length;
+					current 	= data( elem ),
+					prev 		= data( elem.prev() ),
+					next 		= data( elem.next() ),
+					up 			= key.arrow.up && prev.elem.length,
+					down 		= key.arrow.down && next.elem.length,
+					chain 		= up ? prev.chain : next.chain,
+					target 		= up ? prev.elem : next.elem,
+					action 		= up ? 'insertBefore' : 'insertAfter',
+					replacement = {};
 				
-				/*up && (
-					prev.text.appendTo( current.elem ),
-					current.text.appendTo( prev.elem )
-				);*/
-				
-				/*down && (
-					elem.insertAfter( next )
-				);*/
+				if( up || down )
+				{
+					evt.preventDefault();
+					
+					replacement[ current.chain ] = todo(chain);
+					replacement[ chain ] = todo(current.chain);
+					
+					current.elem[ action ]( target );
+					current.elem.attr('data-follow', chain);
+					target.attr('data-follow', current.chain);
+					todo(replacement);
+					
+					current.text.focus();
+				}
 			}
 		});
 	}
