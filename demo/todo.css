@@ -11,7 +11,7 @@
 .todo .delete:hover { color:black; }
 .todo .info { min-height:1em; }
 .todo .info * { font-size:15px; }
-.todo .info p { margin:0; padding:0; }
+.todo .info > p { margin:0; padding:0; display:none; }
 .todo .right { float:right; }
 .todo .completed { text-decoration:line-through; color:gray; }
 .todo .text { outline:none !important; }

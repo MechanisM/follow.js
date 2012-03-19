@@ -14,6 +14,7 @@ $(function()
 		completed: 0,
 		left: 0
 	});
+	todo.dispatch('list');
 });
 
 // в качестве объекта для хранения данных (JSON) можно указать любой объект JS
@@ -124,6 +125,11 @@ todo.follow('list', function( items, params )
 		var
 			left = this.select('[name=completed][value=false]', 'list').length,
 			completed = this.sizeof(items) - left;
+
+		// hide "clear-all" if no items
+		this.ui.list.clear
+			.parent()
+			.toggle( !(!left && !completed) );
 		
 		this({
 			left: left,
@@ -150,17 +156,15 @@ todo.follow('list', function( item, params )
 			.find('.text').text( item.title ).end()
 			.appendTo(items.block)
 			.delay(10)
-			.slideDown('fast'),
-		text = elem.find('.text');
+			.slideDown('fast');
 		
-		// make editable
-		text[0].contentEditable = true;
-		text.blur(function( evt ) {
-			todo(chain + '.title', text.text()); // save
-		});
+		// extra ability (just for fun)
+		typeof make == 'object' && make
+			.editable(elem, params)
+			.sortable(elem);
 	}
 	// remove
-	else {
+	else if( !item ) {
 		items.block
 			.find('[data-follow = "'+ chain +'"]')
 			.slideUp('fast', function(){
@@ -189,69 +193,70 @@ todo.follow(/^(list\.\d+)\.completed$/, function( value, params )
 		.find(':checkbox').attr('checked', value);
 });
 
-/*todo.follow('list', function(){
-	// hide "clear-all" if no items
-	this.ui.list.clear.toggle( !(!left && !completed) );
-})*/
-		
-/*
-	.keydown(function( evt )
+// other stuff
+var make = {
+	editable: function( elem )
 	{
 		var 
-			get_item_data = function( elem ){
-				return {
-					elem: elem,
-					text: elem.find('.text'),
-					chain: elem.attr('data-follow')
-				}
-			},
-			
-			current = get_item_data( elem ),
-			prev = get_item_data( elem.prev() ),
-			next = get_item_data( elem.next() ),
-			
-			code = evt.which || evt.keyCode,
-			key = {
-				ctrl: evt.ctrlKey && code != 17,
-				enter: code == 13,
-				arrow: {
-					up: code == 38,
-					down: code == 40
-				}
-			};
+			text = elem.find('.text'),
+			chain = elem.attr('data-follow');
+
+		text[0].contentEditable = true;
+		text
+			.blur(function( evt ) {
+				todo(chain + '.title', text.text()); // save
+			})
+			.keypress(function( evt ) {
+				evt.which == 13 && (
+					text.blur(),
+					elem.next().find('.text').focus(),
+					evt.preventDefault()
+				);
+			});
 		
-		// saving
-		if( key.enter )
-		{
-			current.text.blur();
-			next.text.focus();
-			return false;
-		}
+		return this;
+	},
+	
+	sortable: function( elem )
+	{
+		var data = function( elem ){
+			return {
+				elem: elem,
+				text: elem.find('.text'),
+				chain: elem.attr('data-follow')
+			}
+		};
 		
-		// sortable
-		if( key.ctrl )
+		elem.find('.text').keydown(function( evt )
 		{
 			var 
-				up = key.arrow.up && prev.elem.length,
-				down = key.arrow.down && next.elem.length;
+				current = data( elem ),
+				prev = data( elem.prev() ),
+				next = data( elem.next() ),
+				code = evt.which || evt.keyCode,
+				key = {
+					ctrl: evt.ctrlKey && code != 17,
+					arrow: {
+						up: code == 38,
+						down: code == 40
+					}
+				};
 			
-			// сортировка глючит при множественной перестановке
-			up && (
-				elem.insertBefore( prev.elem ),
-				current.data = todo( current.chain ),
-				prev.data = todo( prev.chain ),
-				todo(current.chain, prev.data),
-				todo(prev.chain, current.data),
-				console.log( todo )
-			);
-			
-			down && (
-				elem.insertAfter( next )
-			);
-			
-			(up || down) && setTimeout(function(){
-				elem.find('.text').focus();
-			}, 0);
-		}
-	});
-*/
+			if( key.ctrl )
+			{
+				var 
+					up = key.arrow.up && prev.elem.length,
+					down = key.arrow.down && next.elem.length;
+				
+				/*up && (
+					prev.text.appendTo( current.elem ),
+					current.text.appendTo( prev.elem )
+				);*/
+				
+				/*down && (
+					elem.insertAfter( next )
+				);*/
+			}
+		});
+	}
+};
