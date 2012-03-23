@@ -25,7 +25,8 @@
     
     <xsl:variable name="models" select="/*//js:model" />
     <xsl:if test="count($models) > 0">
-        <script type="text/javascript">
+    	<xsl:element name="script">
+        	<xsl:attribute name="type">text/javascript</xsl:attribute>
             Follow.load([
                 <xsl:choose>
                     <xsl:when test="$name">
@@ -39,7 +40,7 @@
                 "modules": "<xsl:value-of select="$modules"/>",
                 "external": "<xsl:value-of select="$external"/>"
             });
-        </script>
+        </xsl:element>
     </xsl:if>
 </xsl:template>
 
@@ -53,11 +54,11 @@
         <xsl:if test="@storage">"storage": <xsl:value-of select="@storage"/>, </xsl:if>
         <xsl:if test="@is-module">"isModule": true, </xsl:if>
 
-        <xsl:if test="@dependency">
+        <!-- <xsl:if test="@dependency">
             <xsl:text>"dependency": "</xsl:text>
             <xsl:value-of select="@dependency" />
             <xsl:text>", </xsl:text>
-        </xsl:if>
+        </xsl:if> -->
             
         <xsl:text>"chains": [</xsl:text>
         <xsl:for-each select="js:*[@chain]">
@@ -73,28 +74,42 @@
 
 <xsl:template match="js:obj | js:map">
     <xsl:param name="node"/>
+    <xsl:param name="key" select="@key"/>
     
     <xsl:variable name="name" select="local-name()" />
     <xsl:variable name="ctx" select="@context" />
     <xsl:variable name="self"><xsl:copy-of select="*" /></xsl:variable>
     <xsl:variable name="tmpl" select="exsl:node-set($self)"/>
     <xsl:variable name="top" select="'js:model' = name(..) and @chain"/>
+    <xsl:variable name="is_obj" select="$name = 'obj' or $key"/>
+    <xsl:variable name="is_map" select="$name = 'map' and not($key)"/>
     
     <xsl:if test="$top">
-        <xsl:text>{"chain": "</xsl:text>
+    	<xsl:text>{</xsl:text>
+        <xsl:text>"chain": "</xsl:text>
         <xsl:value-of select="@chain"/>
         <xsl:text>",</xsl:text>
         <xsl:text>"json":</xsl:text>
     </xsl:if>
-    
-    <xsl:if test="$name = 'obj'">{</xsl:if>
-    <xsl:if test="$name = 'map'">[</xsl:if>
+
+        <xsl:if test="$key and not($top)">
+            <xsl:text>"</xsl:text>
+            <xsl:value-of select="js:escape($key)"/>
+            <xsl:text>": </xsl:text>
+        </xsl:if>
         
+        <xsl:choose>
+            <xsl:when test="$is_map">[</xsl:when>
+            <xsl:otherwise>{</xsl:otherwise>
+        </xsl:choose>
+            
         <xsl:for-each select="$node">
             <xsl:variable name="context" select="dyn:evaluate( js:ctx($ctx) )"/>
             <xsl:for-each select="$context">
             
                 <xsl:variable name="node" select="." />
+                <xsl:variable name="keyprop" select="dyn:evaluate($key)"/>
+                
                 <xsl:choose>
                     <xsl:when test="$name = 'obj'">
                         <xsl:for-each select="$tmpl/js:prop">
@@ -109,13 +124,16 @@
                     </xsl:when>
                     
                     <xsl:otherwise>
-                    	<xsl:for-each select="$tmpl/*">
+                        <xsl:for-each select="$tmpl/*">
+                        
                             <xsl:apply-templates select=".">
                                 <xsl:with-param name="node" select="$node"/>
                                 <xsl:with-param name="parent" select="$name"/>
                                 <xsl:with-param name="top" select="$top"/>
+                                <xsl:with-param name="key" select="$keyprop"/>
                             </xsl:apply-templates>
                             <xsl:value-of select="js:comma()" />
+                            
                         </xsl:for-each>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -123,14 +141,13 @@
                 <xsl:value-of select="js:comma()" />
             </xsl:for-each>
         </xsl:for-each>
+    
+        <xsl:choose>
+            <xsl:when test="$is_map">]</xsl:when>
+            <xsl:otherwise>}</xsl:otherwise>
+        </xsl:choose>
 
-    <xsl:if test="$name = 'obj'">}</xsl:if>
-    <xsl:if test="$name = 'map'">]</xsl:if>
-    
-    <xsl:if test="$top">
-        <xsl:text>}</xsl:text>
-    </xsl:if>
-    
+	<xsl:if test="$top">}</xsl:if>
     <xsl:value-of select="js:comma()" />
 </xsl:template>
 
