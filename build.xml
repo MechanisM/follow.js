@@ -20,9 +20,9 @@
 				<file name="follow.toxml.js"/>
 				<file name="follow.select.js"/>
 			</filelist>
-			<!-- <filelist dir="source/addons">
+			<filelist dir="source/addons">
 				<file name="follow.collector.js"/>
-			</filelist> -->
+			</filelist>
 		</concat>
 		<yuicompress/>
 		

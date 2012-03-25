@@ -47,7 +47,8 @@
 				module = M.module;
 			
 			if( module ) {
-				this.module[ module.name ] = module;
+				this.modules = this.modules || {};
+				this.modules[ module.name ] = module;
 				module._model = model;
 				module._params = path;
 				modules.push(module);
@@ -94,12 +95,12 @@
     Follow.module = function( conf )
     {
 		var 
-			module = this.module[ conf.name ],
+			module = this.modules[ conf.name ],
 			depends_on = conf.depends,
 			init = function()
 			{
 				if( conf.init( module._model, module._params ) === conf ){
-					this.module[ conf.name ]._inited = true;
+					this.modules[ conf.name ]._inited = true;
 				}
 			}.bind(this);
 		
@@ -110,12 +111,12 @@
 				var modules = depends_on.modules
 					.trim().split(' ')
 					.filter(function( name ){
-						return !( this.module[name] && this.module[name]._inited );
+						return !( this.modules[name] && this.modules[name]._inited );
 					}, this);
 				
 				if( modules.length )
 				{
-					alert( 
+					window.console && console.error( 
 						'Module "'+ module.name +'" initialization error: module(s) "'
 						+ modules.join(', ')
 						+ '" was not loaded or their init-method not returns this-object.'
