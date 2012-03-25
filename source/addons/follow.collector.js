@@ -37,39 +37,56 @@
 	
 	Follow.load = function( models, path )
 	{
+		var modules = [];
+		
+		// insert data to the models
 		models.forEach(function(M)
 		{
 			var 
 				model = Follow(M.name, M.storage),
-				externals = M.dependency,
-				is_module = M.isModule;
+				module = M.module;
 			
-			// save extra data for init-module
-			Follow.module.params = Follow.module.params || {};
-			Follow.module.params[ model.modelName ] = path;
+			if( module ) {
+				this.module[ module.name ] = module;
+				module._model = model;
+				module._params = path;
+				modules.push(module);
+			}
 			
-			// insert data to the model
 			M.chains.forEach(function(C) {
 				model(C.chain, C.json);
 			});
+		}, this);
+		
+		// loading modules & externals
+		modules.forEach(function( module )
+		{
+			var inject = function() {
+				var filepath = (module.path || module._params.modules) + module.name + '.js';
+				loader(filepath);
+			};
 			
-			// loading modules & externals
-			if( is_module )
+			// check dependencies on chains for the module
+			if( module.depends )
 			{
-				var inject = function() {
-					loader(path.modules + model.modelName + '.js');
-				};
-				
-				if( externals )
+				var model = module._model;
+				module.depends.trim().split(' ').every(function( chain )
 				{
-					var files = externals.split(' ').map(function( name ){
-						return path.external + name + '.js';
-					});
-					loader(files, inject);
-				}
-				else {
-					inject();
-				}
+					var 
+						data = model(chain),
+						type = model.gettype(data);
+					return (
+						type == 'array' || type == 'object'
+						? model.sizeof(data)
+						: type == 'number'
+							? String(data)
+							: data
+					);
+				})
+				&& inject();
+			}
+			else {
+				inject();
 			}
 		});
 	};
@@ -77,9 +94,48 @@
     Follow.module = function( conf )
     {
 		var 
-			model = Follow(conf.model, conf.storage),
-			params = this.module.params[ model.modelName ];
+			module = this.module[ conf.name ],
+			depends_on = conf.depends,
+			init = function()
+			{
+				if( conf.init( module._model, module._params ) === conf ){
+					this.module[ conf.name ]._inited = true;
+				}
+			}.bind(this);
 		
-		conf.init(model, params);
+		if( depends_on )
+		{
+			if( depends_on.modules )
+			{
+				var modules = depends_on.modules
+					.trim().split(' ')
+					.filter(function( name ){
+						return !( this.module[name] && this.module[name]._inited );
+					}, this);
+				
+				if( modules.length )
+				{
+					alert( 
+						'Module "'+ module.name +'" initialization error: module(s) "'
+						+ modules.join(', ')
+						+ '" was not loaded or their init-method not returns this-object.'
+					);
+					return false;
+				}
+			}
+			
+			if( depends_on.external )
+			{
+				var external = depends_on.external
+					.trim().split(' ')
+					.map(function( filename ){
+						return module._params.external + filename + '.js';
+					});
+				
+				loader(external, init)
+			}
+			else init();
+		}
+		else init();
     };
 }( this ));

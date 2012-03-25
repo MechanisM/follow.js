@@ -57,7 +57,9 @@
     </hello>
 
     <!-- Sample 3 -->
-    <js:model name="sample" is-module="true" context="//mx:resource[@id='market:catalog.popular-categories']">
+    <js:model name="sample" context="//mx:resource[@id='market:catalog.popular-categories']">
+
+        <js:module name="sample" path="" depends="categories"/>
     
         <js:map chain="categories" context="categories/category" key="@id">
             <js:obj>

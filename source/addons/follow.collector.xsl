@@ -17,11 +17,8 @@
 
 <xsl:template name="follow.js">
     <xsl:param name="name"/>
-    
-    <!-- A path to load modules -->
-    <xsl:param name="modules" select="'/js/modules/'" />
-    <!-- A path to load external files that will be taken from @dependency  -->
-    <xsl:param name="external" select="'/js/external/'" />
+    <xsl:param name="modules">/js/modules/</xsl:param>
+    <xsl:param name="external">/js/external/</xsl:param>
     
     <xsl:variable name="models" select="/*//js:model" />
     <xsl:if test="count($models) > 0">
@@ -47,18 +44,21 @@
 <xsl:template match="js:model">
     <xsl:variable name="context" select="js:ctx(@context)" />
     <xsl:variable name="node" select="dyn:evaluate($context)" />
+    <xsl:variable name="module" select="js:module[1]" />
     
     <xsl:text>{</xsl:text>
     
         <xsl:if test="@name">"name": "<xsl:value-of select="@name"/>", </xsl:if>
         <xsl:if test="@storage">"storage": <xsl:value-of select="@storage"/>, </xsl:if>
-        <xsl:if test="@is-module">"isModule": true, </xsl:if>
-
-        <!-- <xsl:if test="@dependency">
-            <xsl:text>"dependency": "</xsl:text>
-            <xsl:value-of select="@dependency" />
-            <xsl:text>", </xsl:text>
-        </xsl:if> -->
+        
+        <xsl:if test="$module">
+        	<xsl:text>"module": {</xsl:text>
+            	<xsl:for-each select="$module/@*">
+                	<xsl:value-of select="concat('&quot;', name(.), '&quot;: &quot;', ., '&quot;')"/>
+                    <xsl:value-of select="js:comma()"/>
+                </xsl:for-each>
+        	<xsl:text>},</xsl:text>
+        </xsl:if>
             
         <xsl:text>"chains": [</xsl:text>
         <xsl:for-each select="js:*[@chain]">
@@ -67,8 +67,9 @@
             </xsl:apply-templates>
             <xsl:value-of select="js:comma()" />
         </xsl:for-each>
+        <xsl:text>]</xsl:text>
         
-    <xsl:text>]}</xsl:text>
+    <xsl:text>}</xsl:text>
     <xsl:value-of select="js:comma()"/>
 </xsl:template>
 
