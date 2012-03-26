@@ -1,11 +1,5 @@
 
 TODO
-    
-    Модули
-
-    - доступ к конфигурационному объекту модуля Follow.module('name').config = {model: '', storage: '', init: function(){}, ...}
-    - ручная загрузка/выполнение модуля Follow.module('name').load([force=false]), аргумент force позволяет выполнять init модуля повторно
-    - события для Follow.module('name'): .beforeLoad(callback), .onReady(callback)
 
 	Документация
     
@@ -13,3 +7,4 @@ TODO
     - @key="//xpath" (если не задан то js:map будет создавать массив)
     - js:module + @name, @path, @depends
     - описать правила оформления модулей (свойства name, depends, init)
+    - Follow('module').bind('evt', callback), evt = "ready", "beforeload"

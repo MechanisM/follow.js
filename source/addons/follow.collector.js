@@ -1,6 +1,6 @@
 /*!
  * Follow.js
- * A simple unpacker for raw-data of "follow.collector.xsl"
+ * Modules support.
  * Dependencies: jQuery or yepnope.js for loading external JS-files
  */
 
@@ -47,8 +47,8 @@
 				module = M.module;
 			
 			if( module ) {
-				this.modules = this.modules || {};
-				this.modules[ module.name ] = module;
+				var config = this.modules[module.name] || this.createModuleConfig();
+				this.modules[ module.name ] = this.utils.extend(module, config);
 				module._model = model;
 				module._params = path;
 				modules.push(module);
@@ -63,7 +63,8 @@
 		modules.forEach(function( module )
 		{
 			var inject = function() {
-				var filepath = (module.path || module._params.modules) + module.name + '.js';
+				var filepath = (module.path || module._params.modules) + encodeURIComponent(module.name) + '.js';
+				module.trigger('beforeload', [module._model, module._params]);
 				loader(filepath);
 			};
 			
@@ -92,17 +93,25 @@
 		});
 	};
     
+	Follow.modules = {};
+	
     Follow.module = function( conf )
     {
+		if( this.utils.type(conf) == 'string' ){
+			// in this case "conf" is a name of the module
+			var config = this.modules[conf] || (this.modules[conf] = this.createModuleConfig());
+			return config;
+		}
+		
 		var 
 			module = this.modules[ conf.name ],
 			depends_on = conf.depends,
 			init = function()
 			{
-				if( conf.init( module._model, module._params ) === conf ){
-					this.modules[ conf.name ]._inited = true;
-				}
-			}.bind(this);
+				module._config = conf;
+				conf === conf.init(module._model, module._params) && (module._inited = true);
+				module.trigger('ready', [module._model, module._params]);
+			};
 		
 		if( depends_on )
 		{
@@ -130,7 +139,7 @@
 				var external = depends_on.external
 					.trim().split(' ')
 					.map(function( filename ){
-						return module._params.external + filename + '.js';
+						return module._params.external + encodeURIComponent(filename) + '.js';
 					});
 				
 				loader(external, init)
@@ -139,4 +148,21 @@
 		}
 		else init();
     };
+	
+	Follow.createModuleConfig = function()
+	{
+		return {
+			trigger: function(evt, params){
+				(this.events[evt] || []).forEach(function( callback ){
+					callback.apply(this, params);
+				}, this);
+			},
+			bind: function( evt, callback ){
+				this.events[evt] = this.events[evt] || [];
+				this.events[evt].push(callback);
+			},
+			events: {}
+		};
+	};
+	
 }( this ));

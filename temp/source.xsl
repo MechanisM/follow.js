@@ -14,6 +14,7 @@
     	<head>
         	<script type="text/javascript" src="../demo/common/jquery.min.js"></script>
         	<script type="text/javascript" src="../follow.inc.php"></script>
+        	<!-- <script type="text/javascript" src="site.js"></script> -->
     	</head>
 	    <body>
             <p>A main content of the page</p>

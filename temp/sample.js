@@ -10,7 +10,7 @@ Follow.module(
 	
 	init: function( model, params )
 	{
-		alert( model );
+		alert( model )
 		return this; // need to mark this module as "inited"
 	}
 });
