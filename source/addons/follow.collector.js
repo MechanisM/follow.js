@@ -1,5 +1,5 @@
 /*!
- * Follow.js
+ * Follow.js (source/addons/follow.collector.js)
  * Modules support.
  * Dependencies: jQuery or yepnope.js for loading external JS-files
  */
