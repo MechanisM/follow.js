@@ -1,0 +1,31 @@
+
+TODO
+
+Создать файл follow.linker.js для автоматического обновления данных DOM-элементов, соответствующих цепочке модели
+Связь данных модели и DOM-элемента через аттрибут data-follow-chain="my.chain.in.the.model"
+
+Зависимости: jQuery
+
+Обновление разных типов по-умолчанию:
+    * Блочные и инлайн элементы - обновление через .html(content)
+    * Элементы формы input[type = radio|checkbox] - обновление через .attr('checked', !!content)
+    * Остальные элементы формы - textarea, select, input[type=text], etc. - обновляем через .val(content), 
+      в том числе, если это select с множественным выбором, то по-идее если content - массив значений, 
+      то .val() должен норм. захавать его (проверить!)
+    * Для элементов button нужно юзать также метод .html(content)
+    * У изображений обновление через .attr('src', content)
+
+Кастомизация:
+Follow.link({
+	location: '#special .data',
+    trigger: function( elem, content )
+    {
+    	// Принцип работы - вначале происходит общий поиск элемента, т.е через $('*[data-follow-chain="changed.chain"]')
+        // Далее, проверяются объекты из Follow.link на соответствие свойства location, через elem.closest(obj.location)
+        // Если элемент существует в данном расположении - используем его trigger для обновления DOM и обрываем цикл
+        elem
+        	.text(content)
+            .attr('title', content);
+        return true; // не будет обрывать цикл для поиска соответствия в других объектах Follow.link
+    }
+})
