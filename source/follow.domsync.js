@@ -47,41 +47,43 @@ this.jQuery && (function($)
 		{
             var 
 				elem = $(this),
-				prev_default = false;
+				prev_default = false,
+				apply_defaults = function()
+				{
+					if( elem.is(':checkbox') || elem.is(':radio') )
+					{
+						(elem.is(':checkbox') || (elem.is(':radio') && elem.val() == value))
+						&& elem.attr('checked', !!value)
+					}
+					else if( elem.is('input') || elem.is('select') || elem.is('textarea') )
+					{
+						elem.is('select[multiple]') 
+						&& model.gettype(value) != 'array'
+						&& (value = model.map(value, function(v){ return v}));
+						
+						elem.val( value );
+					}
+					else if( elem.is('img') ){
+						elem.attr('src', value)
+					}
+					else {
+						elem.html(value);
+					}
+				};
 			
 			$.each(DOM.links, function()
 			{
 				return (
-					((this.model && this.model === model) || true) 
-					&& elem.closest( this.location ).length
-					&& (prev_default = true)
-					&& this.trigger(elem, value)
+					(this.model ? this.model === model : true) 
+						&& elem.is( this.match )
+						&& (prev_default = true)
+					? this.trigger(elem, value, apply_defaults)
+					: true
 				);
 			});
 			
 			// default behavior
-			if( !prev_default )
-			{
-				if( elem.is(':checkbox') || elem.is(':radio') )
-				{
-					(elem.is(':checkbox') || (elem.is(':radio') && elem.val() == value))
-					&& elem.attr('checked', !!value)
-				}
-				else if( elem.is('input') || elem.is('select') || elem.is('textarea') )
-				{
-					elem.is('select[multiple]') 
-					&& model.gettype(value) != 'array'
-					&& (value = model.map(value, function(v){ return v}));
-					
-					elem.val( value );
-				}
-				else if( elem.is('img') ){
-					elem.attr('src', value)
-				}
-				else {
-					elem.html(value);
-				}
-			}
+			!prev_default && apply_defaults();
         });
 	};
 	
