@@ -48,40 +48,49 @@ this.jQuery && (function($)
             var 
 				elem = $(this),
 				prev_default = false,
+				is_the_same_model = function()
+				{
+					var M = elem.data('follow-model') || '';
+					var S = elem.data('follow-storage') || 'undefined';
+					return model === Function('return Follow("'+ M +'", '+ S +')')();
+				}(),
 				apply_defaults = function()
 				{
-					if( elem.is(':checkbox') || elem.is(':radio') )
+					if( is_the_same_model )
 					{
-						(elem.is(':checkbox') || (elem.is(':radio') && elem.val() == value))
-						&& elem.attr('checked', !!value)
-					}
-					else if( elem.is('input') || elem.is('select') || elem.is('textarea') )
-					{
-						elem.is('select[multiple]') 
-						&& model.gettype(value) != 'array'
-						&& (value = model.map(value, function(v){ return v}));
-						
-						elem.val( value );
-					}
-					else if( elem.is('img') ){
-						elem.attr('src', value)
-					}
-					else {
-						elem.html(value);
+						if( elem.is(':checkbox') || elem.is(':radio') )
+						{
+							(elem.is(':checkbox') || (elem.is(':radio') && elem.val() == value))
+							&& elem.attr('checked', !!value)
+						}
+						else if( elem.is('input') || elem.is('select') || elem.is('textarea') )
+						{
+							elem.is('select[multiple]') 
+							&& model.gettype(value) != 'array'
+							&& (value = model.map(value, function(v){ return v}));
+							
+							elem.val( value );
+						}
+						else if( elem.is('img') ){
+							elem.attr('src', value)
+						}
+						else {
+							elem.html(value);
+						}
 					}
 				};
 			
 			$.each(DOM.links, function()
 			{
 				return (
-					(this.model ? this.model === model : true) 
-						&& elem.is( this.match )
+					is_the_same_model
+						&& elem.is( this.match ) // 1
 						&& (prev_default = true)
-					? this.trigger(elem, value, apply_defaults)
+					? this.trigger(elem, value, apply_defaults) // 2
 					: true
 				);
 			});
-			
+
 			// default behavior
 			!prev_default && apply_defaults();
         });

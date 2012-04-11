@@ -18,9 +18,12 @@ Follow.link({
 
 $(function()
 {
-	var test = Follow();
-	test({
+	var model = Follow();
+	model({
 		'hello.world': 'New value',
 		test: ['test', 1]
 	});
+	
+	var test = Follow('test');
+	test('hello.world', Math.random())
 });
