@@ -19,3 +19,7 @@ $(function()
 		test: ['test', 1]
 	});
 });
+
+window.ondblclick = function(){
+	alert(Follow())
+}

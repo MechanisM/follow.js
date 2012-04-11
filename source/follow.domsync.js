@@ -10,7 +10,28 @@ this.jQuery && (function($)
 		links: []
 	};
 	
-	// work-flow
+	// Sync direction: DOM to model (form-elements with data-follow attribute)
+	// also we can use attributes data-follow-model="" and data-follow-storage="" to update chains in non-default model
+	$(document).delegate('input[data-follow], select[data-follow], textarea[data-follow]', 'change', function()
+	{
+		var 
+			elem = $(this),
+			data = {
+				chain: elem.data('follow'),
+				model: elem.data('follow-model'),
+				storage: elem.data('follow-storage')
+			},
+			model = Follow(data.model, data.storage);
+		
+		if( elem.is(':checkbox') ){
+			model(data.chain, elem.prop('checked'));
+		}
+		else {
+			model(data.chain, elem.val());
+		}
+	});
+	
+	// Sync direction: model to DOM
 	Follow.sync = function( chain, data )
 	{
 		var 
@@ -36,8 +57,10 @@ this.jQuery && (function($)
 			// default behavior
 			if( !prev_default )
 			{
-				if( elem.is(':checkbox') || elem.is(':radio') ){
-					elem.attr('checked', !!value)
+				if( elem.is(':checkbox') || elem.is(':radio') )
+				{
+					(elem.is(':checkbox') || (elem.is(':radio') && elem.val() == value))
+					&& elem.attr('checked', !!value)
 				}
 				else if( elem.is('input') || elem.is('select') || elem.is('textarea') )
 				{
