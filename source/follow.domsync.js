@@ -21,18 +21,18 @@ this.jQuery && (function($)
 	{
 		var 
 			elem = $(this),
+			chain = elem.data('follow'),
 			data = {
-				chain: elem.data('follow'),
-				model: elem.data('follow-model'),
-				storage: elem.data('follow-storage')
+				model: elem.data('follow-model') || '',
+				storage: elem.data('follow-storage') || 'undefined'
 			},
-			model = Follow(data.model, data.storage);
+			model = Function('return Follow("'+ data.model +'", '+ data.storage +')')();
 		
 		if( elem.is(':checkbox') ){
-			model(data.chain, elem.prop('checked'));
+			model(chain, elem.prop('checked'));
 		}
 		else {
-			model(data.chain, elem.val());
+			model(chain, elem.val());
 		}
 	});
 	
@@ -99,10 +99,10 @@ this.jQuery && (function($)
 					elem = $(this),
 					chain = elem.data('follow'),
 					data = {
-						model: elem.data('follow-model'),
-						storage: elem.data('follow-storage')
+						model: elem.data('follow-model') || '',
+						storage: elem.data('follow-storage') || 'undefined'
 					},
-					current = Follow(data.model, data.storage);
+					current = Function('return Follow("'+ data.model +'", '+ data.storage +')')();
 					
                 if( model === current && !imported[chain] )
 				{

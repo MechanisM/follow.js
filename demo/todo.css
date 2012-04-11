@@ -17,3 +17,4 @@
 .todo .text { outline:none !important; }
 .todo .pseudo { color:gray; text-decoration:none; border-bottom:1px dashed gray; }
 .todo .pseudo:hover { color:black; border-bottom-color:black; }
+.todo label { cursor:pointer; }

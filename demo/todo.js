@@ -158,11 +158,6 @@ todo.follow('list', function( item, params )
 			.appendTo(items.block)
 			.delay(10)
 			.slideDown('fast');
-		
-		// extra ability (just for fun)
-		typeof make == 'object' && make
-			.editable(elem, params)
-			.sortable(elem);
 	}
 	
 	// remove
@@ -194,87 +189,3 @@ todo.follow(/^(list\.\d+)\.completed$/, function( value, params )
 		.find('.text').toggleClass('completed', value).end()
 		.find(':checkbox').attr('checked', value);
 });
-
-
-// usability stuff
-var make = {
-	editable: function( elem )
-	{
-		var text = elem.find('.text');
-
-		text[0].contentEditable = true;
-		text
-			.blur(function( evt ) {
-				todo(
-					elem.attr('data-follow') + '.title',
-					text.text()
-				);
-			})
-			.keypress(function( evt )
-			 {
-				var code = evt.which || evt.keyCode;
-				if( code == 13 /* Enter */ )
-				{
-					var next = elem[ evt.shiftKey ? 'prev' : 'next' ]();
-					text.blur();
-					next.find('.text').focus();
-					evt.preventDefault();
-				}
-			});
-		
-		return this;
-	},
-	
-	sortable: function( elem )
-	{
-		var data = function( elem ){
-			return {
-				elem: elem,
-				text: elem.find('.text'),
-				chain: elem.attr('data-follow')
-			}
-		};
-		
-		elem.find('.text').keydown(function( evt )
-		{
-			var 
-				code = evt.which || evt.keyCode,
-				key = {
-					ctrl: evt.ctrlKey && code != 17,
-					arrow: {
-						up: code == 38,
-						down: code == 40
-					}
-				};
-			
-			if( key.ctrl )
-			{
-				var 
-					current 	= data( elem ),
-					prev 		= data( elem.prev() ),
-					next 		= data( elem.next() ),
-					up 			= key.arrow.up && prev.elem.length,
-					down 		= key.arrow.down && next.elem.length,
-					chain 		= up ? prev.chain : next.chain,
-					target 		= up ? prev.elem : next.elem,
-					action 		= up ? 'insertBefore' : 'insertAfter',
-					replacement = {};
-				
-				if( up || down )
-				{
-					evt.preventDefault();
-					
-					replacement[ current.chain ] = todo(chain);
-					replacement[ chain ] = todo(current.chain);
-					
-					current.elem[ action ]( target );
-					current.elem.attr('data-follow', chain);
-					target.attr('data-follow', current.chain);
-					todo(replacement);
-					
-					current.text.focus();
-				}
-			}
-		});
-	}
-};
