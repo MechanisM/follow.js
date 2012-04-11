@@ -17,6 +17,7 @@ $files = array(
 	
 	'follow.toxml.js',
 	'follow.select.js',
+	'follow.domsync.js',
 	
 	'addons/follow.collector.js'
 );

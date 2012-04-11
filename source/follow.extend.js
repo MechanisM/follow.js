@@ -253,7 +253,10 @@ Follow.extend(
 	{
 		var 
 			followers = this.followers,
-			params = data[1] || {};
+			params = data[1] || {},
+			sync = this.constructor.sync;
+		
+		sync && sync.apply(this, arguments);
 		
 		for(var p in followers)
 		{
