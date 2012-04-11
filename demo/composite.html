@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Follow.js: model.composite (dependent observable)</title>
 	<script type="text/javascript" src="common/jquery.min.js"></script>
-	<script type="text/javascript" src="../follow.min.js"></script>
+	<script type="text/javascript" src="../follow.inc.php"></script>
 	<script type="text/javascript" src="composite.js"></script>
 </head>
 <body>
@@ -21,13 +21,13 @@
 			</h2>
 			<div class="name">
 				<p>
-					First name: <input type="text" name="name.first" value="John" />
+					First name: <input type="text" data-follow="name.first" value="John" />
 				</p>
 				<p>
-					Second name: <input type="text" name="name.second" value="Smith" />
+					Second name: <input type="text" data-follow="name.second" value="Smith" />
 				</p>
 			</div>
-			<div id="greeting" style="display:none"></div>
+			<div data-follow="greetings"></div>
 		</div>
 </body>
 </html>

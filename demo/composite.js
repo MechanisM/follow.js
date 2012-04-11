@@ -1,38 +1,18 @@
-// Follow.js samples: model.composite
+// Follow.js: model.composite
 
 $(function()
 {
-	var 
-		model = Follow('sample'),
-		events = {
-			update_name: function() {
-				model(this.name, this.value);
-			}
-		};
-		
-	model.ui = {
-		greeting: $('#greeting'),
-		name: {
-			first: $(':input[name="name.first"]').change( events.update_name ),
-			second: $(':input[name="name.second"]').change( events.update_name )
-		}
-	};
+	var model = Follow();
 	
-	model('name', function(){
-		return {
-			first: this.ui.name.first.val(),
-			second: this.ui.name.second.val()
-		}
-	});
+	model.importDataFromDOM();
 	
-	model.follow('name.full', function( value )
+	model.follow('fullName', function( name )
 	{
-		this.ui.greeting
-			.toggle( !!value )
-			.text('Hello, '+ value + '!');
-	});
+		var greetings = name ? ('Hello, '+ name + '!') : '';
+		this('greetings', greetings);
+	})
 	
-	model.composite('name.full', function()
+	model.composite('fullName', function()
 	{
 		var name = this('name');
 		if( name.first && name.second ){

@@ -10,6 +10,11 @@ this.jQuery && (function($)
 		links: []
 	};
 	
+	Follow.link = function( config ) {
+		DOM.links.push(config);
+		return DOM.links;
+	};
+	
 	// Sync direction: DOM to model (form-elements with data-follow attribute)
 	// also we can use attributes data-follow-model="" and data-follow-storage="" to update chains in non-default model
 	$(document).delegate('input[data-follow], select[data-follow], textarea[data-follow]', 'change', function()
@@ -80,10 +85,46 @@ this.jQuery && (function($)
         });
 	};
 	
-	// add custom rule to match
-	Follow.link = function( config ) {
-		DOM.links.push(config);
-		return DOM.links;
-	};
+	// Import data from DOM-elements with data-follow="" attribute
+	Follow.extend({
+		importDataFromDOM: function()
+		{
+			var 
+				model = this,
+				imported = {};
+			
+			$('[data-follow]').each(function()
+			{
+				var 
+					elem = $(this),
+					chain = elem.data('follow'),
+					data = {
+						model: elem.data('follow-model'),
+						storage: elem.data('follow-storage')
+					},
+					current = Follow(data.model, data.storage);
+					
+                if( model === current && !imported[chain] )
+				{
+					var value;
+					
+					if( elem.is(':checkbox') ){
+						value = elem.prop('checked')
+					}
+					else if( elem.is(':radio') && elem.attr('name') ) {
+						value = $(':radio[name = "'+ elem.attr('name') +'"]').val()
+					}
+					else if( elem.is('input') || elem.is('select') || elem.is('textarea') ){
+						value = elem.val()
+					}
+					else {
+						value = elem.text();
+					}
+					
+					imported[chain] = true;
+					model(chain, value);
+				}
+            });
+		}
+	});
 }(this.jQuery));
-
