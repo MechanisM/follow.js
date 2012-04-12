@@ -256,7 +256,10 @@ Follow.extend(
 			params = data[1] || {},
 			sync = this.constructor.sync;
 		
-		sync && sync.apply(this, arguments);
+		sync && sync.call(this, {
+			chain: chain,
+			value: data[0]
+		});
 		
 		for(var p in followers)
 		{

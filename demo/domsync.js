@@ -21,8 +21,15 @@ $(function()
 	var model = Follow();
 	model({
 		'hello.world': 'New value',
-		test: ['test', 1]
+		test: ['test', 1],
+		text: {
+			one: 1,
+			2: 'two'
+		}
 	});
+	
+	// export all sub-chains
+	model.exportDataToDOM('text');
 	
 	var test = Follow('test');
 	test('hello.world', Math.random())

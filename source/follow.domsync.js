@@ -37,11 +37,12 @@ this.jQuery && (function($)
 	});
 	
 	// Sync direction: model to DOM
-	Follow.sync = function( chain, data )
+	Follow.sync = function( params )
 	{
 		var 
 			model = this,
-			value = data[0];
+			chain = params.chain,
+			value = params.value;
 		
 		$('*[data-follow="'+ chain +'"]').each(function()
 		{
@@ -96,8 +97,9 @@ this.jQuery && (function($)
         });
 	};
 	
-	// Import data from DOM-elements with data-follow="" attribute
-	Follow.extend({
+	// Special methods to import/export data-model
+	Follow.extend(
+	{
 		importDataFromDOM: function()
 		{
 			var 
@@ -136,6 +138,29 @@ this.jQuery && (function($)
 					model(chain, value);
 				}
             });
+		},
+		
+		exportDataToDOM: function( chain )
+		{
+			var 
+				model = this,
+				chain = chain || '',
+				stack = chain ? this(chain) : this(),
+				sync = this.constructor.sync;
+			
+			// export current chain
+			chain && sync.call(model, {
+				chain: chain,
+				value: stack
+			});
+			
+			// export sub-chains if exists (for objects and arrays)
+			this.extend(true, {}, stack, function( path, value ){
+				sync.call(model, {
+					chain: (chain ? chain + '.' : '') + path,
+					value: value
+				});
+			});
 		}
 	});
 }(this.jQuery));
