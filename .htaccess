@@ -1,0 +1,6 @@
+AddDefaultCharset UTF-8
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteRule ^follow\.min\.js$ follow.inc.php [L,NC]
+</IfModule>
