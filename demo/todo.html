@@ -5,37 +5,50 @@
 	<title>Follow.js sample: TODO list</title>
 	<link rel="stylesheet" href="todo.css" media="screen" />
 	<script type="text/javascript" src="common/jquery.min.js"></script>
+	<script type="text/javascript" src="../source/external/jsrender.js"></script>
 	<script type="text/javascript" src="../follow.min.js"></script>
-	<script type="text/javascript" src="todo.js"></script>
+	<script type="text/javascript" src="todo-new.js"></script>
 </head>
 <body>
-		
-	<div class="todo">
+	
+    <!-- container -->	
+	<div class="todo" id="todo"></div>
+    
+    <!-- templates -->
+    <script id="todo_tmpl" type="text/x-jsrender">
 		<h2>TODO</h2>
 		<input id="new-entry" type="text" value="What needs to be done?" title="Press Enter to save entry" />
 		<ul id="todo_list">
-			<!-- in this example we will use <li> below as template -->
-			<li style="display:none;">
-            	<label>
-                    <input type="checkbox" name="mark" />
-                    <span class="text"></span>
-                </label>
-				<i class="delete" title="Remove this item">(x)</i>
-			</li>
+		
+			{{for list tmpl="#todo_tmpl_item"/}}
+			
 		</ul>
 		<div class="info">
 			<p class="right" id="todo_completed">
-                <span>&nbsp;|&nbsp;</span>
-				<a href="#" class="clear pseudo">Clear <span class="completed-count">0</span> completed item<i class="suffix">s</i></a>
+				<span>&nbsp;|&nbsp;</span>
+				<a href="#" class="clear pseudo">
+					Clear <span class="completed-count" {{follow chain="completed"/}}>{{:completed}}</span> completed item<i class="suffix">s</i>
+				</a>
 			</p>
 			<p class="right" id="todo_all">
-                <a href="#" class="clear_all pseudo">Clear All</a>
+				<a href="#" class="clear_all pseudo">Clear All</a>
 			</p>
 			<p id="todo_left">
-				<span class="left-count">0</span> item<i class="suffix">s</i> left.
+				<span class="left-count" {{follow chain="left"/}}>{{:left}}</span> item<i class="suffix">s</i> left.
 			</p>
 		</div>
-	</div>
+    </script>
+
+    <script id="todo_tmpl_item" type="text/x-jsrender">
+		<li {{follow chain=chain/}}>
+			<label>
+				<input {{if completed}}checked{{/if}} {{follow chain=chain + '.completed'/}} type="checkbox" name="mark" />
+				<span {{follow chain=chain + '.title'/}} class="text {{if completed}}completed{{/if}}">{{:title}}</span>
+			</label>
+			<i class="delete" title="Remove this item">(x)</i>
+		</li>
+    </script>
+    
 
 </body>
 </html>

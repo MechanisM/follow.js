@@ -2,9 +2,9 @@
 
 Follow.link({
 	match: '#world input',
-	trigger: function( elem, value, apply_defaults ) {
+	trigger: function( elem, params ) {
 		elem.css('border', '1px solid red');
-		apply_defaults();
+		params.applyDefault();
 		//return false; // to prevent handling for the next links
 	}
 });

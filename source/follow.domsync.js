@@ -30,12 +30,11 @@ this.jQuery && (function($)
 			chain = elem.data('follow'),
 			model = DOM.getModelByElemAttrs(elem);
 		
-		if( elem.is(':checkbox') ){
-			model(chain, elem.prop('checked'));
-		}
-		else {
-			model(chain, elem.val());
-		}
+		model(chain, 
+			elem.is(':checkbox')
+				? elem.prop('checked')
+				: elem.val()
+		);
 	});
 	
 	// Sync direction: model to DOM
@@ -46,13 +45,13 @@ this.jQuery && (function($)
 			chain = params.chain,
 			value = params.value;
 		
-		$('*[data-follow="'+ chain +'"]').each(function()
+		$('[data-follow="'+ chain +'"]').each(function()
 		{
             var 
 				elem = $(this),
 				prev_default = false,
 				is_the_same_model = DOM.getModelByElemAttrs(elem) === model,
-				apply_defaults = function()
+				apply_default = function()
 				{
 					if( is_the_same_model )
 					{
@@ -80,17 +79,19 @@ this.jQuery && (function($)
 			
 			$.each(DOM.links, function()
 			{
-				return (
-					is_the_same_model
-						&& elem.is( this.match ) // 1
-						&& (prev_default = true)
-					? this.trigger(elem, value, apply_defaults) // 2
-					: true
-				);
+				if( is_the_same_model && elem.is( this.match ) )
+				{
+					prev_default = true;
+					return this.trigger(elem, {
+						value: value,
+						chain: chain,
+						applyDefault: apply_default
+					});
+				}
 			});
 
 			// default behavior
-			!prev_default && apply_defaults();
+			!prev_default && apply_default();
         });
 	};
 	
@@ -105,6 +106,10 @@ this.jQuery && (function($)
 				var elem = $(this);
                 return DOM.getModelByElemAttrs(elem) === model;
             });
+		},
+		
+		getChainByElement: function( elem ){
+			return elem.data('follow');
 		},
 		
 		// Special methods to import/export data-model
