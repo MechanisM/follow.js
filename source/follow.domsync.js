@@ -7,7 +7,13 @@
 this.jQuery && (function($)
 {
 	var DOM = {
-		links: []
+		links: [],
+		
+		getModelByElemAttrs: function( elem ){
+			var M = elem.data('follow-model') || '';
+			var S = elem.data('follow-storage') || 'undefined';
+			return Function('return Follow("'+ M +'", '+ S +')')();
+		}
 	};
 	
 	Follow.link = function( config ) {
@@ -16,17 +22,13 @@ this.jQuery && (function($)
 	};
 	
 	// Sync direction: DOM to model (form-elements with data-follow attribute)
-	// also we can use attributes data-follow-model="" and data-follow-storage="" to update chains in non-default model
+	// also we can use attributes data-follow-model="" and data-follow-storage="" to update chains in non-default models
 	$(document).delegate('input[data-follow], select[data-follow], textarea[data-follow]', 'change', function()
 	{
 		var 
 			elem = $(this),
 			chain = elem.data('follow'),
-			data = {
-				model: elem.data('follow-model') || '',
-				storage: elem.data('follow-storage') || 'undefined'
-			},
-			model = Function('return Follow("'+ data.model +'", '+ data.storage +')')();
+			model = DOM.getModelByElemAttrs(elem);
 		
 		if( elem.is(':checkbox') ){
 			model(chain, elem.prop('checked'));
@@ -49,12 +51,7 @@ this.jQuery && (function($)
             var 
 				elem = $(this),
 				prev_default = false,
-				is_the_same_model = function()
-				{
-					var M = elem.data('follow-model') || '';
-					var S = elem.data('follow-storage') || 'undefined';
-					return model === Function('return Follow("'+ M +'", '+ S +')')();
-				}(),
+				is_the_same_model = DOM.getModelByElemAttrs(elem) === model,
 				apply_defaults = function()
 				{
 					if( is_the_same_model )
@@ -97,9 +94,20 @@ this.jQuery && (function($)
         });
 	};
 	
-	// Special methods to import/export data-model
 	Follow.extend(
 	{
+		// Getting DOM-elements by chain
+		getElementsByChain: function( chain )
+		{
+			var model = this;
+			return $('[data-follow="'+ chain +'"]').filter(function()
+			{
+				var elem = $(this);
+                return DOM.getModelByElemAttrs(elem) === model;
+            });
+		},
+		
+		// Special methods to import/export data-model
 		importDataFromDOM: function()
 		{
 			var 
@@ -111,11 +119,7 @@ this.jQuery && (function($)
 				var 
 					elem = $(this),
 					chain = elem.data('follow'),
-					data = {
-						model: elem.data('follow-model') || '',
-						storage: elem.data('follow-storage') || 'undefined'
-					},
-					current = Function('return Follow("'+ data.model +'", '+ data.storage +')')();
+					current = DOM.getModelByElemAttrs(elem);
 					
                 if( model === current && !imported[chain] )
 				{
@@ -163,4 +167,5 @@ this.jQuery && (function($)
 			});
 		}
 	});
+	
 }(this.jQuery));

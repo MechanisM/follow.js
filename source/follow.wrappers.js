@@ -51,6 +51,24 @@
 						});
 					}
 				};
+			},
+			
+			// throw out of main flow
+			'lazy': function( path, callback )
+			{
+				var handler = function()
+				{
+					var model = this;
+					var args = [].slice.call(arguments);
+					
+					setTimeout(function(){
+						callback.apply(model, args);
+					}, 10);
+				};
+				return {
+					path: path,
+					callback: handler
+				}
 			}
 		}
 	});

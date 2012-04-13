@@ -27,14 +27,14 @@
 			<p class="right" id="todo_completed">
 				<span>&nbsp;|&nbsp;</span>
 				<a href="#" class="clear pseudo">
-					Clear <span class="completed-count" {{follow chain="completed"/}}>0</span> completed item<i class="suffix">s</i>
+					Clear <span class="completed-count" {{follow chain="completed"/}}>{{:completed}}</span> completed item<i class="suffix">s</i>
 				</a>
 			</p>
 			<p class="right" id="todo_all">
 				<a href="#" class="clear_all pseudo">Clear All</a>
 			</p>
 			<p id="todo_left">
-				<span class="left-count" {{follow chain="left"/}}>0</span> item<i class="suffix">s</i> left.
+				<span class="left-count" {{follow chain="left"/}}>{{:left}}</span> item<i class="suffix">s</i> left.
 			</p>
 		</div>
     </script>
@@ -43,7 +43,7 @@
 		<li {{follow chain=chain/}}>
 			<label>
 				<input {{if completed}}checked{{/if}} {{follow chain=chain + '.completed'/}} type="checkbox" name="mark" />
-				<span {{follow chain=chain + '.title'/}} class="text">{{:title}}</span>
+				<span {{follow chain=chain + '.title'/}} class="text {{if completed}}completed{{/if}}">{{:title}}</span>
 			</label>
 			<i class="delete" title="Remove this item">(x)</i>
 		</li>
