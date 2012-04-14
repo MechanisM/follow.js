@@ -13,7 +13,8 @@ $(function()
 	todo.init({
 		list: [],
 		completed: 0,
-		left: 0
+		left: 0,
+		all: 0
 	});
 	
 	// prepare data
@@ -45,16 +46,11 @@ $.views.tags({
 });
 
 // data-triggers
-todo.follow('left completed', function( value, params )
+todo.follow('left completed all', function( value, params )
 {
 	$('#todo_'+ params.chain)
 		.find('.suffix').toggle(value > 1).end()
 		.toggle( !!value );
-}, 'lazy');
-
-todo.follow('list', function( value )
-{
-	$('#todo_all').toggle( !!this.sizeof(value) );
 }, 'lazy');
 
 todo.follow('list', function( item, params )
@@ -91,15 +87,15 @@ todo.follow(/^list\.\d+\.completed$/, function()
 {
 	var 
 		list = this.map('list', function(i){ return i }),
+		all = list.length,
 		completed = list.filter(function(i){ return i.completed }).length,
-		left = list.length - completed;
+		left = all - completed;
 	
 	this({
 		completed: completed,
-		left: left
+		left: left,
+		all: all
 	});
-	
-	this.dispatch('list'); // to show or hide "clear-all" element
 });
 
 // DOM-events
