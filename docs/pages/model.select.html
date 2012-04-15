@@ -1,8 +1,8 @@
 <!-- Follow.js: model.select -->
 
 <h3 class="pre"><span class="array">stack</span> model.select(
-    <span class="mixed">(string | regexp)</span> actor,
-    <span class="string">[ctx_chain]</span>
+    <span class="mixed">(string | regexp)</span> expression,
+    <span class="string">[context_chain]</span>
 )</h3>
 
 <p>
@@ -11,41 +11,35 @@
     Второй аргумент задает контекст поиска для выражения в первом аргументе.<br />
     Существует две кардинально разные формы поиска данных в модели, поддерживаемые этим методом:<br />
 </p>
-<ol>
-    <li class="space-top">
-    	Первый аргумент (<em>actor</em>) - <strong>регулярное выражение</strong>
-        <p>
-            В этом случае поиск происходит по всем возможным цепочкам, которые существуют в модели.<br />
-            Т.е для объекта модели <em>{x: true, y: ['test']}</em> будут проверены цепочки <em>"x", "y", "y.0"</em> на соответствие регулярному выражению.
-        </p>
-    </li>
-    <li class="space-top">
-    	Первый аргумент (<em>actor</em>) - <strong>CSS-селектор</strong>
-        <p>
-        	Чтобы иметь возможность использовать селекторы, JSON конвертируется в XML-объект.<br />
-            Каждое свойство в JSON переводится в элемент <em>&lt;p name="" type="" path="" value=""/></em><br />
-            Аттрибут <em>type</em> может иметь следующие значения: <em>object, array, boolean, string, number, null</em><br />
-            Если у элемента тип <em>object</em> или <em>array</em>, то он не имеет аттрибута <em>value</em>.
-        </p>
-        <p>
-            <strong>Внимание:</strong> для браузеров, не понимающих метод <em>document.querySelectorAll</em>, 
-            используется конвертация CSS в аналогичное XPath-выражение для методов <em>document.evaluate</em> 
-            или <em>document.selectNodes</em>, в зависимости от браузера.<br />
-            В связи с этим, доступны далеко не все возможные селекторы, 
-            т.к старые версии IE (6-8) непонимают функции и оси в XPath-выражениях (или же перевод физически невозможен).
-        </p>
-        <ul class="space-top">
-            <li>:root - ссылается на контекстный узел</li>
-            <li>* или p - выбор всех элементов</li>
-            <li>[name = "x"][type = number][value = "3"] - фильтрация элементов по аттрибутам</li>
-            <li>[name = "x"] [type = number] - выбор всех потомков у элементов (" ")</li>
-            <li>[name = "x"] > [type = number] - выбор всех детей у элементов (">")</li>
-            <li>:root > [name = x], [name = y] - объединения множеств (",")</li>
-        </ul>
-    </li>
-</ol>
 
-<br />
+<h3>Регулярное выражение</h3>
+<p>
+    В этом случае поиск происходит по всем возможным цепочкам, которые существуют в модели.<br />
+    Т.е для объекта модели <em>{x: true, y: ['test']}</em> будут проверены цепочки <em>"x", "y", "y.0"</em> на соответствие регулярному выражению.
+</p>
+
+<h3>CSS-селектор</h3>
+<p>
+    Чтобы иметь возможность использовать селекторы, JSON конвертируется в XML-объект.<br />
+    Каждое свойство в JSON переводится в элемент <em>&lt;p name="" type="" path="" value=""/></em><br />
+    Аттрибут <em>type</em> может иметь следующие значения: <em>object, array, boolean, string, number, null</em><br />
+    Если у элемента тип <em>object</em> или <em>array</em>, то он не имеет аттрибута <em>value</em>.
+</p>
+<p>
+    <strong>Внимание:</strong> для браузеров, не понимающих метод <em>document.querySelectorAll</em>, 
+    используется конвертация CSS в аналогичное XPath-выражение для методов <em>document.evaluate</em> 
+    или <em>document.selectNodes</em>, в зависимости от браузера.<br />
+    В связи с этим, доступны далеко не все возможные селекторы, 
+    т.к старые версии IE (6-8) непонимают функции и оси в XPath-выражениях (или же перевод физически невозможен).
+</p>
+<ul class="space-top">
+    <li>:root - ссылается на контекстный узел</li>
+    <li>* или p - выбор всех элементов</li>
+    <li>[name = "x"][type = number][value = "3"] - фильтрация элементов по аттрибутам</li>
+    <li>[name = "x"] [type = number] - выбор всех потомков у элементов (" ")</li>
+    <li>[name = "x"] > [type = number] - выбор всех детей у элементов (">")</li>
+    <li>:root > [name = x], [name = y] - объединения множеств (",")</li>
+</ul>
 <p>
 	Примеры использования метода model.select можно найти в файле с юнит тестами <a href="../tests/test.select.js">test.select.js</a>
 </p>
@@ -70,7 +64,24 @@
     });
 </code>
 
-<h3>XML</h3>
+<h3>Примеры поиска</h3>
+<code dependent-on="model">
+
+    // выбирем всех потомков цепочки "f" и цепочку "h"
+    model.backup();
+    model.select(/^f\..*|h$/).update('changed!');
+    alert( model );
+    
+    // найдем в модели все числовые данные потомков цепочки "f" и умножим их на 2
+    model.restore();
+    model.select('[type = "number"]', 'f').update(function( num ){
+    	return num * 2;
+    });
+    alert(model);
+    
+</code>
+
+<h3>XML-представление модели</h3>
 <code id="xml">
 	<script type="text/javascript">
         var code = document.getElementById('model').innerHTML;
@@ -82,3 +93,10 @@
 </code>
 
 <!-- <a href="#" class="next"></a> -->
+
+
+
+
+
+
+
